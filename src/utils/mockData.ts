@@ -18,11 +18,43 @@ export const mockMarketPrices: MarketPrice[] = [
     lastUpdated: '1 hour ago'
   },
   {
+    crop: 'Rice (Non-Basmati)',
+    market: 'Rampur Mandi',
+    price: 1850,
+    change: 3.8,
+    distance: '5 km',
+    lastUpdated: '2 hours ago'
+  },
+  {
+    crop: 'Rice (Non-Basmati)',
+    market: 'Moradabad Mandi',
+    price: 1950,
+    change: 6.2,
+    distance: '25 km',
+    lastUpdated: '4 hours ago'
+  },
+  {
     crop: 'Wheat',
     market: 'Rampur Mandi',
     price: 2150,
     change: -2.3,
     distance: '5 km',
+    lastUpdated: '3 hours ago'
+  },
+  {
+    crop: 'Wheat',
+    market: 'Bareilly Mandi',
+    price: 2230,
+    change: 4.7,
+    distance: '35 km',
+    lastUpdated: '2 hours ago'
+  },
+  {
+    crop: 'Wheat',
+    market: 'Delhi Azadpur',
+    price: 2380,
+    change: 8.1,
+    distance: '45 km',
     lastUpdated: '3 hours ago'
   },
   {
@@ -32,6 +64,94 @@ export const mockMarketPrices: MarketPrice[] = [
     change: 5.1,
     distance: '8 km',
     lastUpdated: '6 hours ago'
+  },
+  {
+    crop: 'Sugarcane',
+    market: 'Bajaj Hindusthan Mill',
+    price: 335,
+    change: 7.8,
+    distance: '15 km',
+    lastUpdated: '4 hours ago'
+  },
+  {
+    crop: 'Maize',
+    market: 'Rampur Mandi',
+    price: 1650,
+    change: -1.5,
+    distance: '5 km',
+    lastUpdated: '3 hours ago'
+  },
+  {
+    crop: 'Maize',
+    market: 'Moradabad Mandi',
+    price: 1720,
+    change: 2.8,
+    distance: '25 km',
+    lastUpdated: '5 hours ago'
+  },
+  {
+    crop: 'Mustard',
+    market: 'Rampur Mandi',
+    price: 5250,
+    change: 15.2,
+    distance: '5 km',
+    lastUpdated: '1 hour ago'
+  },
+  {
+    crop: 'Mustard',
+    market: 'Aligarh Mandi',
+    price: 5180,
+    change: 12.8,
+    distance: '40 km',
+    lastUpdated: '2 hours ago'
+  },
+  {
+    crop: 'Potato',
+    market: 'Rampur Mandi',
+    price: 980,
+    change: -8.5,
+    distance: '5 km',
+    lastUpdated: '1 hour ago'
+  },
+  {
+    crop: 'Potato',
+    market: 'Agra Mandi',
+    price: 1120,
+    change: -3.2,
+    distance: '55 km',
+    lastUpdated: '3 hours ago'
+  },
+  {
+    crop: 'Onion',
+    market: 'Rampur Mandi',
+    price: 1850,
+    change: 22.3,
+    distance: '5 km',
+    lastUpdated: '2 hours ago'
+  },
+  {
+    crop: 'Onion',
+    market: 'Delhi Azadpur',
+    price: 2150,
+    change: 28.7,
+    distance: '45 km',
+    lastUpdated: '1 hour ago'
+  },
+  {
+    crop: 'Tomato',
+    market: 'Rampur Mandi',
+    price: 3200,
+    change: 45.8,
+    distance: '5 km',
+    lastUpdated: '1 hour ago'
+  },
+  {
+    crop: 'Tomato',
+    market: 'Ghaziabad Mandi',
+    price: 3450,
+    change: 52.1,
+    distance: '38 km',
+    lastUpdated: '2 hours ago'
   }
 ];
 
@@ -62,6 +182,87 @@ export const mockPestReports: PestReport[] = [
     crop: 'Rice',
     reportedBy: 'Farmer Patel',
     timestamp: '1 day ago'
+  },
+  {
+    id: '4',
+    location: 'Sector 3, Village Rampur',
+    pestType: 'Fall Armyworm',
+    severity: 'High',
+    crop: 'Maize',
+    reportedBy: 'Farmer Gupta',
+    timestamp: '3 hours ago'
+  },
+  {
+    id: '5',
+    location: 'Sector 18, Village Rampur',
+    pestType: 'White Grub',
+    severity: 'Medium',
+    crop: 'Sugarcane',
+    reportedBy: 'Farmer Sharma',
+    timestamp: '8 hours ago'
+  },
+  {
+    id: '6',
+    location: 'Sector 7, Village Rampur',
+    pestType: 'Bollworm',
+    severity: 'Medium',
+    crop: 'Cotton',
+    reportedBy: 'Farmer Yadav',
+    timestamp: '12 hours ago'
+  },
+  {
+    id: '7',
+    location: 'Sector 22, Village Rampur',
+    pestType: 'Leaf Hopper',
+    severity: 'Low',
+    crop: 'Rice',
+    reportedBy: 'Farmer Mishra',
+    timestamp: '1 day ago'
+  },
+  {
+    id: '8',
+    location: 'Sector 5, Village Rampur',
+    pestType: 'Rust',
+    severity: 'Medium',
+    crop: 'Wheat',
+    reportedBy: 'Farmer Verma',
+    timestamp: '15 hours ago'
+  },
+  {
+    id: '9',
+    location: 'Sector 11, Village Rampur',
+    pestType: 'Thrips',
+    severity: 'Low',
+    crop: 'Onion',
+    reportedBy: 'Farmer Tiwari',
+    timestamp: '2 days ago'
+  },
+  {
+    id: '10',
+    location: 'Sector 20, Village Rampur',
+    pestType: 'Fruit Fly',
+    severity: 'High',
+    crop: 'Tomato',
+    reportedBy: 'Farmer Joshi',
+    timestamp: '6 hours ago'
+  },
+  {
+    id: '11',
+    location: 'Sector 14, Village Rampur',
+    pestType: 'Blight',
+    severity: 'Medium',
+    crop: 'Potato',
+    reportedBy: 'Farmer Pandey',
+    timestamp: '18 hours ago'
+  },
+  {
+    id: '12',
+    location: 'Sector 9, Village Rampur',
+    pestType: 'Cutworm',
+    severity: 'Low',
+    crop: 'Mustard',
+    reportedBy: 'Farmer Agarwal',
+    timestamp: '3 days ago'
   }
 ];
 
@@ -70,18 +271,38 @@ export const mockFarmData: PlotData[] = [
   { id: 'A2', crop: 'Rice', health: 'good', soilMoisture: 'high', pestAlert: false },
   { id: 'A3', crop: 'Wheat', health: 'warning', soilMoisture: 'medium', pestAlert: true },
   { id: 'A4', crop: 'Empty', health: 'good', soilMoisture: 'medium', pestAlert: false },
+  { id: 'A5', crop: 'Maize', health: 'good', soilMoisture: 'high', pestAlert: false },
+  { id: 'A6', crop: 'Mustard', health: 'excellent', soilMoisture: 'medium', pestAlert: false },
   { id: 'B1', crop: 'Rice', health: 'good', soilMoisture: 'high', pestAlert: false },
   { id: 'B2', crop: 'Rice', health: 'excellent', soilMoisture: 'high', pestAlert: false },
   { id: 'B3', crop: 'Wheat', health: 'poor', soilMoisture: 'low', pestAlert: true },
   { id: 'B4', crop: 'Empty', health: 'good', soilMoisture: 'medium', pestAlert: false },
+  { id: 'B5', crop: 'Potato', health: 'warning', soilMoisture: 'medium', pestAlert: true },
+  { id: 'B6', crop: 'Onion', health: 'good', soilMoisture: 'low', pestAlert: false },
   { id: 'C1', crop: 'Sugarcane', health: 'excellent', soilMoisture: 'high', pestAlert: false },
   { id: 'C2', crop: 'Sugarcane', health: 'good', soilMoisture: 'medium', pestAlert: false },
   { id: 'C3', crop: 'Empty', health: 'good', soilMoisture: 'medium', pestAlert: false },
-  { id: 'C4', crop: 'Empty', health: 'good', soilMoisture: 'low', pestAlert: false },
+  { id: 'C4', crop: 'Tomato', health: 'warning', soilMoisture: 'high', pestAlert: true },
+  { id: 'C5', crop: 'Cotton', health: 'good', soilMoisture: 'medium', pestAlert: false },
+  { id: 'C6', crop: 'Empty', health: 'good', soilMoisture: 'low', pestAlert: false },
   { id: 'D1', crop: 'Sugarcane', health: 'good', soilMoisture: 'high', pestAlert: false },
   { id: 'D2', crop: 'Sugarcane', health: 'excellent', soilMoisture: 'high', pestAlert: false },
-  { id: 'D3', crop: 'Empty', health: 'good', soilMoisture: 'medium', pestAlert: false },
-  { id: 'D4', crop: 'Empty', health: 'good', soilMoisture: 'medium', pestAlert: false },
+  { id: 'D3', crop: 'Wheat', health: 'good', soilMoisture: 'medium', pestAlert: false },
+  { id: 'D4', crop: 'Rice', health: 'excellent', soilMoisture: 'high', pestAlert: false },
+  { id: 'D5', crop: 'Maize', health: 'poor', soilMoisture: 'low', pestAlert: true },
+  { id: 'D6', crop: 'Empty', health: 'good', soilMoisture: 'medium', pestAlert: false },
+  { id: 'E1', crop: 'Mustard', health: 'good', soilMoisture: 'medium', pestAlert: false },
+  { id: 'E2', crop: 'Empty', health: 'good', soilMoisture: 'low', pestAlert: false },
+  { id: 'E3', crop: 'Potato', health: 'excellent', soilMoisture: 'high', pestAlert: false },
+  { id: 'E4', crop: 'Onion', health: 'warning', soilMoisture: 'medium', pestAlert: false },
+  { id: 'E5', crop: 'Tomato', health: 'good', soilMoisture: 'high', pestAlert: false },
+  { id: 'E6', crop: 'Cotton', health: 'excellent', soilMoisture: 'medium', pestAlert: false },
+  { id: 'F1', crop: 'Rice', health: 'warning', soilMoisture: 'medium', pestAlert: true },
+  { id: 'F2', crop: 'Wheat', health: 'good', soilMoisture: 'medium', pestAlert: false },
+  { id: 'F3', crop: 'Empty', health: 'good', soilMoisture: 'low', pestAlert: false },
+  { id: 'F4', crop: 'Sugarcane', health: 'excellent', soilMoisture: 'high', pestAlert: false },
+  { id: 'F5', crop: 'Empty', health: 'good', soilMoisture: 'medium', pestAlert: false },
+  { id: 'F6', crop: 'Maize', health: 'good', soilMoisture: 'high', pestAlert: false }
 ];
 
 export const weatherData = {
@@ -91,6 +312,61 @@ export const weatherData = {
   forecast: 'Partly cloudy with chance of showers'
 };
 
+export const extendedWeatherData = {
+  current: {
+    temperature: 32,
+    humidity: 78,
+    windSpeed: 8.5,
+    pressure: 1013,
+    uvIndex: 7,
+    visibility: 10
+  },
+  forecast: [
+    {
+      day: 'Today',
+      high: 34,
+      low: 26,
+      humidity: 82,
+      rainfall: 15,
+      condition: 'Partly cloudy with showers'
+    },
+    {
+      day: 'Tomorrow',
+      high: 31,
+      low: 24,
+      humidity: 85,
+      rainfall: 25,
+      condition: 'Heavy rainfall expected'
+    },
+    {
+      day: 'Day 3',
+      high: 29,
+      low: 23,
+      humidity: 88,
+      rainfall: 45,
+      condition: 'Continuous rainfall'
+    },
+    {
+      day: 'Day 4',
+      high: 33,
+      low: 25,
+      humidity: 75,
+      rainfall: 5,
+      condition: 'Clearing up'
+    },
+    {
+      day: 'Day 5',
+      high: 35,
+      low: 27,
+      humidity: 70,
+      rainfall: 0,
+      condition: 'Sunny and clear'
+    }
+  ],
+  monthlyRainfall: 125,
+  seasonalRainfall: 485
+};
+
 export const soilData = {
   ph: 6.8,
   nitrogen: 'Medium',
@@ -98,3 +374,397 @@ export const soilData = {
   potassium: 'Good',
   organicMatter: 'High'
 };
+
+export const detailedSoilData = {
+  ph: 6.8,
+  nitrogen: { level: 'Medium', value: 245, unit: 'kg/ha' },
+  phosphorus: { level: 'Good', value: 35, unit: 'kg/ha' },
+  potassium: { level: 'Good', value: 180, unit: 'kg/ha' },
+  organicMatter: { level: 'High', value: 3.2, unit: '%' },
+  moisture: { level: 'Adequate', value: 22, unit: '%' },
+  temperature: { value: 28, unit: '°C' },
+  electricalConductivity: { level: 'Normal', value: 0.4, unit: 'dS/m' },
+  carbonContent: { level: 'Good', value: 1.8, unit: '%' },
+  bulkDensity: { level: 'Optimal', value: 1.3, unit: 'g/cm³' }
+};
+
+// Add buyers data
+export const mockBuyers: any[] = [
+  {
+    id: '1',
+    name: 'Rampur Farmers Producer Organization',
+    type: 'FPO',
+    location: 'Rampur, UP',
+    crops: ['Rice', 'Wheat', 'Sugarcane'],
+    rating: 4.8,
+    contact: '+91 9876543210'
+  },
+  {
+    id: '2',
+    name: 'Agrotech Trading Company',
+    type: 'Trader',
+    location: 'Delhi',
+    crops: ['Rice (Basmati)', 'Wheat', 'Mustard'],
+    rating: 4.5,
+    contact: '+91 9876543211'
+  },
+  {
+    id: '3',
+    name: 'Green Valley Processing Ltd',
+    type: 'Processor',
+    location: 'Moradabad, UP',
+    crops: ['Tomato', 'Potato', 'Onion'],
+    rating: 4.2,
+    contact: '+91 9876543212'
+  },
+  {
+    id: '4',
+    name: 'United Sugar Mills',
+    type: 'Processor',
+    location: 'Bareilly, UP',
+    crops: ['Sugarcane'],
+    rating: 4.6,
+    contact: '+91 9876543213'
+  },
+  {
+    id: '5',
+    name: 'Kisan Mitra Traders',
+    type: 'Trader',
+    location: 'Rampur, UP',
+    crops: ['Maize', 'Rice', 'Wheat'],
+    rating: 4.1,
+    contact: '+91 9876543214'
+  },
+  {
+    id: '6',
+    name: 'Northern Plains FPO',
+    type: 'FPO',
+    location: 'Aligarh, UP',
+    crops: ['Potato', 'Mustard', 'Wheat'],
+    rating: 4.7,
+    contact: '+91 9876543215'
+  },
+  {
+    id: '7',
+    name: 'Fresh Harvest Foods',
+    type: 'Processor',
+    location: 'Ghaziabad, UP',
+    crops: ['Tomato', 'Onion', 'Potato'],
+    rating: 4.3,
+    contact: '+91 9876543216'
+  },
+  {
+    id: '8',
+    name: 'Agri Solutions Traders',
+    type: 'Trader',
+    location: 'Agra, UP',
+    crops: ['Cotton', 'Maize', 'Mustard'],
+    rating: 4.0,
+    contact: '+91 9876543217'
+  }
+];
+
+// Add seasonal data
+export const mockSeasonalData: any[] = [
+  {
+    season: 'Kharif',
+    year: '2024',
+    cropsGrown: ['Rice (Basmati)', 'Rice (Non-Basmati)', 'Sugarcane', 'Maize', 'Cotton'],
+    totalYield: '285 quintals',
+    revenue: '₹4,25,000',
+    soilHealth: 'Good',
+    pestIncidents: 3
+  },
+  {
+    season: 'Rabi',
+    year: '2023-24',
+    cropsGrown: ['Wheat', 'Mustard', 'Potato', 'Onion'],
+    totalYield: '195 quintals',
+    revenue: '₹3,15,000',
+    soilHealth: 'Excellent',
+    pestIncidents: 1
+  },
+  {
+    season: 'Zaid',
+    year: '2024',
+    cropsGrown: ['Tomato', 'Maize'],
+    totalYield: '85 quintals',
+    revenue: '₹1,85,000',
+    soilHealth: 'Good',
+    pestIncidents: 2
+  },
+  {
+    season: 'Kharif',
+    year: '2023',
+    cropsGrown: ['Rice (Basmati)', 'Sugarcane', 'Cotton'],
+    totalYield: '265 quintals',
+    revenue: '₹3,95,000',
+    soilHealth: 'Good',
+    pestIncidents: 4
+  },
+  {
+    season: 'Rabi',
+    year: '2022-23',
+    cropsGrown: ['Wheat', 'Mustard', 'Potato'],
+    totalYield: '175 quintals',
+    revenue: '₹2,85,000',
+    soilHealth: 'Average',
+    pestIncidents: 2
+  }
+];
+
+// Add crop recommendations data
+export const mockCropRecommendations: any[] = [
+  {
+    name: 'Rice (Basmati)',
+    suitability: 'High',
+    expectedYield: '25-30 quintals/acre',
+    roi: '35-40%',
+    requirements: ['High water availability', 'Clay-loam soil', 'Warm climate'],
+    tips: ['Use certified seeds', 'Maintain proper spacing', 'Apply recommended fertilizers']
+  },
+  {
+    name: 'Wheat',
+    suitability: 'High',
+    expectedYield: '20-25 quintals/acre',
+    roi: '30-35%',
+    requirements: ['Well-drained soil', 'Cool weather', 'Moderate water'],
+    tips: ['Timely sowing', 'Proper irrigation', 'Pest monitoring']
+  },
+  {
+    name: 'Sugarcane',
+    suitability: 'Medium',
+    expectedYield: '400-500 quintals/acre',
+    roi: '25-30%',
+    requirements: ['High water requirement', 'Deep fertile soil', 'Warm climate'],
+    tips: ['Quality seed cane', 'Regular irrigation', 'Proper fertilization']
+  },
+  {
+    name: 'Mustard',
+    suitability: 'High',
+    expectedYield: '8-12 quintals/acre',
+    roi: '45-50%',
+    requirements: ['Well-drained soil', 'Cool dry weather', 'Low water requirement'],
+    tips: ['Line sowing', 'Timely harvesting', 'Pest management']
+  },
+  {
+    name: 'Potato',
+    suitability: 'Medium',
+    expectedYield: '150-200 quintals/acre',
+    roi: '40-45%',
+    requirements: ['Sandy-loam soil', 'Cool weather', 'Regular irrigation'],
+    tips: ['Quality seed tubers', 'Proper earthing up', 'Disease management']
+  },
+  {
+    name: 'Maize',
+    suitability: 'High',
+    expectedYield: '25-30 quintals/acre',
+    roi: '35-40%',
+    requirements: ['Well-drained soil', 'Warm weather', 'Moderate water'],
+    tips: ['Hybrid varieties', 'Balanced nutrition', 'Weed control']
+  }
+];
+
+// Add fertilizer recommendations
+export const mockFertilizerRecommendations = {
+  'Rice': {
+    nitrogen: '120-150 kg/ha',
+    phosphorus: '60-75 kg/ha',
+    potassium: '40-60 kg/ha',
+    organic: '10-12 tons/ha',
+    timing: ['Basal: 50% N, 100% P, 100% K', 'Tillering: 25% N', 'Panicle: 25% N']
+  },
+  'Wheat': {
+    nitrogen: '100-120 kg/ha',
+    phosphorus: '60-80 kg/ha',
+    potassium: '40-60 kg/ha',
+    organic: '8-10 tons/ha',
+    timing: ['Basal: 50% N, 100% P, 100% K', 'Crown root: 50% N']
+  },
+  'Sugarcane': {
+    nitrogen: '150-200 kg/ha',
+    phosphorus: '60-80 kg/ha',
+    potassium: '80-120 kg/ha',
+    organic: '15-20 tons/ha',
+    timing: ['Planting: 1/3 N, 100% P, 100% K', 'After 2 months: 1/3 N', 'After 4 months: 1/3 N']
+  },
+  'Maize': {
+    nitrogen: '120-150 kg/ha',
+    phosphorus: '60-80 kg/ha',
+    potassium: '40-60 kg/ha',
+    organic: '10-12 tons/ha',
+    timing: ['Basal: 50% N, 100% P, 100% K', 'Knee high: 50% N']
+  }
+};
+
+// Add equipment rental data
+export const mockEquipmentRental = [
+  {
+    id: '1',
+    name: 'Tractor (35 HP)',
+    type: 'Tractor',
+    ratePerHour: 800,
+    ratePerDay: 6000,
+    availability: 'Available',
+    location: 'Rampur',
+    owner: 'Ram Singh Equipment',
+    contact: '+91 9876543220'
+  },
+  {
+    id: '2',
+    name: 'Combine Harvester',
+    type: 'Harvester',
+    ratePerHour: 1500,
+    ratePerDay: 12000,
+    availability: 'Available',
+    location: 'Rampur',
+    owner: 'Modern Agri Services',
+    contact: '+91 9876543221'
+  },
+  {
+    id: '3',
+    name: 'Rotavator',
+    type: 'Tillage',
+    ratePerHour: 600,
+    ratePerDay: 4500,
+    availability: 'Booked',
+    location: 'Rampur',
+    owner: 'Farm Tech Solutions',
+    contact: '+91 9876543222'
+  },
+  {
+    id: '4',
+    name: 'Seed Drill',
+    type: 'Sowing',
+    ratePerHour: 500,
+    ratePerDay: 3500,
+    availability: 'Available',
+    location: 'Rampur',
+    owner: 'Green Equipment',
+    contact: '+91 9876543223'
+  },
+  {
+    id: '5',
+    name: 'Sprayer (Power)',
+    type: 'Spraying',
+    ratePerHour: 400,
+    ratePerDay: 2500,
+    availability: 'Available',
+    location: 'Rampur',
+    owner: 'Crop Care Services',
+    contact: '+91 9876543224'
+  }
+];
+
+// Add government schemes data
+export const mockGovernmentSchemes = [
+  {
+    id: '1',
+    name: 'PM-KISAN',
+    category: 'Income Support',
+    benefit: '₹6,000 per year',
+    eligibility: 'All landholding farmers',
+    status: 'Active',
+    lastPayment: '₹2,000 on 15 Aug 2024',
+    nextPayment: 'Dec 2024'
+  },
+  {
+    id: '2',
+    name: 'Crop Insurance (PMFBY)',
+    category: 'Insurance',
+    benefit: 'Crop loss compensation',
+    eligibility: 'All farmers',
+    status: 'Enrolled',
+    coverage: 'Kharif 2024: Rice, Sugarcane',
+    premium: '₹3,500 paid'
+  },
+  {
+    id: '3',
+    name: 'Soil Health Card',
+    category: 'Soil Testing',
+    benefit: 'Free soil testing',
+    eligibility: 'All farmers',
+    status: 'Completed',
+    lastTest: 'March 2024',
+    nextTest: 'March 2026'
+  },
+  {
+    id: '4',
+    name: 'KCC (Kisan Credit Card)',
+    category: 'Credit',
+    benefit: 'Low interest farm loans',
+    eligibility: 'Landholding farmers',
+    status: 'Active',
+    creditLimit: '₹2,50,000',
+    utilization: '₹1,80,000'
+  },
+  {
+    id: '5',
+    name: 'Pradhan Mantri Krishi Sinchai Yojana',
+    category: 'Irrigation',
+    benefit: 'Irrigation subsidies',
+    eligibility: 'All farmers',
+    status: 'Applied',
+    subsidy: '50% on drip irrigation',
+    applicationDate: '15 July 2024'
+  }
+];
+
+// Add training and advisory data
+export const mockTrainingPrograms = [
+  {
+    id: '1',
+    title: 'Modern Rice Cultivation Techniques',
+    date: '15 Sept 2024',
+    time: '10:00 AM - 4:00 PM',
+    venue: 'Krishi Vigyan Kendra, Rampur',
+    instructor: 'Dr. Raj Kumar (Agricultural Scientist)',
+    topics: ['SRI Method', 'Nutrient Management', 'Pest Control'],
+    fees: 'Free',
+    registration: 'Open'
+  },
+  {
+    id: '2',
+    title: 'Organic Farming Workshop',
+    date: '22 Sept 2024',
+    time: '9:00 AM - 5:00 PM',
+    venue: 'District Collector Office, Rampur',
+    instructor: 'Mr. Suresh Sharma (Organic Farming Expert)',
+    topics: ['Composting', 'Bio-fertilizers', 'Natural Pest Control'],
+    fees: '₹200',
+    registration: 'Open'
+  },
+  {
+    id: '3',
+    title: 'Farm Mechanization Program',
+    date: '30 Sept 2024',
+    time: '11:00 AM - 3:00 PM',
+    venue: 'Agricultural Equipment Center',
+    instructor: 'Engineer Vikash Singh',
+    topics: ['Tractor Operations', 'Equipment Maintenance', 'Cost Benefits'],
+    fees: 'Free',
+    registration: 'Closed'
+  }
+];
+
+// Add weather alerts
+export const mockWeatherAlerts = [
+  {
+    id: '1',
+    type: 'Heavy Rainfall',
+    severity: 'High',
+    message: 'Heavy to very heavy rainfall expected in next 48 hours. Take precautionary measures.',
+    startTime: '31 Aug 2024, 6:00 PM',
+    endTime: '2 Sept 2024, 6:00 AM',
+    recommendations: ['Harvest mature crops', 'Ensure proper drainage', 'Protect livestock']
+  },
+  {
+    id: '2',
+    type: 'High Temperature',
+    severity: 'Medium',
+    message: 'Temperature may rise above 38°C in coming days. Heat wave conditions likely.',
+    startTime: '5 Sept 2024, 12:00 PM',
+    endTime: '8 Sept 2024, 6:00 PM',
+    recommendations: ['Increase irrigation frequency', 'Provide shade to animals', 'Avoid midday activities']
+  }
+];
