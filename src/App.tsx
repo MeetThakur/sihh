@@ -50,15 +50,6 @@ function App() {
       />
       
       <main className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Smart Crop Advisory System
-          </h1>
-          <p className="text-gray-600">
-            AI-powered agricultural guidance for small and marginal farmers
-          </p>
-        </div>
-        
         {renderActiveComponent()}
       </main>
     </div>

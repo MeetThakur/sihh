@@ -11,7 +11,7 @@ export async function askGemini(prompt: string): Promise<string> {
   if (!apiKey) {
     throw new Error("Gemini API key not set. Please add VITE_GEMINI_API_KEY to your .env file.");
   }
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const result = await model.generateContent(prompt);
   return result.response.text();
 }

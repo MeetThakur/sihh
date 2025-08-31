@@ -11,26 +11,38 @@ Farm Size: ${farmSize}
 Weather: ${weather}
 Location: ${location}
 
-Please provide 3-4 crop recommendations in JSON format with each crop having:
+Please provide 3-4 crop recommendations as a JSON array only (no markdown, no explanation). Each crop should have:
 - name
 - suitability (High/Medium/Low)
 - expectedYield
 - roi (return on investment)
 - requirements (array of strings)
-- tips (array of strings)`;
+- tips (array of strings)
+
+Return only the JSON array, nothing else.`;
     
     const response = await askGemini(prompt);
     try {
-      const recommendations = JSON.parse(response);
-      return recommendations;
-    } catch {
+      // Extract JSON from markdown code blocks if present
+      let jsonString = response;
+      const jsonMatch = response.match(/```json\s*([\s\S]*?)\s*```/);
+      if (jsonMatch) {
+        jsonString = jsonMatch[1];
+      }
+      
+      const recommendations = JSON.parse(jsonString);
+      return Array.isArray(recommendations) ? recommendations : [recommendations];
+    } catch (error) {
+      console.error('Failed to parse Gemini response:', error);
+      // Format the raw response in a readable way
+      const formattedResponse = response.replace(/```json|```/g, '').trim();
       return [{
         name: 'Gemini AI Recommendation',
         suitability: 'AI-powered',
-        expectedYield: 'Variable',
-        roi: 'Based on market conditions',
+        expectedYield: 'See details below',
+        roi: 'Based on market analysis',
         requirements: ['Follow AI guidance'],
-        tips: [response]
+        tips: [formattedResponse]
       }];
     }
   } catch (err) {
