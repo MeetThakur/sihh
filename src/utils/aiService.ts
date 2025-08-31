@@ -4,9 +4,11 @@ export const generateCropRecommendations = async (farmInput: any) => {
   // Simulate API call delay
   await new Promise(resolve => setTimeout(resolve, 2000));
   
-  const { budget, season, soilType, farmSize } = farmInput;
-  const budgetNum = parseInt(budget?.replace(/[₹,]/g, '') || '0');
-  const sizeNum = parseFloat(farmSize?.replace(/[^0-9.]/g, '') || '1');
+  const { budget, season, soilType, farmSize, weather, location } = farmInput;
+  
+  // Convert budget to number if it's a string
+  const budgetNum = typeof budget === 'string' ? parseInt(budget) : (budget || 0);
+  const sizeNum = typeof farmSize === 'string' ? parseFloat(farmSize) : (farmSize || 1);
   
   // Determine suitable crops based on inputs
   let recommendations = [];
@@ -14,28 +16,29 @@ export const generateCropRecommendations = async (farmInput: any) => {
   // Season-based filtering
   const currentSeason = season?.toLowerCase();
   const soilKey = soilType?.toLowerCase();
+  const weatherKey = weather?.toLowerCase();
+  
+  console.log('AI Service Input:', { budget: budgetNum, season: currentSeason, soilType: soilKey, farmSize: sizeNum, weather: weatherKey });
   
   if (currentSeason === 'kharif' || currentSeason === 'monsoon') {
-    // High water availability crops
+    // High water availability crops for Kharif season
     if (budgetNum > 100000 && sizeNum >= 2) {
       recommendations.push({
         name: 'Rice (Basmati)',
         suitability: 'High' as const,
         expectedYield: `${Math.round(40 + Math.random() * 15)}-${Math.round(50 + Math.random() * 10)} quintals/hectare`,
         roi: `₹${Math.round(35000 + Math.random() * 15000).toLocaleString()} - ₹${Math.round(55000 + Math.random() * 15000).toLocaleString()}`,
-        requirements: ['Well-drained clay soil', 'Consistent water supply', 'High organic matter'],
-        tips: [`Best planting time: ${currentSeason === 'kharif' ? 'June-July' : 'May-June'}`, 'Use certified seeds', 'Implement SRI method for 20-30% higher yield']
+        requirements: ['Well-drained clay soil', 'Consistent water supply during Kharif', 'High organic matter'],
+        tips: [`Best planting time: June-July for ${currentSeason} season`, 'Use certified Basmati seeds', 'Implement SRI method for 20-30% higher yield', 'Monitor for brown planthopper during monsoon']
       });
-    }
-    
-    if (budgetNum > 50000) {
+    } else if (budgetNum > 50000) {
       recommendations.push({
         name: 'Rice (Non-Basmati)',
         suitability: budgetNum > 80000 ? 'High' as const : 'Medium' as const,
         expectedYield: `${Math.round(35 + Math.random() * 10)}-${Math.round(45 + Math.random() * 10)} quintals/hectare`,
         roi: `₹${Math.round(25000 + Math.random() * 10000).toLocaleString()} - ₹${Math.round(35000 + Math.random() * 10000).toLocaleString()}`,
-        requirements: ['Clay to clay-loam soil', 'Adequate water supply', 'Balanced fertilization'],
-        tips: ['Shorter duration varieties for quick returns', 'Monitor for brown planthopper', 'Maintain 20cm water level initially']
+        requirements: ['Clay to clay-loam soil', 'Adequate monsoon water', 'Balanced fertilization for Kharif'],
+        tips: ['Shorter duration varieties for quick returns', 'Monitor for pest during humid weather', 'Maintain proper water level initially']
       });
     }
     
@@ -45,93 +48,177 @@ export const generateCropRecommendations = async (farmInput: any) => {
         suitability: 'High' as const,
         expectedYield: `${Math.round(400 + Math.random() * 100)}-${Math.round(550 + Math.random() * 100)} quintals/hectare`,
         roi: `₹${Math.round(80000 + Math.random() * 30000).toLocaleString()} - ₹${Math.round(120000 + Math.random() * 30000).toLocaleString()}`,
-        requirements: ['Deep fertile soil', 'Very high water requirement', 'Long-term commitment'],
-        tips: ['Plant quality seed cane', 'Ensure drip irrigation if possible', '12-18 month crop cycle']
+        requirements: ['Deep fertile soil', 'Very high water requirement', 'Long-term commitment (12+ months)'],
+        tips: ['Plant quality seed cane in Kharif', 'Ensure drip irrigation during dry spells', 'Good for large farms with high investment capacity']
       });
     }
     
-    recommendations.push({
-      name: 'Maize (Hybrid)',
-      suitability: budgetNum > 40000 ? 'High' as const : 'Medium' as const,
-      expectedYield: `${Math.round(30 + Math.random() * 15)}-${Math.round(40 + Math.random() * 15)} quintals/hectare`,
-      roi: `₹${Math.round(20000 + Math.random() * 10000).toLocaleString()} - ₹${Math.round(35000 + Math.random() * 10000).toLocaleString()}`,
-      requirements: ['Well-drained soil', 'Moderate water needs', 'Good sunlight'],
-      tips: ['Use hybrid varieties for better yield', 'Apply balanced NPK fertilizers', 'Harvest at proper moisture content']
-    });
+    if (budgetNum > 40000) {
+      recommendations.push({
+        name: 'Maize (Kharif)',
+        suitability: budgetNum > 60000 ? 'High' as const : 'Medium' as const,
+        expectedYield: `${Math.round(30 + Math.random() * 15)}-${Math.round(40 + Math.random() * 15)} quintals/hectare`,
+        roi: `₹${Math.round(20000 + Math.random() * 10000).toLocaleString()} - ₹${Math.round(35000 + Math.random() * 10000).toLocaleString()}`,
+        requirements: ['Well-drained soil', 'Moderate water needs', 'Good sunlight exposure'],
+        tips: ['Use hybrid varieties for monsoon season', 'Apply balanced NPK fertilizers', 'Harvest at proper moisture content', 'Good alternative to rice in moderate budget']
+      });
+    }
+    
+    // Add cotton for suitable conditions
+    if ((weatherKey === 'hot_humid' || weatherKey === 'moderate') && soilKey === 'black') {
+      recommendations.push({
+        name: 'Cotton',
+        suitability: 'High' as const,
+        expectedYield: `${Math.round(15 + Math.random() * 8)}-${Math.round(25 + Math.random() * 8)} quintals/hectare`,
+        roi: `₹${Math.round(40000 + Math.random() * 25000).toLocaleString()} - ₹${Math.round(70000 + Math.random() * 25000).toLocaleString()}`,
+        requirements: ['Black cotton soil preferred', 'Warm humid weather', 'Good pest management'],
+        tips: ['Ideal for black cotton soil', 'Monitor for bollworm', 'High-value cash crop', 'Requires good market linkage']
+      });
+    }
     
   } else if (currentSeason === 'rabi' || currentSeason === 'winter') {
-    // Cool season crops
-    recommendations.push({
-      name: 'Wheat',
-      suitability: 'High' as const,
-      expectedYield: `${Math.round(25 + Math.random() * 10)}-${Math.round(35 + Math.random() * 10)} quintals/hectare`,
-      roi: `₹${Math.round(30000 + Math.random() * 15000).toLocaleString()} - ₹${Math.round(45000 + Math.random() * 15000).toLocaleString()}`,
-      requirements: ['Loamy to clay-loam soil', 'Cool weather', 'Moderate irrigation'],
-      tips: ['Sow in November-December', 'Use improved varieties like HD-2967', 'Apply urea in 2-3 splits']
-    });
+    // Cool season crops for Rabi
+    if (budgetNum > 30000) {
+      recommendations.push({
+        name: 'Wheat',
+        suitability: 'High' as const,
+        expectedYield: `${Math.round(25 + Math.random() * 10)}-${Math.round(35 + Math.random() * 10)} quintals/hectare`,
+        roi: `₹${Math.round(30000 + Math.random() * 15000).toLocaleString()} - ₹${Math.round(45000 + Math.random() * 15000).toLocaleString()}`,
+        requirements: ['Loamy to clay-loam soil', 'Cool winter weather', 'Moderate irrigation needs'],
+        tips: ['Sow in November-December for Rabi', 'Use improved varieties like HD-2967', 'Apply urea in 2-3 splits', 'Perfect for winter season']
+      });
+    }
     
-    if (budgetNum > 60000) {
+    if (budgetNum > 60000 && (weatherKey === 'cool_dry' || weatherKey === 'moderate')) {
       recommendations.push({
         name: 'Mustard',
         suitability: 'High' as const,
         expectedYield: `${Math.round(8 + Math.random() * 6)}-${Math.round(15 + Math.random() * 5)} quintals/hectare`,
         roi: `₹${Math.round(40000 + Math.random() * 20000).toLocaleString()} - ₹${Math.round(65000 + Math.random() * 20000).toLocaleString()}`,
-        requirements: ['Well-drained soil', 'Cool dry weather', 'Low water requirement'],
-        tips: ['High oil prices make it profitable', 'Line sowing recommended', 'Harvest when 75% pods turn brown']
+        requirements: ['Well-drained soil', 'Cool dry winter weather', 'Low water requirement'],
+        tips: ['High oil prices make it very profitable', 'Line sowing recommended for Rabi', 'Harvest when 75% pods turn brown', 'Excellent for cool dry conditions']
       });
     }
     
-    if (soilKey?.includes('sandy') || soilKey?.includes('loam')) {
+    if ((soilKey?.includes('sandy') || soilKey?.includes('loamy')) && budgetNum > 80000) {
       recommendations.push({
         name: 'Potato',
-        suitability: budgetNum > 80000 ? 'High' as const : 'Medium' as const,
+        suitability: budgetNum > 120000 ? 'High' as const : 'Medium' as const,
         expectedYield: `${Math.round(150 + Math.random() * 80)}-${Math.round(250 + Math.random() * 80)} quintals/hectare`,
         roi: `₹${Math.round(60000 + Math.random() * 40000).toLocaleString()} - ₹${Math.round(120000 + Math.random() * 40000).toLocaleString()}`,
-        requirements: ['Sandy-loam soil', 'Cool weather', 'Regular irrigation'],
-        tips: ['High value crop with good returns', 'Use certified seed potatoes', 'Proper storage essential']
+        requirements: ['Sandy-loam soil', 'Cool winter weather', 'Regular irrigation in Rabi'],
+        tips: ['High value crop with excellent returns', 'Use certified seed potatoes', 'Proper storage facilities essential', 'Best for cool Rabi season']
       });
     }
     
-  } else {
-    // Zaid/Summer season
-    recommendations.push({
-      name: 'Maize (Zaid)',
-      suitability: 'Medium' as const,
-      expectedYield: `${Math.round(25 + Math.random() * 10)}-${Math.round(35 + Math.random() * 10)} quintals/hectare`,
-      roi: `₹${Math.round(25000 + Math.random() * 15000).toLocaleString()} - ₹${Math.round(40000 + Math.random() * 15000).toLocaleString()}`,
-      requirements: ['Irrigation facilities', 'Heat-tolerant varieties', 'Adequate water supply'],
-      tips: ['Limited to irrigated areas', 'Use short-duration varieties', 'Provide adequate nutrition']
-    });
+    // Add onion for suitable conditions
+    if (budgetNum > 50000 && sizeNum >= 1.5) {
+      recommendations.push({
+        name: 'Onion',
+        suitability: 'Medium' as const,
+        expectedYield: `${Math.round(200 + Math.random() * 100)}-${Math.round(350 + Math.random() * 100)} quintals/hectare`,
+        roi: `₹${Math.round(50000 + Math.random() * 30000).toLocaleString()} - ₹${Math.round(80000 + Math.random() * 30000).toLocaleString()}`,
+        requirements: ['Well-drained soil', 'Cool weather for bulb development', 'Good irrigation facilities'],
+        tips: ['Plant in Rabi for better quality', 'Ensure proper curing after harvest', 'Good storage facilities needed', 'High market demand']
+      });
+    }
+    
+  } else if (currentSeason === 'zaid' || currentSeason === 'summer') {
+    // Summer season crops (limited options)
+    if (budgetNum > 40000 && (weatherKey === 'hot_humid' || location?.toLowerCase().includes('irrigated'))) {
+      recommendations.push({
+        name: 'Maize (Zaid)',
+        suitability: 'Medium' as const,
+        expectedYield: `${Math.round(25 + Math.random() * 10)}-${Math.round(35 + Math.random() * 10)} quintals/hectare`,
+        roi: `₹${Math.round(25000 + Math.random() * 15000).toLocaleString()} - ₹${Math.round(40000 + Math.random() * 15000).toLocaleString()}`,
+        requirements: ['Assured irrigation facilities', 'Heat-tolerant varieties', 'Adequate water supply throughout'],
+        tips: ['Limited to well-irrigated areas only', 'Use short-duration heat-resistant varieties', 'Provide adequate nutrition', 'Monitor water stress carefully']
+      });
+    }
+    
+    if (budgetNum > 80000 && soilKey?.includes('sandy')) {
+      recommendations.push({
+        name: 'Watermelon',
+        suitability: 'Medium' as const,
+        expectedYield: `${Math.round(200 + Math.random() * 150)}-${Math.round(400 + Math.random() * 150)} quintals/hectare`,
+        roi: `₹${Math.round(40000 + Math.random() * 30000).toLocaleString()} - ₹${Math.round(80000 + Math.random() * 30000).toLocaleString()}`,
+        requirements: ['Sandy soil preferred', 'Hot weather', 'Drip irrigation essential'],
+        tips: ['High-value summer crop', 'Requires drip irrigation system', 'Good market timing crucial', 'Sandy soil gives best quality']
+      });
+    }
   }
   
-  // Add soil-specific recommendations
-  if (soilKey?.includes('clay') && !recommendations.find(r => r.name.includes('Rice'))) {
-    recommendations.unshift({
-      name: 'Rice (suitable for clay soil)',
-      suitability: 'High' as const,
-      expectedYield: `${Math.round(35 + Math.random() * 15)}-${Math.round(50 + Math.random() * 10)} quintals/hectare`,
-      roi: `₹${Math.round(30000 + Math.random() * 20000).toLocaleString()} - ₹${Math.round(50000 + Math.random() * 20000).toLocaleString()}`,
-      requirements: ['Clay soil is ideal', 'Proper water management', 'Balanced fertilization'],
-      tips: ['Clay soil retains water well', 'Ensure proper drainage', 'Use appropriate varieties']
-    });
+  // Add soil-specific recommendations if none match above
+  if (recommendations.length === 0 || recommendations.length < 2) {
+    if (soilKey?.includes('clay')) {
+      recommendations.push({
+        name: 'Rice (suitable for clay soil)',
+        suitability: 'High' as const,
+        expectedYield: `${Math.round(35 + Math.random() * 15)}-${Math.round(50 + Math.random() * 10)} quintals/hectare`,
+        roi: `₹${Math.round(30000 + Math.random() * 20000).toLocaleString()} - ₹${Math.round(50000 + Math.random() * 20000).toLocaleString()}`,
+        requirements: ['Clay soil is ideal for rice', 'Proper water management', 'Balanced fertilization'],
+        tips: ['Clay soil retains water well for rice', 'Ensure proper drainage channels', 'Use appropriate rice varieties for your region']
+      });
+    }
+    
+    if (soilKey?.includes('sandy')) {
+      recommendations.push({
+        name: 'Groundnut',
+        suitability: 'Medium' as const,
+        expectedYield: `${Math.round(15 + Math.random() * 10)}-${Math.round(25 + Math.random() * 10)} quintals/hectare`,
+        roi: `₹${Math.round(25000 + Math.random() * 15000).toLocaleString()} - ₹${Math.round(40000 + Math.random() * 15000).toLocaleString()}`,
+        requirements: ['Sandy to sandy-loam soil', 'Good drainage', 'Moderate water needs'],
+        tips: ['Sandy soil provides good pod development', 'Avoid waterlogging', 'Good rotation crop', 'Fixes nitrogen in soil']
+      });
+    }
   }
   
-  // Budget-based filtering and sorting
+  // Budget-based filtering and adjustments
   if (budgetNum < 50000) {
-    recommendations = recommendations.filter(r => !r.name.includes('Sugarcane') && !r.name.includes('Potato'));
+    recommendations = recommendations.filter(r => 
+      !r.name.includes('Sugarcane') && 
+      !r.name.includes('Potato') && 
+      !r.name.includes('Cotton')
+    );
+    
+    // Add low-budget options if list is empty
+    if (recommendations.length === 0) {
+      recommendations.push({
+        name: 'Finger Millet (Ragi)',
+        suitability: 'High' as const,
+        expectedYield: `${Math.round(12 + Math.random() * 8)}-${Math.round(20 + Math.random() * 8)} quintals/hectare`,
+        roi: `₹${Math.round(15000 + Math.random() * 10000).toLocaleString()} - ₹${Math.round(25000 + Math.random() * 10000).toLocaleString()}`,
+        requirements: ['Low input costs', 'Drought tolerant', 'Suitable for marginal lands'],
+        tips: ['Excellent for low budget farming', 'Nutritious grain with good market', 'Requires minimal inputs', 'Climate resilient crop']
+      });
+    }
+    
     recommendations = recommendations.slice(0, 2); // Limit options for low budget
   } else if (budgetNum > 200000) {
     // Add premium options for high budget
     recommendations.unshift({
-      name: 'Organic Rice (Premium)',
+      name: 'Organic Premium Crops',
       suitability: 'High' as const,
-      expectedYield: `${Math.round(25 + Math.random() * 10)}-${Math.round(35 + Math.random() * 10)} quintals/hectare`,
+      expectedYield: `${Math.round(20 + Math.random() * 15)}-${Math.round(35 + Math.random() * 15)} quintals/hectare`,
       roi: `₹${Math.round(60000 + Math.random() * 30000).toLocaleString()} - ₹${Math.round(90000 + Math.random() * 30000).toLocaleString()}`,
-      requirements: ['Organic certification', 'Premium market access', 'Extended growing period'],
-      tips: ['Higher margins in organic market', 'Requires 3-year transition period', 'Focus on soil health']
+      requirements: ['Organic certification process', 'Premium market access', 'Extended transition period'],
+      tips: ['Higher margins in organic market', 'Requires 3-year transition period', 'Focus on soil health improvement', 'High investment but premium returns']
     });
   }
   
+  // Ensure we have at least 2 recommendations
+  if (recommendations.length === 0) {
+    recommendations.push({
+      name: 'Mixed Farming Approach',
+      suitability: 'Medium' as const,
+      expectedYield: 'Variable based on crop mix',
+      roi: `₹${Math.round(20000 + Math.random() * 15000).toLocaleString()} - ₹${Math.round(35000 + Math.random() * 15000).toLocaleString()}`,
+      requirements: ['Diversified approach', 'Risk management', 'Multiple income streams'],
+      tips: ['Reduces risk through diversification', 'Suitable for uncertain conditions', 'Consult local agricultural extension officer', 'Consider local climate and market conditions']
+    });
+  }
+  
+  console.log('Generated Recommendations:', recommendations);
   return recommendations.slice(0, 4); // Return top 4 recommendations
 };
 

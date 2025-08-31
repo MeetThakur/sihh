@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Leaf, MapPin, Calendar, DollarSign, Thermometer, Droplets } from 'lucide-react';
+import { generateCropRecommendations } from '../utils/aiService';
 
 interface FarmInput {
   budget: string;
@@ -32,41 +33,29 @@ const CropAdvisory: React.FC = () => {
   const [recommendations, setRecommendations] = useState<CropRecommendation[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Mock AI recommendations - in real app this would call OpenAI API
+  // Use AI service for dynamic recommendations
   const generateRecommendations = async () => {
     setLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      // Call the AI service with farm input data
+      const aiRecommendations = await generateCropRecommendations(farmInput);
+      setRecommendations(aiRecommendations);
+    } catch (error) {
+      console.error('Error generating recommendations:', error);
+      // Fallback to a basic recommendation if AI service fails
+      setRecommendations([
+        {
+          name: 'Basic Crop Option',
+          suitability: 'Medium',
+          expectedYield: '20-30 quintals/hectare',
+          roi: '₹15,000 - ₹25,000',
+          requirements: ['Based on your inputs, please try again or consult local experts'],
+          tips: ['Check your internet connection and input values']
+        }
+      ]);
+    }
     
-    const mockRecommendations: CropRecommendation[] = [
-      {
-        name: 'Rice (Basmati)',
-        suitability: 'High',
-        expectedYield: '45-50 quintals/hectare',
-        roi: '₹35,000 - ₹45,000',
-        requirements: ['Well-drained clay soil', 'Consistent water supply', 'Moderate fertilizer'],
-        tips: ['Plant during July-August', 'Use SRI method for better yield', 'Monitor for brown planthopper']
-      },
-      {
-        name: 'Wheat',
-        suitability: 'Medium',
-        expectedYield: '30-35 quintals/hectare',
-        roi: '₹25,000 - ₹30,000',
-        requirements: ['Loamy soil', 'Cool weather', 'Nitrogen-rich fertilizer'],
-        tips: ['Suitable for rabi season', 'Ensure proper drainage', 'Consider drought-resistant varieties']
-      },
-      {
-        name: 'Sugarcane',
-        suitability: 'High',
-        expectedYield: '800-1000 quintals/hectare',
-        roi: '₹80,000 - ₹120,000',
-        requirements: ['Deep fertile soil', 'Heavy irrigation', 'High initial investment'],
-        tips: ['Long-term crop (12-18 months)', 'High water requirement', 'Good market linkage essential']
-      }
-    ];
-    
-    setRecommendations(mockRecommendations);
     setLoading(false);
   };
 
