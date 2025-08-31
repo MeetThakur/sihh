@@ -21,7 +21,8 @@ Please provide 3-4 crop recommendations as a JSON array only (no markdown, no ex
 
 Return only the JSON array, nothing else.`;
     
-    const response = await askGemini(prompt);
+    const responseText = await askGemini(prompt);
+    const response = typeof responseText === 'string' ? responseText : JSON.stringify(responseText);
     try {
       // Extract JSON from markdown code blocks if present
       let jsonString = response;
@@ -30,7 +31,7 @@ Return only the JSON array, nothing else.`;
         jsonString = jsonMatch[1];
       }
       
-      const recommendations = JSON.parse(jsonString);
+  const recommendations = JSON.parse(jsonString);
       return Array.isArray(recommendations) ? recommendations : [recommendations];
     } catch (error) {
       console.error('Failed to parse Gemini response:', error);
