@@ -1,13 +1,15 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// @ts-ignore
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+// In Vite/React, use VITE_GEMINI_API_KEY for frontend access
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+console.log('Gemini API key status:', apiKey ? 'Found' : 'Missing');
 
 const genAI = new GoogleGenerativeAI(apiKey || "");
 
 export async function askGemini(prompt: string): Promise<string> {
   if (!apiKey) {
-    throw new Error("Gemini API key not set. Please add GEMINI_API_KEY to your .env file.");
+    throw new Error("Gemini API key not set. Please add VITE_GEMINI_API_KEY to your .env file.");
   }
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
   const result = await model.generateContent(prompt);
