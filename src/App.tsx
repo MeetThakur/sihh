@@ -7,6 +7,7 @@ import PestWatch from './components/PestWatch';
 import MarketLinkage from './components/MarketLinkage';
 import HealthCard from './components/HealthCard';
 import Dashboard from './components/Dashboard';
+import Chatbot from './components/Chatbot';
 
 type ActiveTab = 'dashboard' | 'advisory' | 'farm' | 'pest' | 'market' | 'health';
 
@@ -52,6 +53,9 @@ function App() {
       <main className="container mx-auto px-4 py-6 max-w-7xl">
         {renderActiveComponent()}
       </main>
+      
+      {/* AI Chatbot */}
+      <Chatbot />
     </div>
   );
 }
