@@ -7,6 +7,7 @@ import PestWatch from './components/PestWatch';
 import MarketLinkage from './components/MarketLinkage';
 import HealthCard from './components/HealthCard';
 import Dashboard from './components/Dashboard';
+import Chatbot from './components/Chatbot';
 
 
 type ActiveTab = 'dashboard' | 'advisory' | 'farm' | 'pest' | 'market' | 'health';
@@ -44,6 +45,23 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+      {/* Header with KhetSetu Branding */}
+      <header className="bg-white shadow-sm border-b border-green-100">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center">
+                <Leaf className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">KhetSetu</h1>
+                <p className="text-sm text-gray-600">Smart Agricultural Platform</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
       <Navigation
         items={navigationItems}
         activeTab={activeTab}
@@ -55,7 +73,7 @@ function App() {
       </main>
       
       {/* AI Chatbot */}
-      {/* <Chatbot /> */}
+      <Chatbot />
     </div>
   );
 }
