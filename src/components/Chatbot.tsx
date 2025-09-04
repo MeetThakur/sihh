@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Send, X, Bot, User, Loader } from 'lucide-react';
 import { askGemini } from '../utils/geminiService';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Message {
   id: string;
@@ -15,11 +16,14 @@ interface ChatbotProps {
 }
 
 const Chatbot: React.FC<ChatbotProps> = ({ isOpen: controlledOpen, onToggle }) => {
+  const { t, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(controlledOpen || false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! I\'m your KhetSetu agricultural assistant. I can help you with crop advice, pest management, weather concerns, and farming best practices. How can I assist you today?',
+      text: language === 'hi' 
+        ? 'नमस्ते! मैं आपका खेतसेतु कृषि सहायक हूं। मैं फसल सलाह, कीट प्रबंधन, मौसम संबंधी चिंताओं और कृषि प्रथाओं में आपकी सहायता कर सकता हूं। आज मैं आपकी कैसे सहायता कर सकता हूं?'
+        : 'Hello! I\'m your KhetSetu agricultural assistant. I can help you with crop advice, pest management, weather concerns, and farming best practices. How can I assist you today?',
       isUser: false,
       timestamp: new Date()
     }
@@ -158,8 +162,8 @@ Please provide a helpful, practical response focused on agricultural guidance. K
             <Bot size={20} />
           </div>
           <div>
-            <h3 className="font-semibold text-sm">KhetSetu Assistant</h3>
-            <p className="text-xs text-emerald-100">Online • Ready to help</p>
+            <h3 className="font-semibold text-sm">{t('chatbot.title')}</h3>
+            <p className="text-xs text-emerald-100">{t('chatbot.status')}</p>
           </div>
         </div>
         <button
@@ -248,7 +252,7 @@ Please provide a helpful, practical response focused on agricultural guidance. K
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask about crops, pests, weather..."
+            placeholder={t('chatbot.placeholder')}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
             disabled={isLoading}
           />

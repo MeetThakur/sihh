@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Map as MapIcon, Eye, AlertTriangle, Droplets, Edit3, Save, X, Lightbulb } from 'lucide-react';
+import { Map as MapIcon, Eye, AlertTriangle, Droplets, Edit3, X, Lightbulb } from 'lucide-react';
 import { mockFarmData } from '../utils/mockData';
 
 interface PlotData {
@@ -120,21 +120,6 @@ const FarmVisualization: React.FC = () => {
       )
     );
     setEditingPlot(null);
-  };
-
-  const getCropEmoji = (crop: string) => {
-    switch (crop) {
-      case 'Rice': return '🌾';
-      case 'Wheat': return '🌾';
-      case 'Sugarcane': return '🎋';
-      case 'Maize': return '🌽';
-      case 'Mustard': return '🌻';
-      case 'Potato': return '🥔';
-      case 'Onion': return '🧅';
-      case 'Tomato': return '🍅';
-      case 'Cotton': return '🌿';
-      default: return '⬜';
-    }
   };
 
   const getCropColor = (crop: string) => {
@@ -288,14 +273,14 @@ const FarmVisualization: React.FC = () => {
                     `}
                   >
                     <div className="text-xs font-medium text-gray-700 mb-1">{plot.id}</div>
-                    {viewMode === 'crops' && (
-                      <div className="text-lg">{getCropEmoji(plot.crop)}</div>
-                    )}
                     {plot.pestAlert && (
-                      <AlertTriangle 
-                        size={12} 
-                        className="absolute top-1 right-1 text-red-500" 
-                      />
+                      <div className="absolute -top-1 -right-1 bg-red-500 rounded-full p-1 shadow-lg animate-pulse">
+                        <AlertTriangle 
+                          size={16} 
+                          className="text-white animate-bounce" 
+                          fill="white"
+                        />
+                      </div>
                     )}
                     {isEditing && (
                       <Edit3 
@@ -313,25 +298,55 @@ const FarmVisualization: React.FC = () => {
           <div className="border-t pt-4">
             <h4 className="font-medium text-gray-900 mb-2">Legend</h4>
             {viewMode === 'crops' && (
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 text-sm">
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-emerald-200 border border-emerald-400 rounded"></div>
+                  <span className="text-lg mr-1">🌾</span>
                   <span>Rice</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-amber-200 border border-amber-400 rounded"></div>
+                  <span className="text-lg mr-1">🌾</span>
                   <span>Wheat</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-green-200 border border-green-400 rounded"></div>
+                  <span className="text-lg mr-1">🎋</span>
                   <span>Sugarcane</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-yellow-200 border border-yellow-400 rounded"></div>
+                  <span className="text-lg mr-1">🌽</span>
                   <span>Maize</span>
                 </div>
                 <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-orange-200 border border-orange-400 rounded"></div>
+                  <span className="text-lg mr-1">🌻</span>
+                  <span>Mustard</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-purple-200 border border-purple-400 rounded"></div>
+                  <span className="text-lg mr-1">🥔</span>
+                  <span>Potato</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-pink-200 border border-pink-400 rounded"></div>
+                  <span className="text-lg mr-1">🧅</span>
+                  <span>Onion</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-red-200 border border-red-400 rounded"></div>
+                  <span className="text-lg mr-1">🍅</span>
+                  <span>Tomato</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-indigo-200 border border-indigo-400 rounded"></div>
+                  <span className="text-lg mr-1">🌿</span>
+                  <span>Cotton</span>
+                </div>
+                <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-gray-100 border border-gray-300 rounded"></div>
+                  <span className="text-lg mr-1">⬜</span>
                   <span>Empty</span>
                 </div>
               </div>
@@ -372,6 +387,19 @@ const FarmVisualization: React.FC = () => {
                 </div>
               </div>
             )}
+            
+            {/* Pest Alert Legend */}
+            <div className="mt-4 p-3 bg-red-50 rounded-lg border border-red-200">
+              <div className="flex items-center space-x-2">
+                <div className="bg-red-500 rounded-full p-1 animate-pulse">
+                  <AlertTriangle size={14} className="text-white" fill="white" />
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-red-800">Pest Alert</span>
+                  <p className="text-xs text-red-600">Plots with this symbol require immediate pest management attention</p>
+                </div>
+              </div>
+            </div>
             
             {isEditing && (
               <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -429,9 +457,16 @@ const FarmVisualization: React.FC = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Pest Alert:</span>
-                    <span className={`font-medium ${selectedPlotData.pestAlert ? 'text-red-600' : 'text-green-600'}`}>
-                      {selectedPlotData.pestAlert ? 'Yes' : 'No'}
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      {selectedPlotData.pestAlert && (
+                        <div className="bg-red-500 rounded-full p-1 animate-pulse">
+                          <AlertTriangle size={12} className="text-white" fill="white" />
+                        </div>
+                      )}
+                      <span className={`font-medium ${selectedPlotData.pestAlert ? 'text-red-600' : 'text-green-600'}`}>
+                        {selectedPlotData.pestAlert ? 'Active Alert' : 'No Alert'}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -457,8 +492,19 @@ const FarmVisualization: React.FC = () => {
                       </div>
                     )}
                     {selectedPlotData.pestAlert && (
-                      <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
-                        <p className="text-orange-800">Pest detected nearby. Apply preventive measures immediately.</p>
+                      <div className="p-4 bg-red-50 rounded-lg border-2 border-red-300 shadow-md">
+                        <div className="flex items-start space-x-3">
+                          <div className="bg-red-500 rounded-full p-2 animate-pulse">
+                            <AlertTriangle size={20} className="text-white" fill="white" />
+                          </div>
+                          <div>
+                            <h5 className="font-semibold text-red-800 mb-1">🚨 URGENT: Pest Alert Active</h5>
+                            <p className="text-red-700 text-sm">
+                              Immediate pest management required! Apply organic neem spray or consult agricultural expert. 
+                              Check neighboring plots for spread prevention.
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

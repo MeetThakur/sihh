@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf, Map as MapIcon, Bug, TrendingUp, FileText, Home } from 'lucide-react';
+import { Leaf, Map as MapIcon, Bug, TrendingUp, FileText, Home, Globe } from 'lucide-react';
 import Navigation from './components/Navigation';
 import CropAdvisory from './components/CropAdvisory';
 import FarmVisualization from './components/FarmVisualization';
@@ -8,20 +8,22 @@ import MarketLinkage from './components/MarketLinkage';
 import HealthCard from './components/HealthCard';
 import Dashboard from './components/Dashboard';
 import Chatbot from './components/Chatbot';
+import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 
 
 type ActiveTab = 'dashboard' | 'advisory' | 'farm' | 'pest' | 'market' | 'health';
 
-function App() {
+const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+  const { t, language, setLanguage } = useLanguage();
 
   const navigationItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: Home },
-    { id: 'advisory', label: 'Crop Advisory', icon: Leaf },
-    { id: 'farm', label: 'Farm View', icon: MapIcon },
-    { id: 'pest', label: 'Pest Watch', icon: Bug },
-    { id: 'market', label: 'Market', icon: TrendingUp },
-    { id: 'health', label: 'Health Card', icon: FileText },
+    { id: 'dashboard', label: t('nav.dashboard'), icon: Home },
+    { id: 'advisory', label: t('nav.cropAdvisory'), icon: Leaf },
+    { id: 'farm', label: t('nav.farmView'), icon: MapIcon },
+    { id: 'pest', label: t('nav.pestWatch'), icon: Bug },
+    { id: 'market', label: t('nav.market'), icon: TrendingUp },
+    { id: 'health', label: t('nav.healthCard'), icon: FileText },
   ];
 
   const renderActiveComponent = () => {
@@ -54,9 +56,18 @@ function App() {
                 <Leaf className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">KhetSetu</h1>
-                <p className="text-sm text-gray-600">Smart Agricultural Platform</p>
+                <h1 className="text-2xl font-bold text-gray-900">{t('header.title')}</h1>
+                <p className="text-sm text-gray-600">{t('header.subtitle')}</p>
               </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+                className="flex items-center px-3 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors"
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                {language === 'en' ? 'हिंदी' : 'English'}
+              </button>
             </div>
           </div>
         </div>
@@ -75,6 +86,14 @@ function App() {
       {/* AI Chatbot */}
       <Chatbot />
     </div>
+  );
+};
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }
 
