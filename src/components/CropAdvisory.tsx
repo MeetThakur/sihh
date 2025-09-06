@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 interface FarmInput {
   budget: string;
+  minBudget?: string;
   season: string;
   soilType: string;
   weather: string;
@@ -46,6 +47,7 @@ const CropAdvisory: React.FC = () => {
   const { t } = useLanguage();
   const [farmInput, setFarmInput] = useState<FarmInput>({
     budget: '',
+  minBudget: '',
     season: '',
     soilType: '',
     weather: '',
@@ -188,7 +190,22 @@ const CropAdvisory: React.FC = () => {
     try {
       // Call the AI service with farm input data
       const aiRecommendations = await generateCropRecommendations(farmInput);
-      setRecommendations(aiRecommendations);
+      // If user provided a minimum budget, filter any recommendations that have estimatedCost
+      let filtered = aiRecommendations;
+      const min = farmInput.minBudget ? Number(farmInput.minBudget) : undefined;
+      if (min !== undefined && !isNaN(min)) {
+        filtered = aiRecommendations.filter(rec => {
+          // rec may include estimatedCost in different formats; attempt parsing
+          const costRaw = (rec as any).estimatedCost;
+          if (!costRaw) return true; // keep if no cost info
+          // try to extract number from strings like '₹10,000' or '10000-15000'
+          const nums = String(costRaw).replace(/[^0-9\-]/g, '').split('-').filter(Boolean);
+          const low = nums.length > 0 ? Number(nums[0]) : NaN;
+          return isNaN(low) ? true : low <= min;
+        });
+      }
+
+      setRecommendations(filtered);
     } catch (error) {
       console.error('Error generating recommendations:', error);
       // Fallback to a basic recommendation if AI service fails
@@ -241,6 +258,20 @@ const CropAdvisory: React.FC = () => {
               onChange={(e) => handleInputChange('budget', e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               placeholder="50000"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <DollarSign size={16} className="inline mr-1" />
+              {t('cropAdvisory.minBudget',) || 'Minimum Budget (₹)'}
+            </label>
+            <input
+              type="number"
+              value={farmInput.minBudget}
+              onChange={(e) => handleInputChange('minBudget' as keyof FarmInput, e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              placeholder="10000"
             />
           </div>
 
