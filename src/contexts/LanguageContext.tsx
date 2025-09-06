@@ -24,7 +24,6 @@ const translations: Translations = {
   'nav.farmView': { en: 'Farm View', hi: 'खेत दृश्य' },
   'nav.pestWatch': { en: 'Pest Watch', hi: 'कीट निगरानी' },
   'nav.market': { en: 'Market', hi: 'बाज़ार' },
-  'nav.healthCard': { en: 'Health Card', hi: 'स्वास्थ्य कार्ड' },
   'nav.expertConsult': { en: 'Expert Consult', hi: 'विशेषज्ञ सलाह' },
 
   // Header
