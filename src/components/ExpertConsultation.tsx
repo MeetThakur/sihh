@@ -154,6 +154,22 @@ const ExpertConsultation: React.FC = () => {
         </p>
       </div>
 
+      {/* Free First Session Banner */}
+      <div className="bg-gradient-to-r from-emerald-500 to-green-600 p-6 rounded-xl text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold mb-2">🎉 Special Offer: First Session FREE!</h2>
+            <p className="text-emerald-100">
+              Get your first consultation with any expert absolutely free. No hidden charges.
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-3xl font-bold">₹0</div>
+            <div className="text-sm text-emerald-100">First Session</div>
+          </div>
+        </div>
+      </div>
+
       {/* Expert List */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">Available Experts</h2>
@@ -191,7 +207,10 @@ const ExpertConsultation: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">Session Price:</span>
-                  <span className="font-medium text-emerald-600">₹{expert.pricePerSession}</span>
+                  <div className="flex flex-col items-end">
+                    <span className="font-medium text-emerald-600">1st Session: FREE</span>
+                    <span className="text-xs text-gray-500">Next: ₹{expert.pricePerSession}</span>
+                  </div>
                 </div>
               </div>
 
@@ -258,7 +277,14 @@ const ExpertConsultation: React.FC = () => {
             <div className="mb-4">
               <p className="text-sm text-gray-600">Expert: <span className="font-medium">{selectedExpert.name}</span></p>
               <p className="text-sm text-gray-600">Specialty: <span className="font-medium">{selectedExpert.specialty}</span></p>
-              <p className="text-sm text-gray-600">Price: <span className="font-medium text-emerald-600">₹{selectedExpert.pricePerSession}</span></p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-600">Session Price:</p>
+                <div className="text-right">
+                  <p className="text-lg font-bold text-emerald-600">FREE</p>
+                  <p className="text-xs text-gray-500">First consultation is complimentary</p>
+                  <p className="text-xs text-gray-400">Next sessions: ₹{selectedExpert.pricePerSession}</p>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -363,6 +389,10 @@ const ExpertConsultation: React.FC = () => {
           Tips for Better Consultations
         </h3>
         <ul className="space-y-2 text-emerald-800">
+          <li className="flex items-start">
+            <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+            Your first consultation with any expert is completely FREE
+          </li>
           <li className="flex items-start">
             <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
             Prepare clear photos of your crops or problems before the session

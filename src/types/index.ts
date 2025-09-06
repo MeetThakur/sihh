@@ -10,6 +10,7 @@ export interface FarmInput {
 export interface CropRecommendation {
   name: string;
   suitability: 'High' | 'Medium' | 'Low';
+  suitabilityScore?: number;
   expectedYield: string;
   roi: string;
   requirements: string[];

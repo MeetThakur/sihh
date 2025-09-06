@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Map as MapIcon, Eye, AlertTriangle, Droplets, Edit3, X, Lightbulb } from 'lucide-react';
+import { Map as MapIcon, AlertTriangle, Edit3, X, Lightbulb, Settings, Plus, Minus, Grid3X3 } from 'lucide-react';
 import { mockFarmData } from '../utils/mockData';
 
 interface PlotData {
@@ -18,6 +18,13 @@ interface CropSuggestion {
   roi: string;
 }
 
+interface FarmConfig {
+  totalAcres: number;
+  plotSizeAcres: number;
+  rows: number;
+  cols: number;
+}
+
 const FarmVisualization: React.FC = () => {
   const [selectedPlot, setSelectedPlot] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'crops' | 'health' | 'moisture'>('crops');
@@ -25,11 +32,88 @@ const FarmVisualization: React.FC = () => {
   const [editingPlot, setEditingPlot] = useState<string | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [farmData, setFarmData] = useState<PlotData[]>(mockFarmData);
+  const [showFarmConfig, setShowFarmConfig] = useState(false);
+  const [farmConfig, setFarmConfig] = useState<FarmConfig>({
+    totalAcres: farmData.length * 0.16,
+    plotSizeAcres: 0.16,
+    rows: 6,
+    cols: 6
+  });
 
   // Available crops for selection
   const availableCrops = [
     'Empty', 'Rice', 'Wheat', 'Sugarcane', 'Maize', 'Mustard', 'Potato', 'Onion', 'Tomato', 'Cotton'
   ];
+
+  // Generate plot IDs based on grid dimensions
+  const generatePlotId = (row: number, col: number): string => {
+    const rowLabel = String.fromCharCode(65 + row); // A, B, C, etc.
+    return `${rowLabel}${col + 1}`;
+  };
+
+  // Generate new farm data based on configuration
+  const generateFarmData = (rows: number, cols: number): PlotData[] => {
+    const newData: PlotData[] = [];
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const plotId = generatePlotId(row, col);
+        // Try to preserve existing plot data if it exists
+        const existingPlot = farmData.find(plot => plot.id === plotId);
+        
+        newData.push(existingPlot || {
+          id: plotId,
+          crop: 'Empty',
+          health: 'good',
+          soilMoisture: 'medium',
+          pestAlert: false
+        });
+      }
+    }
+    return newData;
+  };
+
+  // Update farm configuration
+  const updateFarmConfig = (newConfig: Partial<FarmConfig>) => {
+    const updatedConfig = { ...farmConfig, ...newConfig };
+    
+    // Calculate total acres if plot size changed
+    if (newConfig.plotSizeAcres) {
+      updatedConfig.totalAcres = updatedConfig.rows * updatedConfig.cols * newConfig.plotSizeAcres;
+    }
+    
+    // Update rows and cols if total acres changed
+    if (newConfig.totalAcres && !newConfig.plotSizeAcres) {
+      const totalPlots = Math.round(newConfig.totalAcres / updatedConfig.plotSizeAcres);
+      const newRows = Math.ceil(Math.sqrt(totalPlots));
+      const newCols = Math.ceil(totalPlots / newRows);
+      updatedConfig.rows = newRows;
+      updatedConfig.cols = newCols;
+      updatedConfig.totalAcres = newRows * newCols * updatedConfig.plotSizeAcres;
+    }
+    
+    setFarmConfig(updatedConfig);
+    
+    // Generate new farm data if grid dimensions changed
+    if (newConfig.rows !== undefined || newConfig.cols !== undefined) {
+      const newFarmData = generateFarmData(updatedConfig.rows, updatedConfig.cols);
+      setFarmData(newFarmData);
+    }
+  };
+
+  // Add or remove plots
+  const adjustPlotCount = (increment: boolean) => {
+    const currentTotal = farmConfig.rows * farmConfig.cols;
+    const newTotal = increment ? currentTotal + 1 : Math.max(1, currentTotal - 1);
+    
+    const newRows = Math.ceil(Math.sqrt(newTotal));
+    const newCols = Math.ceil(newTotal / newRows);
+    
+    updateFarmConfig({
+      rows: newRows,
+      cols: newCols,
+      totalAcres: newRows * newCols * farmConfig.plotSizeAcres
+    });
+  };
 
   // Generate crop suggestions based on plot conditions
   const generateCropSuggestions = (plot: PlotData): CropSuggestion[] => {
@@ -162,71 +246,91 @@ const FarmVisualization: React.FC = () => {
   const cropSuggestions = selectedPlotData ? generateCropSuggestions(selectedPlotData) : [];
 
   return (
-    <div className="space-y-6">
-      {/* Controls */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-            <MapIcon className="mr-2 text-emerald-600" size={24} />
-            Farm Visualization
+    <div className="space-y-8 bg-gradient-to-br from-green-50 via-emerald-50 to-blue-50 min-h-screen p-6">
+      {/* Enhanced Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
+          Smart Farm Visualization
+        </h1>
+        <p className="text-gray-600 text-lg">Interactive Farm Layout & Crop Management Dashboard</p>
+      </div>
+
+      {/* Enhanced Controls */}
+      <div className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-xl border border-gray-100">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-6 lg:space-y-0">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+            <div className="p-3 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl mr-4 shadow-lg">
+              <MapIcon className="text-white" size={28} />
+            </div>
+            Farm Layout Manager
           </h2>
           
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-4">
+            <button
+              onClick={() => setShowFarmConfig(!showFarmConfig)}
+              className={`group px-6 py-3 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center ${
+                showFarmConfig
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700' 
+                  : 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700'
+              }`}
+            >
+              <Settings size={20} className="mr-2 group-hover:rotate-45 transition-transform duration-300" />
+              Farm Settings
+            </button>
+            
             <button
               onClick={() => {
                 setIsEditing(!isEditing);
                 setEditingPlot(null);
               }}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center ${
+              className={`group px-6 py-3 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center ${
                 isEditing 
-                  ? 'bg-red-600 text-white hover:bg-red-700' 
-                  : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  ? 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700' 
+                  : 'bg-gradient-to-r from-emerald-500 to-green-600 text-white hover:from-emerald-600 hover:to-green-700'
               }`}
             >
               {isEditing ? (
                 <>
-                  <X size={16} className="mr-1" />
+                  <X size={20} className="mr-2 group-hover:rotate-90 transition-transform duration-300" />
                   Cancel Edit
                 </>
               ) : (
                 <>
-                  <Edit3 size={16} className="mr-1" />
+                  <Edit3 size={20} className="mr-2 group-hover:rotate-12 transition-transform duration-300" />
                   Edit Plots
                 </>
               )}
             </button>
             
-            <div className="flex space-x-2">
+            <div className="flex bg-white rounded-2xl p-2 shadow-lg border border-gray-200">
               <button
                 onClick={() => setViewMode('crops')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl font-bold transition-all duration-300 ${
                   viewMode === 'crops' 
-                    ? 'bg-emerald-600 text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg' 
+                    : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
                 }`}
               >
                 Crops
               </button>
               <button
                 onClick={() => setViewMode('health')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl font-bold transition-all duration-300 ${
                   viewMode === 'health' 
-                    ? 'bg-emerald-600 text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' 
+                    : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'
                 }`}
               >
-                <Eye size={16} className="inline mr-1" />
-                Health
+                Soil Health
               </button>
               <button
                 onClick={() => setViewMode('moisture')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl font-bold transition-all duration-300 ${
                   viewMode === 'moisture' 
-                    ? 'bg-emerald-600 text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg' 
+                    : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700'
                 }`}
               >
-                <Droplets size={16} className="inline mr-1" />
                 Moisture
               </button>
             </div>
@@ -234,12 +338,126 @@ const FarmVisualization: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {showFarmConfig && (
+        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-2xl border border-purple-200 shadow-lg mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center">
+              <Grid3X3 className="mr-3 text-purple-600" size={24} />
+              Farm Configuration
+            </h3>
+            <button
+              onClick={() => setShowFarmConfig(false)}
+              className="p-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">Total Farm Size (acres)</label>
+              <input
+                type="number"
+                min="0.1"
+                step="0.1"
+                value={farmConfig.totalAcres}
+                onChange={(e) => updateFarmConfig({ totalAcres: parseFloat(e.target.value) || 0.1 })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">Plot Size (acres each)</label>
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={farmConfig.plotSizeAcres}
+                onChange={(e) => updateFarmConfig({ plotSizeAcres: parseFloat(e.target.value) || 0.01 })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">Grid Rows</label>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => updateFarmConfig({ rows: Math.max(1, farmConfig.rows - 1) })}
+                  className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                >
+                  <Minus size={16} />
+                </button>
+                <span className="text-lg font-bold text-gray-900 min-w-[3rem] text-center">{farmConfig.rows}</span>
+                <button
+                  onClick={() => updateFarmConfig({ rows: farmConfig.rows + 1 })}
+                  className="p-2 rounded-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">Grid Columns</label>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => updateFarmConfig({ cols: Math.max(1, farmConfig.cols - 1) })}
+                  className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                >
+                  <Minus size={16} />
+                </button>
+                <span className="text-lg font-bold text-gray-900 min-w-[3rem] text-center">{farmConfig.cols}</span>
+                <button
+                  onClick={() => updateFarmConfig({ cols: farmConfig.cols + 1 })}
+                  className="p-2 rounded-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-6 p-4 bg-white rounded-xl border border-purple-200">
+            <div className="flex items-center justify-between text-sm text-gray-600">
+              <span>Total Plots: <strong className="text-gray-900">{farmConfig.rows * farmConfig.cols}</strong></span>
+              <span>Calculated Size: <strong className="text-gray-900">{(farmConfig.rows * farmConfig.cols * farmConfig.plotSizeAcres).toFixed(2)} acres</strong></span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Farm Grid */}
         <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Farm Layout ({farmData.length * 0.16} acres)</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Farm Layout ({farmConfig.totalAcres.toFixed(2)} acres)
+            </h3>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => adjustPlotCount(false)}
+                className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                title="Remove plots"
+              >
+                <Minus size={16} />
+              </button>
+              <span className="text-sm text-gray-600 min-w-[4rem] text-center">
+                {farmData.length} plots
+              </span>
+              <button
+                onClick={() => adjustPlotCount(true)}
+                className="p-2 rounded-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+                title="Add plots"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+          </div>
           
-          <div className="grid grid-cols-6 gap-2 mb-4">
+          <div 
+            className="grid gap-2 mb-4"
+            style={{ gridTemplateColumns: `repeat(${farmConfig.cols}, 1fr)` }}
+          >
             {farmData.map((plot) => (
               <div key={plot.id} className="relative">
                 {editingPlot === plot.id ? (
