@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf, Map as MapIcon, Bug, TrendingUp, FileText, Home, Globe } from 'lucide-react';
+import { Leaf, Map as MapIcon, Bug, TrendingUp, FileText, Home, Globe, Users } from 'lucide-react';
 import Navigation from './components/Navigation';
 import CropAdvisory from './components/CropAdvisory';
 import FarmVisualization from './components/FarmVisualization';
@@ -7,11 +7,12 @@ import PestWatch from './components/PestWatch';
 import MarketLinkage from './components/MarketLinkage';
 import HealthCard from './components/HealthCard';
 import Dashboard from './components/Dashboard';
+import ExpertConsultation from './components/ExpertConsultation';
 import Chatbot from './components/Chatbot';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 
 
-type ActiveTab = 'dashboard' | 'advisory' | 'farm' | 'pest' | 'market' | 'health';
+type ActiveTab = 'dashboard' | 'advisory' | 'farm' | 'pest' | 'market' | 'health' | 'consult';
 
 const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
@@ -24,6 +25,7 @@ const AppContent: React.FC = () => {
     { id: 'pest', label: t('nav.pestWatch'), icon: Bug },
     { id: 'market', label: t('nav.market'), icon: TrendingUp },
     { id: 'health', label: t('nav.healthCard'), icon: FileText },
+    { id: 'consult', label: t('nav.expertConsult'), icon: Users },
   ];
 
   const renderActiveComponent = () => {
@@ -40,6 +42,8 @@ const AppContent: React.FC = () => {
         return <MarketLinkage />;
       case 'health':
         return <HealthCard />;
+      case 'consult':
+        return <ExpertConsultation />;
       default:
         return <Dashboard />;
     }
