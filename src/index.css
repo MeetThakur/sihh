@@ -16,10 +16,6 @@
     @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
   }
   
-  .dark .minimal-card {
-    @apply bg-gray-800 border-gray-700;
-  }
-  
   .minimal-button {
     @apply px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-md;
   }
@@ -28,23 +24,11 @@
     @apply bg-slate-900 text-white hover:bg-slate-800;
   }
   
-  .dark .minimal-button-primary {
-    @apply bg-slate-100 text-slate-900 hover:bg-slate-200;
-  }
-  
   .minimal-button-secondary {
     @apply bg-slate-100 text-slate-900 hover:bg-slate-200;
   }
   
-  .dark .minimal-button-secondary {
-    @apply bg-gray-700 text-gray-300 hover:bg-gray-600;
-  }
-  
   .minimal-input {
     @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500;
-  }
-  
-  .dark .minimal-input {
-    @apply bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-slate-400 focus:border-slate-400;
   }
 }

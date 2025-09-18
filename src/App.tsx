@@ -8,7 +8,6 @@ import MarketLinkage from './components/MarketLinkage';
 import Dashboard from './components/Dashboard';
 import ExpertConsultation from './components/ExpertConsultation';
 import Chatbot from './components/Chatbot';
-import ThemeToggle from './components/ThemeToggle';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 
 
@@ -47,25 +46,24 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50">
       {/* Minimal Header */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-slate-900 dark:bg-slate-100 rounded-md flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-white dark:text-gray-900" />
+              <div className="w-8 h-8 bg-slate-900 rounded-md flex items-center justify-center">
+                <Leaf className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{t('header.title')}</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{t('header.subtitle')}</p>
+                <h1 className="text-lg font-semibold text-gray-900">{t('header.title')}</h1>
+                <p className="text-xs text-gray-500">{t('header.subtitle')}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <ThemeToggle />
               <button
                 onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-                className="flex items-center px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-gray-600 rounded-md hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                className="flex items-center px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md hover:border-gray-400 transition-colors"
               >
                 <Globe className="w-4 h-4 mr-2" />
                 {language === 'en' ? 'हिंदी' : 'English'}

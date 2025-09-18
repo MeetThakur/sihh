@@ -142,7 +142,7 @@ Please provide a helpful, practical response focused on agricultural guidance. K
     return (
       <button
         onClick={handleToggle}
-        className="fixed bottom-6 right-6 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 group"
+        className="fixed bottom-6 right-6 bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 group"
         aria-label="Open chat assistant"
       >
         <MessageCircle size={24} />
@@ -154,9 +154,9 @@ Please provide a helpful, practical response focused on agricultural guidance. K
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-80 h-96 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 flex flex-col overflow-hidden">
+    <div className="fixed bottom-6 right-6 w-80 h-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-green-600 dark:bg-green-700 text-white p-4 flex items-center justify-between">
+      <div className="bg-green-600 text-white p-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <div className="p-1 bg-white/20 rounded-full">
             <Bot size={20} />
@@ -175,7 +175,7 @@ Please provide a helpful, practical response focused on agricultural guidance. K
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50
         {messages.map((message) => (
           <div
             key={message.id}
@@ -184,17 +184,17 @@ Please provide a helpful, practical response focused on agricultural guidance. K
             <div className={`flex items-start space-x-2 max-w-[80%] ${message.isUser ? 'flex-row-reverse space-x-reverse' : ''
               }`}>
               <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs ${message.isUser
-                  ? 'bg-emerald-600 dark:bg-emerald-700 text-white'
-                  : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-gray-300 text-gray-600
                 }`}>
                 {message.isUser ? <User size={12} /> : <Bot size={12} />}
               </div>
               <div className={`px-3 py-2 rounded-lg text-sm ${message.isUser
-                  ? 'bg-emerald-600 dark:bg-emerald-700 text-white rounded-br-none'
-                  : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-bl-none'
+                  ? 'bg-emerald-600 text-white rounded-br-none'
+                  : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
                 }`}>
                 <p className="whitespace-pre-wrap">{message.text}</p>
-                <p className={`text-xs mt-1 ${message.isUser ? 'text-emerald-100' : 'text-gray-400 dark:text-gray-500'
+                <p className={`text-xs mt-1 ${message.isUser ? 'text-emerald-100' : 'text-gray-400
                   }`}>
                   {formatTimestamp(message.timestamp)}
                 </p>
@@ -206,13 +206,13 @@ Please provide a helpful, practical response focused on agricultural guidance. K
         {isLoading && (
           <div className="flex justify-start">
             <div className="flex items-start space-x-2 max-w-[80%]">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300 flex items-center justify-center text-xs">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs">
                 <Bot size={12} />
               </div>
-              <div className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg rounded-bl-none px-3 py-2">
+              <div className="bg-white text-gray-800 border border-gray-200 rounded-lg rounded-bl-none px-3 py-2">
                 <div className="flex items-center space-x-1">
                   <Loader size={14} className="animate-spin text-emerald-600" />
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Thinking...</span>
+                  <span className="text-sm text-gray-500
                 </div>
               </div>
             </div>
@@ -221,13 +221,13 @@ Please provide a helpful, practical response focused on agricultural guidance. K
 
         {messages.length === 1 && (
           <div className="space-y-2">
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">Quick questions:</p>
+            <p className="text-xs text-gray-500 text-center">Quick questions:</p>
             <div className="space-y-1">
               {getSuggestedQuestions().map((question, index) => (
                 <button
                   key={index}
                   onClick={() => setInputText(question)}
-                  className="w-full text-left p-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:border-emerald-300 dark:hover:border-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
+                  className="w-full text-left p-2 text-xs bg-white border border-gray-200 text-gray-800 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-colors"
                 >
                   {question}
                 </button>
@@ -240,7 +240,7 @@ Please provide a helpful, practical response focused on agricultural guidance. K
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div className="p-4 border-t border-gray-200 bg-white
         <div className="flex space-x-2">
           <input
             ref={inputRef}
@@ -249,13 +249,13 @@ Please provide a helpful, practical response focused on agricultural guidance. K
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={t('chatbot.placeholder')}
-            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+            className="flex-1 px-3 py-2 border border-gray-300 bg-white text-gray-900 placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
             disabled={isLoading}
           />
           <button
             onClick={handleSendMessage}
             disabled={!inputText.trim() || isLoading}
-            className="p-2 bg-emerald-600 dark:bg-emerald-700 text-white rounded-lg hover:bg-emerald-700 dark:hover:bg-emerald-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+            className="p-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? (
               <Loader size={18} className="animate-spin" />

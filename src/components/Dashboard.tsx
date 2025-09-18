@@ -6,10 +6,10 @@ const Dashboard: React.FC = () => {
     <div className="space-y-8">
       {/* Minimal Welcome Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           Welcome to KhetSetu
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">Your Smart Farming Dashboard</p>
+        <p className="text-gray-600">Your Smart Farming Dashboard</p>
       </div>
 
       {/* Minimal Stats Grid */}
@@ -17,12 +17,12 @@ const Dashboard: React.FC = () => {
         <div className="minimal-card p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Current Season</p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-white">Kharif 2025</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Peak growing season</p>
+              <p className="text-sm font-medium text-gray-600">Current Season</p>
+              <p className="text-2xl font-semibold text-gray-900">Kharif 2025</p>
+              <p className="text-xs text-gray-500 mt-1">Peak growing season</p>
             </div>
-            <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-              <Calendar className="text-gray-600 dark:text-gray-400" size={24} />
+            <div className="p-3 bg-gray-100 rounded-lg">
+              <Calendar className="text-gray-600" size={24} />
             </div>
           </div>
         </div>

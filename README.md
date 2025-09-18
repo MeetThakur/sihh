@@ -322,8 +322,6 @@ For support, email support@khetsetu.com or join our community discussions.
 
 <div align="center">
 
-**Built with ❤️ for farmers by the KhetSetu team**
-
-[🌐 Visit KhetSetu](https://khetsetu.vercel.app) | [📧 Contact Us](mailto:support@khetsetu.com) | [🐛 Report Issues](https://github.com/MeetThakur/khetsetu/issues)
+**Built with ❤️ for farmers by Meet**
 
 </div>
