@@ -93,10 +93,10 @@ const MarketLinkage: React.FC = () => {
 
   const getBuyerTypeColor = (type: string) => {
     switch (type) {
-      case 'FPO': return 'bg-emerald-100 text-emerald-800
-      case 'Processor': return 'bg-blue-100 text-blue-800
-      case 'Trader': return 'bg-purple-100 text-purple-800
-      default: return 'bg-gray-100 text-gray-800
+      case 'FPO': return 'bg-emerald-100 text-emerald-800';
+      case 'Processor': return 'bg-blue-100 text-blue-800';
+      case 'Trader': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -107,7 +107,7 @@ const MarketLinkage: React.FC = () => {
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           Market Linkage
         </h1>
-        <p className="text-gray-600 Prices & Direct Buyer Connections</p>
+        <p className="text-gray-600">Live Prices & Direct Buyer Connections</p>
       </div>
 
       {/* Minimal Market Prices */}
@@ -127,11 +127,11 @@ const MarketLinkage: React.FC = () => {
           {marketPrices.map((price, index) => (
             <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900
+                <h3 className="font-semibold text-gray-900">{price.crop}</h3>
                 <div className={`px-3 py-1 rounded-md text-sm font-medium ${
                   price.change >= 0 
-                    ? 'bg-green-100 text-green-700 
-                    : 'bg-red-100 text-red-700
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-red-100 text-red-700'
                 }`}>
                   <span className="mr-1">{getChangeIcon(price.change)}</span>
                   {Math.abs(price.change)}%
@@ -140,22 +140,22 @@ const MarketLinkage: React.FC = () => {
               
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600
-                  <span className="font-semibold text-gray-900
+                  <span className="text-gray-600">Market:</span>
+                  <span className="font-semibold text-gray-900">{price.market}</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600
-                  <span className="text-xl font-bold text-gray-900
+                  <span className="text-gray-600">Price:</span>
+                  <span className="text-xl font-bold text-gray-900">₹{price.price}</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600
-                  <span className="text-gray-900
+                  <span className="text-gray-600">Distance:</span>
+                  <span className="text-gray-900">{price.distance}</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600
+                  <span className="text-gray-600">Updated:</span>
                   <span className="text-gray-500 text-sm">{price.lastUpdated}</span>
                 </div>
                 
@@ -190,17 +190,17 @@ const MarketLinkage: React.FC = () => {
                   <div className="flex items-center text-yellow-400 text-sm mb-1">
                     {'★'.repeat(Math.floor(buyer.rating))}
                   </div>
-                  <span className="text-sm text-gray-600
+                  <span className="text-sm text-gray-600">{buyer.rating}</span>
                 </div>
               </div>
               
               <div className="space-y-3 mb-4">
-                <div className="flex items-center text-sm text-gray-600
+                <div className="flex items-center text-sm text-gray-600">
                   <MapPin size={16} className="mr-2" />
                   <span>{buyer.location}</span>
                 </div>
                 
-                <div className="flex items-center text-sm text-gray-600
+                <div className="flex items-center text-sm text-gray-600">
                   <Phone size={16} className="mr-2" />
                   <span>{buyer.contact}</span>
                 </div>
@@ -244,7 +244,7 @@ const MarketLinkage: React.FC = () => {
             <div className="text-2xl font-bold text-gray-900 mb-2">₹2,450</div>
             <div className="flex items-center text-sm">
               <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm font-medium mr-2">↗ +8.2%</span>
-              <span className="text-gray-600 Up</span>
+              <span className="text-gray-600">Trend Up</span>
             </div>
           </div>
           
@@ -253,7 +253,7 @@ const MarketLinkage: React.FC = () => {
             <div className="text-2xl font-bold text-gray-900 mb-2">₹2,150</div>
             <div className="flex items-center text-sm">
               <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-sm font-medium mr-2">↘ -2.3%</span>
-              <span className="text-gray-600
+              <span className="text-gray-600">Trend Down</span>
             </div>
           </div>
           
@@ -262,7 +262,7 @@ const MarketLinkage: React.FC = () => {
             <div className="text-2xl font-bold text-gray-900 mb-2">₹320</div>
             <div className="flex items-center text-sm">
               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium mr-2">↗ +5.1%</span>
-              <span className="text-gray-600 Growth</span>
+              <span className="text-gray-600">Steady Growth</span>
             </div>
           </div>
         </div>

@@ -252,11 +252,11 @@ const FarmVisualization: React.FC = () => {
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           Farm Visualization
         </h1>
-        <p className="text-gray-600 Farm Layout & Crop Management</p>
+        <p className="text-gray-600">Farm Layout & Crop Management</p>
       </div>
 
       {/* Minimal Controls */}
-      <div className="minimal-card p-6 mb-8">
+      <div className="bg-white p-6 mb-8 rounded-xl shadow-sm border border-gray-100">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
           <h2 className="text-lg font-semibold text-gray-900 flex items-center">
             <MapIcon className="text-gray-600 mr-2" size={20} />
@@ -266,8 +266,8 @@ const FarmVisualization: React.FC = () => {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setShowFarmConfig(!showFarmConfig)}
-              className={`minimal-button ${
-                showFarmConfig ? 'minimal-button-primary' : 'minimal-button-secondary'
+              className={`px-4 py-2 rounded-lg border font-medium transition-colors ${
+                showFarmConfig ? 'bg-purple-600 text-white border-purple-600 hover:bg-purple-700' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
               } flex items-center`}
             >
               <Settings size={16} className="mr-2" />
@@ -279,8 +279,8 @@ const FarmVisualization: React.FC = () => {
                 setIsEditing(!isEditing);
                 setEditingPlot(null);
               }}
-              className={`minimal-button ${
-                isEditing ? 'bg-red-600 text-white hover:bg-red-700 : 'minimal-button-primary'
+              className={`px-4 py-2 rounded-lg border font-medium transition-colors ${
+                isEditing ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-purple-600 text-white border-purple-600 hover:bg-purple-700'
               } flex items-center`}
             >
               {isEditing ? (
@@ -296,13 +296,13 @@ const FarmVisualization: React.FC = () => {
               )}
             </button>
             
-            <div className="flex bg-white rounded-2xl p-2 shadow-lg border border-gray-200
+            <div className="flex bg-white rounded-2xl p-2 shadow-lg border border-gray-200">
               <button
                 onClick={() => setViewMode('crops')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   viewMode === 'crops' 
                     ? 'bg-green-600 text-white' 
-                    : 'text-gray-600 hover:bg-gray-100
+                    : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
                 Crops
@@ -312,7 +312,7 @@ const FarmVisualization: React.FC = () => {
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   viewMode === 'health' 
                     ? 'bg-blue-600 text-white' 
-                    : 'text-gray-600 hover:bg-gray-100
+                    : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
                 Soil Health
@@ -322,7 +322,7 @@ const FarmVisualization: React.FC = () => {
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   viewMode === 'moisture' 
                     ? 'bg-cyan-600 text-white' 
-                    : 'text-gray-600 hover:bg-gray-100
+                    : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
                 Moisture
@@ -333,15 +333,15 @@ const FarmVisualization: React.FC = () => {
       </div>
 
       {showFarmConfig && (
-        <div className="minimal-card p-6 mb-8">
+        <div className="bg-white p-6 mb-8 rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-              <Grid3X3 className="mr-2 text-gray-600 size={20} />
+              <Grid3X3 className="mr-2 text-gray-600" size={20} />
               Farm Configuration
             </h3>
             <button
               onClick={() => setShowFarmConfig(false)}
-              className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50
+              className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
             >
               <X size={20} />
             </button>

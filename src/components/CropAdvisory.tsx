@@ -342,7 +342,7 @@ const CropAdvisory: React.FC = () => {
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           {t('cropAdvisory.title')}
         </h1>
-        <p className="text-gray-600 Crop Recommendations for Your Farm</p>
+        <p className="text-gray-600">Crop Recommendations for Your Farm</p>
       </div>
 
       {/* Minimal Input Form */}
