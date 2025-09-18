@@ -1,5 +1,5 @@
 // Simple and direct Gemini API service for local development
-const GEMINI_API_KEY = import.meta.env?.VITE_GEMINI_API_KEY;
+const GEMINI_API_KEY = 'AIzaSyD7QXWH3PwuzW_vo_jm8eLPRRLdRz895fA';
 
 console.log('Gemini service loaded, API key available:', !!GEMINI_API_KEY);
 

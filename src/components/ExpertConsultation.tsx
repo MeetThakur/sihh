@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Star, MessageCircle, Phone, Video, Calendar, User, Badge, Award, Send } from 'lucide-react';
+import { Star, MessageCircle, Phone, Video, Calendar, User, Badge, Award, Send } from 'lucide-react';
 
 interface Expert {
   id: string;
@@ -142,52 +142,51 @@ const ExpertConsultation: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center">
-          <Users className="mr-3 text-emerald-600" size={28} />
+    <div className="space-y-8">
+      {/* Minimal Header */}
+      <div className="text-center">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           Expert Consultation
         </h1>
         <p className="text-gray-600">
-          Connect with agricultural experts for personalized farming advice and solutions
+          Connect with agricultural experts for personalized farming advice
         </p>
       </div>
 
-      {/* Free First Session Banner */}
-      <div className="bg-gradient-to-r from-emerald-500 to-green-600 p-6 rounded-xl text-white">
+      {/* First Session Free Banner */}
+      <div className="minimal-card p-6 bg-green-50 border-green-200">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold mb-2">🎉 Special Offer: First Session FREE!</h2>
-            <p className="text-emerald-100">
+            <h2 className="text-lg font-semibold text-green-800 mb-2">🎉 First Session FREE!</h2>
+            <p className="text-green-700">
               Get your first consultation with any expert absolutely free. No hidden charges.
             </p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold">₹0</div>
-            <div className="text-sm text-emerald-100">First Session</div>
+            <div className="text-2xl font-bold text-green-800">₹0</div>
+            <div className="text-sm text-green-600">First Session</div>
           </div>
         </div>
       </div>
 
       {/* Expert List */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Available Experts</h2>
+      <div className="minimal-card p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">Available Experts</h2>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {experts.map((expert) => (
-            <div key={expert.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div key={expert.id} className="border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-                    <User className="text-emerald-600" size={24} />
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                    <User className="text-gray-600" size={20} />
                   </div>
                   <div className="ml-3">
                     <h3 className="text-lg font-semibold text-gray-900">{expert.name}</h3>
-                    <p className="text-emerald-600 font-medium">{expert.specialty}</p>
+                    <p className="text-gray-600 font-medium">{expert.specialty}</p>
                   </div>
                 </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getAvailabilityColor(expert.availability)}`}>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${getAvailabilityColor(expert.availability)}`}>
                   {getAvailabilityText(expert.availability)}
                 </span>
               </div>
@@ -208,7 +207,7 @@ const ExpertConsultation: React.FC = () => {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">Session Price:</span>
                   <div className="flex flex-col items-end">
-                    <span className="font-medium text-emerald-600">1st Session: FREE</span>
+                    <span className="font-medium text-green-600">1st Session: FREE</span>
                     <span className="text-xs text-gray-500">Next: ₹{expert.pricePerSession}</span>
                   </div>
                 </div>
@@ -243,14 +242,14 @@ const ExpertConsultation: React.FC = () => {
                 <button
                   onClick={() => handleBookConsultation(expert)}
                   disabled={expert.availability === 'offline'}
-                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                  className="flex-1 minimal-button minimal-button-primary disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   <Calendar size={16} className="mr-2" />
                   Book Session
                 </button>
                 <button
                   disabled={expert.availability !== 'available'}
-                  className="px-4 py-2 border border-emerald-600 text-emerald-600 rounded-lg hover:bg-emerald-50 disabled:border-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+                  className="minimal-button minimal-button-secondary disabled:border-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   <MessageCircle size={16} />
                 </button>

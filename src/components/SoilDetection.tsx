@@ -209,7 +209,7 @@ export const SoilDetection: React.FC<SoilDetectionProps> = ({
             </div>
 
             {/* Insights */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border border-green-200">
+            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
               <h4 className="font-medium text-gray-900 mb-2 flex items-center">
                 <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
                 Soil Insights:

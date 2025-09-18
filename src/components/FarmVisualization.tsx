@@ -246,36 +246,32 @@ const FarmVisualization: React.FC = () => {
   const cropSuggestions = selectedPlotData ? generateCropSuggestions(selectedPlotData) : [];
 
   return (
-    <div className="space-y-8 bg-gradient-to-br from-green-50 via-emerald-50 to-blue-50 min-h-screen p-6">
-      {/* Enhanced Header */}
+    <div className="space-y-8 bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
+      {/* Minimal Header */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
-          Smart Farm Visualization
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          Farm Visualization
         </h1>
-        <p className="text-gray-600 text-lg">Interactive Farm Layout & Crop Management Dashboard</p>
+        <p className="text-gray-600 dark:text-gray-400">Interactive Farm Layout & Crop Management</p>
       </div>
 
-      {/* Enhanced Controls */}
-      <div className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-xl border border-gray-100">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-6 lg:space-y-0">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-            <div className="p-3 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl mr-4 shadow-lg">
-              <MapIcon className="text-white" size={28} />
-            </div>
+      {/* Minimal Controls */}
+      <div className="minimal-card p-6 mb-8">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+            <MapIcon className="text-gray-600 dark:text-gray-400 mr-2" size={20} />
             Farm Layout Manager
           </h2>
           
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setShowFarmConfig(!showFarmConfig)}
-              className={`group px-6 py-3 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center ${
-                showFarmConfig
-                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700' 
-                  : 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700'
-              }`}
+              className={`minimal-button ${
+                showFarmConfig ? 'minimal-button-primary' : 'minimal-button-secondary'
+              } flex items-center`}
             >
-              <Settings size={20} className="mr-2 group-hover:rotate-45 transition-transform duration-300" />
-              Farm Settings
+              <Settings size={16} className="mr-2" />
+              Settings
             </button>
             
             <button
@@ -283,52 +279,50 @@ const FarmVisualization: React.FC = () => {
                 setIsEditing(!isEditing);
                 setEditingPlot(null);
               }}
-              className={`group px-6 py-3 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center ${
-                isEditing 
-                  ? 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700' 
-                  : 'bg-gradient-to-r from-emerald-500 to-green-600 text-white hover:from-emerald-600 hover:to-green-700'
-              }`}
+              className={`minimal-button ${
+                isEditing ? 'bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-600' : 'minimal-button-primary'
+              } flex items-center`}
             >
               {isEditing ? (
                 <>
-                  <X size={20} className="mr-2 group-hover:rotate-90 transition-transform duration-300" />
-                  Cancel Edit
+                  <X size={16} className="mr-2" />
+                  Cancel
                 </>
               ) : (
                 <>
-                  <Edit3 size={20} className="mr-2 group-hover:rotate-12 transition-transform duration-300" />
-                  Edit Plots
+                  <Edit3 size={16} className="mr-2" />
+                  Edit
                 </>
               )}
             </button>
             
-            <div className="flex bg-white rounded-2xl p-2 shadow-lg border border-gray-200">
+            <div className="flex bg-white dark:bg-gray-800 rounded-2xl p-2 shadow-lg border border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setViewMode('crops')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all duration-300 ${
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   viewMode === 'crops' 
-                    ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg' 
-                    : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
+                    ? 'bg-green-600 dark:bg-green-700 text-white' 
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 Crops
               </button>
               <button
                 onClick={() => setViewMode('health')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all duration-300 ${
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   viewMode === 'health' 
-                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' 
-                    : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'
+                    ? 'bg-blue-600 dark:bg-blue-700 text-white' 
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 Soil Health
               </button>
               <button
                 onClick={() => setViewMode('moisture')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all duration-300 ${
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   viewMode === 'moisture' 
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg' 
-                    : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-700'
+                    ? 'bg-cyan-600 dark:bg-cyan-700 text-white' 
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 Moisture
@@ -339,15 +333,15 @@ const FarmVisualization: React.FC = () => {
       </div>
 
       {showFarmConfig && (
-        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-2xl border border-purple-200 shadow-lg mb-8">
+        <div className="minimal-card p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900 flex items-center">
-              <Grid3X3 className="mr-3 text-purple-600" size={24} />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+              <Grid3X3 className="mr-2 text-gray-600 dark:text-gray-400" size={20} />
               Farm Configuration
             </h3>
             <button
               onClick={() => setShowFarmConfig(false)}
-              className="p-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+              className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <X size={20} />
             </button>

@@ -8,6 +8,7 @@ import MarketLinkage from './components/MarketLinkage';
 import Dashboard from './components/Dashboard';
 import ExpertConsultation from './components/ExpertConsultation';
 import Chatbot from './components/Chatbot';
+import ThemeToggle from './components/ThemeToggle';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 
 
@@ -46,24 +47,25 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      {/* Header with KhetSetu Branding */}
-      <header className="bg-white shadow-sm border-b border-green-100">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Minimal Header */}
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center">
-                <Leaf className="w-6 h-6 text-white" />
+              <div className="w-8 h-8 bg-slate-900 dark:bg-slate-100 rounded-md flex items-center justify-center">
+                <Leaf className="w-5 h-5 text-white dark:text-gray-900" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{t('header.title')}</h1>
-                <p className="text-sm text-gray-600">{t('header.subtitle')}</p>
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{t('header.title')}</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{t('header.subtitle')}</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
+              <ThemeToggle />
               <button
                 onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-                className="flex items-center px-3 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors"
+                className="flex items-center px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-gray-600 rounded-md hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
               >
                 <Globe className="w-4 h-4 mr-2" />
                 {language === 'en' ? 'हिंदी' : 'English'}
@@ -79,7 +81,7 @@ const AppContent: React.FC = () => {
         onTabChange={(tab) => setActiveTab(tab as ActiveTab)}
       />
       
-      <main className="container mx-auto px-4 py-6 max-w-7xl">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {renderActiveComponent()}
       </main>
       

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf, Calendar, DollarSign, Thermometer, Droplets, Clock, Bell, CheckCircle, Droplet, AlertCircle, Layers } from 'lucide-react';
+import { Leaf, Calendar, DollarSign, Clock, Bell, CheckCircle, Droplet, AlertCircle } from 'lucide-react';
 import { generateCropRecommendations } from '../utils/aiService';
 import { useLanguage } from '../contexts/LanguageContext';
 import SoilDetection from './SoilDetection';
@@ -173,12 +173,12 @@ const CropAdvisory: React.FC = () => {
 
   const getActivityTypeColor = (type: string) => {
     switch (type) {
-      case 'sowing': return 'bg-green-100 text-green-800 border-green-200';
-      case 'irrigation': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'fertilizer': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'pest': return 'bg-red-100 text-red-800 border-red-200';
-      case 'harvest': return 'bg-amber-100 text-amber-800 border-amber-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'sowing': return 'bg-green-100 text-green-800';
+      case 'irrigation': return 'bg-blue-100 text-blue-800';
+      case 'fertilizer': return 'bg-purple-100 text-purple-800';
+      case 'pest': return 'bg-red-100 text-red-800';
+      case 'harvest': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -336,53 +336,45 @@ const CropAdvisory: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 bg-gradient-to-br from-green-50 via-blue-50 to-emerald-50 min-h-screen p-6">
-      {/* Enhanced Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
+    <div className="space-y-8">
+      {/* Minimal Header */}
+      <div className="text-center">
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
           {t('cropAdvisory.title')}
         </h1>
-        <p className="text-gray-600 text-lg">AI-Powered Crop Recommendations for Your Farm</p>
+        <p className="text-gray-600 dark:text-gray-400">AI-Powered Crop Recommendations for Your Farm</p>
       </div>
 
-      {/* Enhanced Input Form */}
-      <div className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-xl border border-gray-100">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
-          <div className="p-3 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl mr-4 shadow-lg">
-            <Leaf className="text-white" size={28} />
-          </div>
+      {/* Minimal Input Form */}
+      <div className="minimal-card p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+          <Leaf className="text-gray-600 mr-2" size={20} />
           Farm Information
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div className="group">
-            <label className="text-sm font-bold text-gray-700 mb-3 flex items-center">
-              <div className="p-2 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg mr-2 shadow-md">
-                <DollarSign size={16} className="text-white" />
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('cropAdvisory.budget')} (Min: ₹10,000)
             </label>
             <input
               type="number"
               value={farmInput.budget}
               onChange={(e) => handleInputChange('budget', e.target.value)}
-              className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 transition-all duration-300 bg-gradient-to-r from-white to-green-50 font-medium shadow-lg hover:shadow-xl"
+              className="minimal-input"
               placeholder="50000"
               min="10000"
             />
           </div>
 
-          <div className="group">
-            <label className="text-sm font-bold text-gray-700 mb-3 flex items-center">
-              <div className="p-2 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg mr-2 shadow-md">
-                <Calendar size={16} className="text-white" />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('cropAdvisory.season')}
             </label>
             <select
               value={farmInput.season}
               onChange={(e) => handleInputChange('season', e.target.value)}
-              className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 transition-all duration-300 bg-gradient-to-r from-white to-blue-50 font-medium shadow-lg hover:shadow-xl"
+              className="minimal-input"
             >
               <option value="">{t('action.select')} {t('cropAdvisory.season')}</option>
               <option value="kharif">{t('season.kharif')}</option>
@@ -391,17 +383,14 @@ const CropAdvisory: React.FC = () => {
             </select>
           </div>
 
-          <div className="group">
-            <label className="text-sm font-bold text-gray-700 mb-3 flex items-center">
-              <div className="p-2 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg mr-2 shadow-md">
-                <Layers size={16} className="text-white" />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('cropAdvisory.soilType')}
             </label>
             <select
               value={farmInput.soilType}
               onChange={(e) => handleInputChange('soilType', e.target.value)}
-              className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 transition-all duration-300 bg-gradient-to-r from-white to-purple-50 font-medium shadow-lg hover:shadow-xl"
+              className="minimal-input"
             >
               <option value="">{t('action.select')} {t('cropAdvisory.soilType')}</option>
               <option value="clay">{t('soil.clay')}</option>
@@ -413,25 +402,22 @@ const CropAdvisory: React.FC = () => {
             </select>
           </div>
 
-          {/* Enhanced Soil Image Detection */}
-          <div className="col-span-full bg-gradient-to-br from-amber-50 to-yellow-50 p-6 rounded-2xl border-2 border-amber-100 shadow-lg">
+          {/* Minimal Soil Image Detection */}
+          <div className="col-span-full bg-gray-50 p-4 rounded-lg border border-gray-200">
             <SoilDetection 
               onSoilTypeDetected={(detectedSoilType) => handleInputChange('soilType', detectedSoilType)}
               currentSoilType={farmInput.soilType}
             />
           </div>
 
-          <div className="group">
-            <label className="text-sm font-bold text-gray-700 mb-3 flex items-center">
-              <div className="p-2 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg mr-2 shadow-md">
-                <Thermometer size={16} className="text-white" />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('cropAdvisory.weather')}
             </label>
             <select
               value={farmInput.weather}
               onChange={(e) => handleInputChange('weather', e.target.value)}
-              className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 transition-all duration-300 bg-gradient-to-r from-white to-orange-50 font-medium shadow-lg hover:shadow-xl"
+              className="minimal-input"
             >
               <option value="">{t('action.select')} {t('cropAdvisory.weather')}</option>
               <option value="hot_humid">{t('weather.hotHumid')}</option>
@@ -441,29 +427,26 @@ const CropAdvisory: React.FC = () => {
             </select>
           </div>
 
-          <div className="group">
-            <label className="text-sm font-bold text-gray-700 mb-3 flex items-center">
-              <div className="p-2 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg mr-2 shadow-md">
-                <Droplets size={16} className="text-white" />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('cropAdvisory.farmSize')} (acres)
             </label>
             <input
               type="number"
               value={farmInput.farmSize}
               onChange={(e) => handleInputChange('farmSize', e.target.value)}
-              className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 transition-all duration-300 bg-gradient-to-r from-white to-cyan-50 font-medium shadow-lg hover:shadow-xl"
+              className="minimal-input"
               placeholder="2.5"
               step="0.1"
             />
           </div>
         </div>
 
-        <div className="mt-8 text-center">
+        <div className="mt-6 text-center">
           <button
             onClick={generateRecommendations}
             disabled={loading || !farmInput.budget || Number(farmInput.budget) < 10000 || !farmInput.season || !farmInput.soilType}
-            className="group px-12 py-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold rounded-2xl hover:from-emerald-600 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 hover:shadow-xl shadow-lg"
+            className="minimal-button minimal-button-primary disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             <div className="flex items-center space-x-3">
               {loading ? (
@@ -482,88 +465,80 @@ const CropAdvisory: React.FC = () => {
         </div>
       </div>
 
-      {/* Enhanced Recommendations */}
+      {/* Crop Recommendations */}
       {recommendations.length > 0 && (
-        <div className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-xl border border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
-            <div className="p-3 bg-gradient-to-br from-emerald-400 to-green-500 rounded-2xl mr-4 shadow-lg">
-              <Leaf className="text-white" size={28} />
-            </div>
+        <div className="minimal-card p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+            <Leaf className="text-gray-600 mr-2" size={20} />
             {t('cropAdvisory.recommendations')}
           </h2>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {recommendations.map((crop, index) => (
-              <div key={index} className="group relative bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-3xl p-8 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 overflow-hidden">
-                {/* Decorative Elements */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-emerald-200 to-green-200 rounded-full opacity-20 -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700"></div>
-                <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-br from-blue-200 to-emerald-200 rounded-full opacity-30 -ml-8 -mb-8 group-hover:scale-125 transition-transform duration-700"></div>
+              <div key={index} className="border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900">{crop.name}</h3>
+                  <div className="text-right">
+                    <span className={`px-3 py-1 rounded-md text-sm font-medium ${getSuitabilityColor(crop.suitability)}`}>
+                      {crop.suitability}
+                    </span>
+                    {crop.suitabilityScore && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        Score: {crop.suitabilityScore}/100
+                      </div>
+                    )}
+                  </div>
+                </div>
                 
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-gray-900">{crop.name}</h3>
-                    <div className="text-right">
-                      <span className={`px-4 py-2 rounded-2xl text-sm font-bold shadow-lg ${getSuitabilityColor(crop.suitability)}`}>
-                        {crop.suitability}
-                      </span>
-                      {crop.suitabilityScore && (
-                        <div className="text-xs text-gray-500 mt-2 font-medium">
-                          Score: {crop.suitabilityScore}/100
-                        </div>
-                      )}
-                    </div>
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="text-gray-700 font-medium">Expected Yield:</span>
+                    <span className="font-semibold text-gray-900">{crop.expectedYield}</span>
                   </div>
-                  
-                  <div className="space-y-4 mb-6">
-                    <div className="flex justify-between items-center p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl border border-emerald-100">
-                      <span className="text-gray-700 font-medium">Expected Yield:</span>
-                      <span className="font-bold text-emerald-700">{crop.expectedYield}</span>
-                    </div>
-                    <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
-                      <span className="text-gray-700 font-medium">Potential ROI:</span>
-                      <span className="font-bold text-blue-700">{crop.roi}</span>
-                    </div>
+                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="text-gray-700 font-medium">Potential ROI:</span>
+                    <span className="font-semibold text-gray-900">{crop.roi}</span>
                   </div>
+                </div>
 
-                  <div className="mb-6">
-                    <h4 className="font-bold text-gray-900 mb-4 flex items-center">
-                      <CheckCircle className="mr-2 text-emerald-500" size={20} />
-                      Requirements:
-                    </h4>
-                    <ul className="text-sm text-gray-700 space-y-2">
-                      {crop.requirements.map((req, i) => (
-                        <li key={i} className="flex items-start p-2 bg-gray-50 rounded-lg">
-                          <span className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                          <span className="font-medium">{req}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                    <CheckCircle className="mr-2 text-gray-600" size={16} />
+                    Requirements:
+                  </h4>
+                  <ul className="text-sm text-gray-700 space-y-2">
+                    {crop.requirements.map((req, i) => (
+                      <li key={i} className="flex items-start">
+                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        <span>{req}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-                  <div className="mb-6">
-                    <h4 className="font-bold text-gray-900 mb-4 flex items-center">
-                      <Bell className="mr-2 text-blue-500" size={20} />
-                      Expert Tips:
-                    </h4>
-                    <ul className="text-sm text-gray-700 space-y-2">
-                      {crop.tips.map((tip, i) => (
-                        <li key={i} className="flex items-start p-2 bg-blue-50 rounded-lg">
-                          <span className="w-2 h-2 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                          <span className="font-medium">{tip}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                    <Bell className="mr-2 text-gray-600" size={16} />
+                    Expert Tips:
+                  </h4>
+                  <ul className="text-sm text-gray-700 space-y-2">
+                    {crop.tips.map((tip, i) => (
+                      <li key={i} className="flex items-start">
+                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        <span>{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-                  <div className="pt-4 border-t-2 border-gray-200">
-                    <button
-                      onClick={() => generateCalendar(crop.name)}
-                      className="w-full px-6 py-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold rounded-2xl hover:from-emerald-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center"
-                    >
-                      <Calendar size={20} className="mr-3" />
-                      View Fasal Calendar
-                    </button>
-                  </div>
+                <div className="pt-4 border-t border-gray-200">
+                  <button
+                    onClick={() => generateCalendar(crop.name)}
+                    className="w-full minimal-button minimal-button-primary flex items-center justify-center"
+                  >
+                    <Calendar size={16} className="mr-2" />
+                    View Fasal Calendar
+                  </button>
                 </div>
               </div>
             ))}
@@ -571,13 +546,13 @@ const CropAdvisory: React.FC = () => {
         </div>
       )}
 
-      {/* Fasal Calendar (Smart Crop Calendar) */}
+      {/* Fasal Calendar */}
       {showCalendar && calendarData && (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div className="minimal-card p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-                <Calendar className="mr-2 text-emerald-600" size={24} />
+              <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                <Calendar className="mr-2 text-gray-600" size={20} />
                 Fasal Calendar - {calendarData.cropName}
               </h2>
               <p className="text-sm text-gray-600 mt-1">
@@ -586,7 +561,7 @@ const CropAdvisory: React.FC = () => {
             </div>
             <button
               onClick={() => setShowCalendar(false)}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="text-gray-500 hover:text-gray-700 text-xl"
             >
               ✕
             </button>
@@ -594,27 +569,27 @@ const CropAdvisory: React.FC = () => {
 
           {/* Calendar Overview */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-emerald-50 p-4 rounded-lg">
+            <div className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center">
-                <Clock className="text-emerald-600 mr-2" size={20} />
+                <Clock className="text-gray-600 mr-2" size={16} />
                 <div>
                   <p className="text-sm text-gray-600">Duration</p>
                   <p className="font-medium text-gray-900">{calendarData.totalWeeks} weeks</p>
                 </div>
               </div>
             </div>
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center">
-                <DollarSign className="text-blue-600 mr-2" size={20} />
+                <DollarSign className="text-gray-600 mr-2" size={16} />
                 <div>
                   <p className="text-sm text-gray-600">Total Budget</p>
                   <p className="font-medium text-gray-900">{calendarData.budgetTotal}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-amber-50 p-4 rounded-lg">
+            <div className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center">
-                <Bell className="text-amber-600 mr-2" size={20} />
+                <Bell className="text-gray-600 mr-2" size={16} />
                 <div>
                   <p className="text-sm text-gray-600">Activities</p>
                   <p className="font-medium text-gray-900">{calendarData.activities.length} planned</p>
@@ -625,14 +600,14 @@ const CropAdvisory: React.FC = () => {
 
           {/* Weather Alerts */}
           {calendarData.weatherAlerts.length > 0 && (
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
               <div className="flex items-start">
-                <AlertCircle className="text-orange-600 mr-2 mt-0.5" size={20} />
+                <AlertCircle className="text-yellow-600 mr-2 mt-0.5" size={16} />
                 <div>
-                  <h4 className="font-medium text-orange-800 mb-2">Weather Alerts</h4>
+                  <h4 className="font-medium text-yellow-800 mb-2">Weather Alerts</h4>
                   <ul className="space-y-1">
                     {calendarData.weatherAlerts.map((alert, index) => (
-                      <li key={index} className="text-sm text-orange-700">{alert}</li>
+                      <li key={index} className="text-sm text-yellow-700">{alert}</li>
                     ))}
                   </ul>
                 </div>
@@ -648,15 +623,15 @@ const CropAdvisory: React.FC = () => {
               {calendarData.activities.map((activity) => (
                 <div
                   key={activity.id}
-                  className={`border rounded-lg p-4 transition-all ${
-                    activity.completed ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
+                  className={`border rounded-lg p-4 ${
+                    activity.completed ? 'bg-green-50 border-green-200' : 'border-gray-200'
                   }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-3 flex-1">
                       <button
                         onClick={() => toggleActivityComplete(activity.id)}
-                        className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        className={`mt-1 w-5 h-5 rounded border flex items-center justify-center ${
                           activity.completed
                             ? 'bg-green-500 border-green-500 text-white'
                             : 'border-gray-300 hover:border-green-400'
@@ -667,11 +642,11 @@ const CropAdvisory: React.FC = () => {
                       
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
-                          <span className="text-2xl">{activity.icon}</span>
+                          <span className="text-lg">{activity.icon}</span>
                           <h4 className={`font-medium ${activity.completed ? 'text-green-800' : 'text-gray-900'}`}>
                             Week {activity.week}: {activity.activity}
                           </h4>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getActivityTypeColor(activity.type)}`}>
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getActivityTypeColor(activity.type)}`}>
                             {activity.type}
                           </span>
                         </div>
@@ -680,14 +655,14 @@ const CropAdvisory: React.FC = () => {
                         
                         <div className="flex flex-wrap items-center gap-4 text-sm">
                           {activity.budget && (
-                            <div className="flex items-center text-blue-600">
+                            <div className="flex items-center text-gray-600">
                               <DollarSign size={14} className="mr-1" />
                               {activity.budget}
                             </div>
                           )}
                           
                           {activity.weatherDependent && (
-                            <div className="flex items-center text-amber-600">
+                            <div className="flex items-center text-gray-600">
                               <Droplet size={14} className="mr-1" />
                               Weather dependent
                             </div>
@@ -695,12 +670,12 @@ const CropAdvisory: React.FC = () => {
                         </div>
 
                         {activity.alternatives && activity.alternatives.length > 0 && (
-                          <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                            <p className="text-xs font-medium text-blue-800 mb-1">Budget-friendly alternatives:</p>
-                            <ul className="text-xs text-blue-700 space-y-1">
+                          <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                            <p className="text-xs font-medium text-gray-800 mb-1">Budget-friendly alternatives:</p>
+                            <ul className="text-xs text-gray-700 space-y-1">
                               {activity.alternatives.map((alt, index) => (
                                 <li key={index} className="flex items-start">
-                                  <span className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
+                                  <span className="w-1 h-1 bg-gray-400 rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
                                   {alt}
                                 </li>
                               ))}
@@ -716,12 +691,12 @@ const CropAdvisory: React.FC = () => {
           </div>
 
           {/* Integration Notice */}
-          <div className="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-start">
-              <Leaf className="text-emerald-600 mr-2 mt-0.5" size={20} />
+              <Leaf className="text-green-600 mr-2 mt-0.5" size={16} />
               <div>
-                <h4 className="font-medium text-emerald-800 mb-1">Digital Farm Health Card Integration</h4>
-                <p className="text-sm text-emerald-700">
+                <h4 className="font-medium text-green-800 mb-1">Digital Farm Health Card Integration</h4>
+                <p className="text-sm text-green-700">
                   Each completed task is automatically logged into your Farm Health Report. 
                   Track your farming progress and maintain detailed records for better decision making.
                 </p>
