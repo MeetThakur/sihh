@@ -1,282 +1,295 @@
 # 🌾 KhetSetu - Smart Agricultural Platform
 
-KhetSetu is a comprehensive AI-powered agricultural platform designed to empower farmers with smart decision-making tools, real-time insights, and expert guidance for improved crop management and farming practices.
+![KhetSetu Logo](https://img.shields.io/badge/KhetSetu-Smart%20Agriculture-green?style=for-the-badge&logo=leaf)
+
+**KhetSetu** is a comprehensive Smart Agricultural Platform designed to revolutionize farming through technology. It provides farmers with AI-powered insights, crop management tools, weather monitoring, market linkage, and data-driven decision making capabilities.
 
 ## 🚀 Features
 
-### 🌱 **Crop Advisory System**
+### 🌱 **Core Agricultural Features**
+- **Farm Management** - Digital farm profiles with location mapping
+- **Crop Tracking** - Monitor crop growth stages and health
+- **AI-Powered Advice** - Smart recommendations using Gemini AI
+- **Weather Integration** - Real-time weather data and forecasts
+- **Market Linkage** - Current crop prices and market trends
+- **Pest & Disease Detection** - Image-based diagnosis and treatment
 
-- **AI-Powered Recommendations**: Get personalized crop suggestions based on:
-  - Available budget
-  - Seasonal conditions
-  - Soil type analysis
-  - Weather patterns
-  - Farm size optimization
-- **Smart Input Forms**: Streamlined data collection with validation
-- **ROI Calculations**: Expected yield and return on investment predictions
+### 🛠️ **Technology Stack**
+- **Frontend**: React 18 + TypeScript + Tailwind CSS + Vite
+- **Backend**: Node.js + Express + TypeScript + MongoDB
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT-based secure authentication
+- **AI Integration**: Google Gemini AI for smart recommendations
+- **Deployment**: Production-ready with Docker support
 
-### 📅 **Fasal Calendar (Smart Crop Calendar)**
+### 📱 **User Experience**
+- **Responsive Design** - Works seamlessly on mobile and desktop
+- **Multi-language Support** - Hindi and English support
+- **Offline Capability** - Core features work without internet
+- **Real-time Updates** - Live data synchronization
+- **Intuitive Interface** - Farmer-friendly design
 
-- **AI-Generated Timeline**: Week-by-week activity planning from sowing to harvest
-- **Weather-Aware Scheduling**: Automatic adjustments based on weather predictions
-- **Budget-Friendly Alternatives**: Cost-effective suggestions for resource-constrained farmers
-- **Activity Tracking**: Mark completed tasks and maintain farming records
-- **Integrated Notifications**: Reminders for critical farming activities
-- **Visual Icons**: Easy-to-understand symbols (🌱 seed, 💧 water, 🐛 pest, 🌾 harvest)
+## 🏗️ Project Structure
 
-### 🗺️ **Farm Visualization**
+```
+KhetSetu/
+├── backend/                 # Node.js/Express API Server
+│   ├── src/
+│   │   ├── controllers/     # API route handlers
+│   │   ├── models/         # MongoDB data models
+│   │   ├── routes/         # API route definitions
+│   │   ├── middleware/     # Authentication, validation
+│   │   ├── config/         # Database, logging configuration
+│   │   └── server.ts       # Main server entry point
+│   ├── .env               # Environment variables
+│   └── package.json       # Backend dependencies
+├── frontend/               # React Web Application
+│   ├── src/
+│   │   ├── components/     # React UI components
+│   │   ├── pages/         # Page components
+│   │   ├── contexts/      # React context providers
+│   │   ├── utils/         # Utility functions, API calls
+│   │   └── App.tsx        # Main React application
+│   └── package.json       # Frontend dependencies
+├── docs/                   # Documentation
+│   ├── README.md          # Documentation index
+│   ├── development-guide.md # Development roadmap
+│   └── mongodb-atlas-setup.md # Cloud database setup
+└── scripts/               # Utility scripts
+    ├── README.md          # Scripts documentation
+    └── simple-test.sh     # API testing script
+```
 
-- **Interactive Farm Layout**: Visual representation of farm plots (up to 36 plots)
-- **Multi-View Modes**:
-  - **Crops View**: Color-coded crop distribution
-  - **Health Monitoring**: Soil and crop health status
-  - **Moisture Levels**: Irrigation planning insights
-- **Plot Management**:
-  - Click-to-edit crop selection
-  - Real-time plot status updates
-  - Crop rotation suggestions
-- **Enhanced Pest Alerts**:
-  - Prominent visual warnings with animations
-  - Urgent action recommendations
-  - Neighboring plot contamination prevention
+## 🚀 Quick Start
 
-### 🐛 **Pest Watch**
+### Prerequisites
+- Node.js 18+ 
+- MongoDB 7.0+
+- Git
 
-- **Early Warning System**: Pest detection and alerts
-- **Treatment Recommendations**: Organic and chemical solutions
-- **Preventive Measures**: Proactive pest management strategies
+### Installation
 
-### 📈 **Market Linkage**
-
-- **Price Tracking**: Real-time market prices
-- **Selling Opportunities**: Connect with buyers
-- **Market Trends**: Historical and predictive pricing data
-
-### 🏥 **Digital Health Card**
-
-- **Farm Health Reports**: Comprehensive farm status documentation
-- **Activity Logging**: Automatic recording of farming activities
-- **PDF Generation**: Downloadable reports for record-keeping
-- **Performance Analytics**: Track farming success over time
-
-### 💬 **AI Chatbot Assistant**
-
-- **24/7 Agricultural Support**: Expert guidance anytime
-- **Multi-language Support**: English and Hindi (हिंदी) interface
-- **Context-Aware Responses**: KhetSetu platform integration
-- **Quick Suggestions**: Pre-loaded common farming questions
-
-### 🌍 **Language Support**
-
-- **Bilingual Interface**: Seamless switching between English and Hindi
-- **Localized Content**: All features available in both languages
-- **Cultural Adaptation**: Region-specific farming practices
-
-### 📊 **Dashboard**
-
-- **Real-time Metrics**: Active crops, pest alerts, ROI tracking
-- **Recent Activities**: Timeline of farming operations
-- **Weather Integration**: Current conditions and forecasts
-- **Quick Actions**: One-click access to key features
-
-## 🛠️ Tech Stack
-
-### **Frontend**
-
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite (Fast development and optimized builds)
-- **Styling**: Tailwind CSS (Utility-first CSS framework)
-- **Icons**: Lucide React (Beautiful, customizable icons)
-- **State Management**: React Hooks (useState, useContext)
-- **Routing**: Single Page Application (SPA) with component-based navigation
-
-### **AI Integration**
-
-- **AI Service**: Google Gemini AI (gemini-1.5-flash model)
-- **API Management**: Custom proxy for secure key handling
-- **Context Awareness**: Agricultural-specific prompt engineering
-
-### **Backend/API**
-
-- **Serverless Functions**: Vercel serverless functions
-- **API Proxy**: Secure Gemini API integration
-- **Environment Management**: Secure API key handling
-
-### **Additional Libraries**
-
-- **PDF Generation**: jsPDF + html2canvas for health card exports
-- **Language Management**: Custom React Context for i18n
-- **Animations**: CSS animations with Tailwind classes
-- **Responsive Design**: Mobile-first responsive layout
-
-### **Development Tools**
-
-- **TypeScript**: Type safety and better development experience
-- **ESLint**: Code quality and consistency
-- **PostCSS**: CSS processing and optimization
-- **Git**: Version control and collaboration
-
-## 📱 User Interface
-
-### **Design Principles**
-
-- **Farmer-Friendly**: Simple, intuitive interface designed for users with varying technical literacy
-- **Visual Clarity**: Color-coded systems and clear iconography
-- **Mobile-First**: Responsive design optimized for mobile devices
-- **Accessibility**: High contrast alerts and clear visual indicators
-
-### **Navigation**
-
-- **Single Page Application**: Fast, seamless navigation between features
-- **Breadcrumb System**: Clear indication of current location
-- **Quick Actions**: Easy access to frequently used features
-
-## 🌟 Key Highlights
-
-### **Smart Decision Making**
-
-- AI-powered recommendations based on real-time data
-- Evidence-based farming suggestions
-- Cost-benefit analysis for every recommendation
-
-### **Visual Farm Management**
-
-- Interactive plot visualization with real-time status updates
-- Color-coded health monitoring system
-- Animated pest alerts for immediate attention
-
-### **Comprehensive Planning**
-
-- 16-week detailed farming calendar
-- Weather-dependent activity scheduling
-- Budget optimization with alternative suggestions
-
-### **Record Keeping**
-
-- Automatic activity logging
-- Digital health card generation
-- Exportable PDF reports for official use
-
-### **Accessibility**
-
-- Bilingual support (English/Hindi)
-- Simple visual indicators
-- Mobile-optimized interface
-
-## 🎯 Target Users
-
-- **Small-scale Farmers**: 1-5 acre farm owners
-- **Medium-scale Farmers**: 5-20 acre farm management
-- **Agricultural Advisors**: Extension officers and consultants
-- **New Farmers**: First-time farming entrepreneurs
-- **Traditional Farmers**: Looking to adopt modern techniques
-
-## 🌍 Impact
-
-### **Productivity Enhancement**
-
-- Optimized crop selection based on scientific analysis
-- Reduced crop failure through early warning systems
-- Improved yield through proper timing and resource management
-
-### **Cost Optimization**
-
-- Budget-aware recommendations
-- Reduced wastage through precision farming
-- Alternative solution suggestions for cost-effectiveness
-
-### **Knowledge Democratization**
-
-- AI-powered expert knowledge accessible to all farmers
-- Multilingual support breaking language barriers
-- Simple interface overcoming digital literacy challenges
-
-## 🚀 Getting Started
-
-### **Prerequisites**
-
-- Node.js (v18 or higher)
-- npm or yarn package manager
-- Modern web browser
-
-### **Installation**
-
+1. **Clone the repository**
 ```bash
-# Clone the repository
-git clone <repository-url>
+git clone https://github.com/yourusername/khetsetu.git
+cd khetsetu
+```
 
-# Navigate to project directory
-cd sb1-xl7dtcv6
+2. **Set up MongoDB** (choose one option)
+```bash
+# Option A: Local MongoDB
+./install-mongodb.sh
 
-# Install dependencies
+# Option B: MongoDB Atlas (cloud)
+# Follow MONGODB_ATLAS_SETUP.md guide
+```
+
+3. **Configure Backend**
+```bash
+cd backend
 npm install
-
-# Set up environment variables
 cp .env.example .env
-# Add your GEMINI_API_KEY and VITE_GEMINI_API_KEY
-
-# Start development server
-npm run dev
+# Edit .env with your MongoDB URI and API keys
 ```
 
-### **Environment Variables**
-
-```env
-GEMINI_API_KEY=your_gemini_api_key_here
-VITE_GEMINI_API_KEY=your_gemini_api_key_here
-```
-
-### **Build for Production**
-
+4. **Configure Frontend**
 ```bash
-# Create production build
-npm run build
-
-# Preview production build
-npm run preview
+cd ../frontend
+npm install
+cp .env.example .env.local
+# Edit .env.local with your environment variables
 ```
 
-## 📂 Project Structure
+5. **Start Development Servers**
+```bash
+# Terminal 1 - Backend
+cd backend && npm run dev
 
+# Terminal 2 - Frontend  
+cd frontend && npm run dev
 ```
-src/
-├── components/           # React components
-│   ├── CropAdvisory.tsx     # AI-powered crop recommendations
-│   ├── FarmVisualization.tsx # Interactive farm plots
-│   ├── Dashboard.tsx        # Main dashboard
-│   ├── Chatbot.tsx         # AI assistant
-│   ├── HealthCard.tsx      # Digital health reports
-│   ├── PestWatch.tsx       # Pest monitoring
-│   ├── MarketLinkage.tsx   # Market integration
-│   └── Navigation.tsx      # App navigation
-├── contexts/            # React contexts
-│   └── LanguageContext.tsx # i18n management
-├── utils/              # Utility functions
-│   ├── aiService.ts        # AI integration
-│   ├── geminiService.ts    # Gemini API calls
-│   └── mockData.ts         # Sample data
-└── types/              # TypeScript definitions
-    └── index.ts            # Type definitions
+
+6. **Access the Application**
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5000
+- Health Check: http://localhost:5000/health
+
+## 📊 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/auth/profile` - Get user profile
+- `PUT /api/auth/profile` - Update user profile
+
+### Farm Management
+- `GET /api/farms` - List user's farms
+- `POST /api/farms` - Create new farm
+- `GET /api/farms/:id` - Get farm details
+- `PUT /api/farms/:id` - Update farm
+- `DELETE /api/farms/:id` - Delete farm
+
+### Crop Management
+- `GET /api/crops` - List crops
+- `POST /api/crops` - Add new crop
+- `GET /api/crops/:id` - Get crop details
+- `PUT /api/crops/:id` - Update crop
+- `DELETE /api/crops/:id` - Delete crop
+
+### AI & Analytics
+- `POST /api/ai/advice` - Get AI farming advice
+- `POST /api/ai/disease-detection` - Disease detection from images
+- `GET /api/analytics/dashboard` - Dashboard analytics
+
+### External Data
+- `GET /api/weather` - Weather information
+- `GET /api/market/prices` - Market prices
+- `GET /api/health` - System health check
+
+## 🧪 Testing
+
+### Run API Tests
+```bash
+# Test all endpoints
+./scripts/simple-test.sh
+
+# Manual testing with curl
+curl http://localhost:5000/health
 ```
+
+### Test Credentials
+- **Email**: `rajesh.farmer@example.com`
+- **Password**: `FarmingLife123!`
+
+## 🚀 Deployment
+
+### Production Environment
+```bash
+# Build applications
+cd backend && npm run build
+cd frontend && npm run build
+
+# Start production server
+cd backend && npm start
+```
+
+### Docker Deployment
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
+```
+
+### Environment Variables
+
+**Backend (.env)**
+```env
+NODE_ENV=production
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/khetsetu
+JWT_SECRET=your-secure-jwt-secret
+GEMINI_API_KEY=your-gemini-api-key
+```
+
+**Frontend (.env.local)**
+```env
+VITE_API_BASE_URL=http://localhost:5000
+VITE_GEMINI_API_KEY=your-gemini-api-key
+```
+
+## 📚 Documentation
+
+- **[Documentation Hub](docs/README.md)** - Complete documentation index
+- **[Development Guide](docs/development-guide.md)** - Development roadmap
+- **[MongoDB Atlas Setup](docs/mongodb-atlas-setup.md)** - Cloud database setup
+- **[Scripts Documentation](scripts/README.md)** - Utility scripts guide
+- **[API Documentation](http://localhost:5000/api/docs)** - Interactive API docs
 
 ## 🤝 Contributing
 
-We welcome contributions to make KhetSetu even better! Here's how you can help:
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** to the branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request
+### Development Guidelines
+- Follow TypeScript best practices
+- Write comprehensive tests
+- Update documentation for new features
+- Ensure mobile responsiveness
+- Test with real agricultural data
 
-### **Areas for Contribution**
+## 🛠️ Development Commands
 
-- Additional language support
-- New crop varieties and recommendations
-- Enhanced AI prompts and responses
-- Mobile app development
-- API integrations with weather services
-- Advanced analytics and reporting
+### Backend
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run test         # Run tests
+npm run type-check   # TypeScript type checking
+npm run lint         # Run ESLint
+```
+
+### Frontend
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+npm run type-check   # TypeScript type checking
+```
+
+## 🔒 Security
+
+- JWT-based authentication
+- Password hashing with bcrypt
+- CORS protection
+- Rate limiting
+- Input validation and sanitization
+- Environment variable protection
+
+## 🌟 Key Technologies
+
+| Category | Technology | Purpose |
+|----------|------------|---------|
+| **Frontend** | React 18 | Modern UI framework |
+| **Styling** | Tailwind CSS | Utility-first CSS |
+| **Backend** | Express.js | Web framework |
+| **Database** | MongoDB | Document database |
+| **Language** | TypeScript | Type safety |
+| **AI** | Google Gemini | Smart recommendations |
+| **Build** | Vite | Fast build tool |
+| **Auth** | JWT | Secure authentication |
+
+## 📱 Mobile Support
+
+KhetSetu is designed mobile-first for farmers in the field:
+- Touch-friendly interface
+- Offline data synchronization
+- Camera integration for crop monitoring
+- GPS location tracking
+- Progressive Web App (PWA) capabilities
+
+## 🌍 Localization
+
+- **English** - Full support
+- **Hindi** - UI and content localization
+- **Regional Languages** - Extensible for local dialects
+
+## 📈 Analytics & Monitoring
+
+- User engagement tracking
+- Crop performance analytics
+- Weather pattern analysis
+- Market trend monitoring
+- System health monitoring
+
+## 🆘 Support
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/khetsetu/issues)
+- **Documentation**: [Project Wiki](https://github.com/yourusername/khetsetu/wiki)
+- **Community**: [Discussions](https://github.com/yourusername/khetsetu/discussions)
 
 ## 📄 License
 
@@ -284,44 +297,39 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **Google Gemini AI** for providing advanced AI capabilities
-- **Tailwind CSS** for the utility-first CSS framework
-- **Lucide** for beautiful icons
-- **Vite** for fast development experience
-- **Agricultural Experts** who provided domain knowledge
-- **Farming Community** for feedback and insights
+- **Farmers** - For inspiring this platform
+- **Google Gemini AI** - For AI capabilities
+- **MongoDB** - For reliable data storage
+- **React Team** - For the amazing framework
+- **Open Source Community** - For incredible tools and libraries
 
-## 📞 Support
+## 🔮 Roadmap
 
-For support, email support@khetsetu.com or join our community discussions.
+### Phase 1 (Current) ✅
+- Core farm and crop management
+- Basic AI recommendations
+- User authentication
+- Mobile-responsive design
 
-## 🗺️ Roadmap
+### Phase 2 (Next Quarter)
+- IoT sensor integration
+- Advanced disease detection
+- Market price predictions
+- Farmer community features
 
-### **Phase 1** (Current)
-
-- ✅ Core crop advisory system
-- ✅ Farm visualization
-- ✅ AI chatbot integration
-- ✅ Bilingual support
-
-### **Phase 2** (Upcoming)
-
-- 🔄 Weather API integration
-- 🔄 Government scheme integration
-- 🔄 Mobile application
-- 🔄 Offline mode support
-
-### **Phase 3** (Future)
-
-- 📋 IoT sensor integration
-- 📋 Drone mapping support
-- 📋 Marketplace integration
-- 📋 Community features
+### Phase 3 (Future)
+- Drone integration
+- Satellite imagery analysis
+- Financial services integration
+- Equipment marketplace
 
 ---
 
-<div align="center">
+**Made with ❤️ for farmers by the KhetSetu team**
 
-**Built with ❤️ for farmers by Meet**
+*Empowering agriculture through technology* 🌾
 
-</div>
+[![Built with React](https://img.shields.io/badge/Built%20with-React-61DAFB?style=flat&logo=react)](https://reactjs.org/)
+[![Powered by MongoDB](https://img.shields.io/badge/Powered%20by-MongoDB-47A248?style=flat&logo=mongodb)](https://www.mongodb.com/)
+[![AI by Gemini](https://img.shields.io/badge/AI%20by-Gemini-4285F4?style=flat&logo=google)](https://deepmind.google/technologies/gemini/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
