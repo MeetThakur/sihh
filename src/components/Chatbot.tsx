@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, X, Bot, User, Loader } from 'lucide-react';
-import { askGemini } from '../utils/geminiService';
-import { useLanguage } from '../contexts/LanguageContext';
+import React, { useState, useRef, useEffect } from "react";
+import { MessageCircle, Send, X, Bot, User, Loader } from "lucide-react";
+import { askGemini } from "../utils/geminiService";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface Message {
   id: string;
@@ -15,26 +15,30 @@ interface ChatbotProps {
   onToggle?: () => void;
 }
 
-const Chatbot: React.FC<ChatbotProps> = ({ isOpen: controlledOpen, onToggle }) => {
+const Chatbot: React.FC<ChatbotProps> = ({
+  isOpen: controlledOpen,
+  onToggle,
+}) => {
   const { t, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(controlledOpen || false);
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
-      text: language === 'hi'
-        ? 'नमस्ते! मैं आपका खेतसेतु कृषि सहायक हूं। मैं फसल सलाह, कीट प्रबंधन, मौसम संबंधी चिंताओं और कृषि प्रथाओं में आपकी सहायता कर सकता हूं। आज मैं आपकी कैसे सहायता कर सकता हूं?'
-        : 'Hello! I\'m your KhetSetu agricultural assistant. I can help you with crop advice, pest management, weather concerns, and farming best practices. How can I assist you today?',
+      id: "1",
+      text:
+        language === "hi"
+          ? "नमस्ते! मैं आपका खेतसेतु कृषि सहायक हूं। मैं फसल सलाह, कीट प्रबंधन, मौसम संबंधी चिंताओं और कृषि प्रथाओं में आपकी सहायता कर सकता हूं। आज मैं आपकी कैसे सहायता कर सकता हूं?"
+          : "Hello! I'm your KhetSetu agricultural assistant. I can help you with crop advice, pest management, weather concerns, and farming best practices. How can I assist you today?",
       isUser: false,
-      timestamp: new Date()
-    }
+      timestamp: new Date(),
+    },
   ]);
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -63,8 +67,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen: controlledOpen, onToggle }) =
 
   const generateChatResponse = async (userMessage: string): Promise<string> => {
     try {
-      const agriculturalContext = `You are KhetSetu's expert agricultural assistant helping farmers with crop management, pest control, weather advice, and farming best practices. 
-      
+      const agriculturalContext = `You are KhetSetu's expert agricultural assistant helping farmers with crop management, pest control, weather advice, and farming best practices.
+
 User question: "${userMessage}"
 
 Please provide a helpful, practical response focused on agricultural guidance. Keep responses concise but informative. If the question is not related to agriculture, politely redirect to farming topics and mention that you're part of the KhetSetu platform.`;
@@ -72,7 +76,7 @@ Please provide a helpful, practical response focused on agricultural guidance. K
       const response = await askGemini(agriculturalContext);
       return response;
     } catch (error) {
-      console.error('Chat AI error:', error);
+      console.error("Chat AI error:", error);
       return "I apologize, but I'm having trouble connecting to my knowledge base right now. However, I can suggest checking our other tools like Crop Advisory or Pest Watch for immediate assistance. Please try again in a moment.";
     }
   };
@@ -84,11 +88,11 @@ Please provide a helpful, practical response focused on agricultural guidance. K
       id: Date.now().toString(),
       text: inputText.trim(),
       isUser: true,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInputText("");
     setIsLoading(true);
 
     try {
@@ -98,35 +102,35 @@ Please provide a helpful, practical response focused on agricultural guidance. K
         id: (Date.now() + 1).toString(),
         text: aiResponse,
         isUser: false,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, botMessage]);
+      setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: "I'm sorry, I encountered an error. Please try asking your question again, or check our other agricultural tools for assistance.",
         isUser: false,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
 
   const formatTimestamp = (timestamp: Date) => {
-    return timestamp.toLocaleTimeString('en-US', {
+    return timestamp.toLocaleTimeString("en-US", {
       hour12: true,
-      hour: 'numeric',
-      minute: '2-digit'
+      hour: "numeric",
+      minute: "2-digit",
     });
   };
 
@@ -135,7 +139,7 @@ Please provide a helpful, practical response focused on agricultural guidance. K
     "How do I identify pest problems?",
     "When should I plant for the current season?",
     "What government schemes can I apply for?",
-    "How do I improve soil health naturally?"
+    "How do I improve soil health naturally?",
   ];
 
   if (!isOpen) {
@@ -162,8 +166,8 @@ Please provide a helpful, practical response focused on agricultural guidance. K
             <Bot size={20} />
           </div>
           <div>
-            <h3 className="font-semibold text-sm">{t('chatbot.title')}</h3>
-            <p className="text-xs text-green-100">{t('chatbot.status')}</p>
+            <h3 className="font-semibold text-sm">{t("chatbot.title")}</h3>
+            <p className="text-xs text-green-100">{t("chatbot.status")}</p>
           </div>
         </div>
         <button
@@ -179,27 +183,35 @@ Please provide a helpful, practical response focused on agricultural guidance. K
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}
           >
-            <div className={`flex items-start space-x-2 max-w-[80%] ${
-              message.isUser ? 'flex-row-reverse space-x-reverse' : ''
-            }`}>
-              <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                message.isUser
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-gray-300 text-gray-600'
-              }`}>
+            <div
+              className={`flex items-start space-x-2 max-w-[80%] ${
+                message.isUser ? "flex-row-reverse space-x-reverse" : ""
+              }`}
+            >
+              <div
+                className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                  message.isUser
+                    ? "bg-emerald-600 text-white"
+                    : "bg-gray-300 text-gray-600"
+                }`}
+              >
                 {message.isUser ? <User size={12} /> : <Bot size={12} />}
               </div>
-              <div className={`px-3 py-2 rounded-lg text-sm ${
-                message.isUser
-                  ? 'bg-emerald-600 text-white rounded-br-none'
-                  : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
-              }`}>
+              <div
+                className={`px-3 py-2 rounded-lg text-sm ${
+                  message.isUser
+                    ? "bg-emerald-600 text-white rounded-br-none"
+                    : "bg-white text-gray-800 border border-gray-200 rounded-bl-none"
+                }`}
+              >
                 <p className="whitespace-pre-wrap">{message.text}</p>
-                <p className={`text-xs mt-1 ${
-                  message.isUser ? 'text-emerald-100' : 'text-gray-400'
-                }`}>
+                <p
+                  className={`text-xs mt-1 ${
+                    message.isUser ? "text-emerald-100" : "text-gray-400"
+                  }`}
+                >
                   {formatTimestamp(message.timestamp)}
                 </p>
               </div>
@@ -225,7 +237,9 @@ Please provide a helpful, practical response focused on agricultural guidance. K
 
         {messages.length === 1 && (
           <div className="space-y-2">
-            <p className="text-xs text-gray-500 text-center">Quick questions:</p>
+            <p className="text-xs text-gray-500 text-center">
+              Quick questions:
+            </p>
             <div className="space-y-1">
               {getSuggestedQuestions().map((question, index) => (
                 <button
@@ -252,7 +266,7 @@ Please provide a helpful, practical response focused on agricultural guidance. K
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={t('chatbot.placeholder')}
+            placeholder={t("chatbot.placeholder")}
             className="flex-1 px-3 py-2 border border-gray-300 bg-white text-gray-900 placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
             disabled={isLoading}
           />
