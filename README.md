@@ -266,12 +266,32 @@ PORT=5000
 MONGODB_URI=mongodb://localhost:27017/khetsetu
 JWT_SECRET=your-secure-jwt-secret
 GEMINI_API_KEY=your-gemini-api-key
+WEATHER_API_KEY=your-weather-api-key-from-weatherapi.com
 ```
 
 **Frontend (.env.local)**
 ```env
 VITE_API_BASE_URL=http://localhost:5000
 VITE_GEMINI_API_KEY=your-gemini-api-key
+VITE_WEATHER_API_KEY=your-weather-api-key-from-weatherapi.com
+```
+
+### Weather API Setup
+
+The weather functionality uses [WeatherAPI.com](https://www.weatherapi.com/) for real-time weather data:
+
+1. Sign up for a free account at [WeatherAPI.com](https://www.weatherapi.com/)
+2. Get your API key from the dashboard
+3. Add it to your environment variables as `VITE_WEATHER_API_KEY`
+4. The weather widget will automatically use the user's location from their profile
+5. Fallback location is set to "Delhi, India" if no user location is available
+
+**Weather Features:**
+- Current weather conditions with temperature, humidity, wind speed
+- 4-day weather forecast
+- Weather alerts and warnings
+- Agricultural insights (irrigation recommendations, pest risk assessment)
+- UV index monitoring for farm worker safety
 ```
 
 ## 📚 Documentation

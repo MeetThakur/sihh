@@ -5,6 +5,15 @@ import {
   ApiResponse,
   AuthResponse,
 } from "../types";
+import {
+  Farm,
+  CreateFarmData,
+  UpdateFarmData,
+  DashboardData,
+  FarmStats,
+  PlotData,
+  PlotActivity,
+} from "./farmService";
 
 // Re-export types for easier importing
 export type { User, LoginCredentials, RegisterData, ApiResponse, AuthResponse };
@@ -230,15 +239,19 @@ class ApiService {
     return !!this.token;
   }
 
-  // Farm management methods (for future use)
-  async getFarms(): Promise<ApiResponse<unknown[]>> {
-    return this.makeRequest("/farms");
+  // Farm management methods
+  async getFarms(): Promise<ApiResponse<{ farms: Farm[] }>> {
+    return this.makeRequest<{ farms: Farm[] }>("/farms");
+  }
+
+  async getFarmById(id: string): Promise<ApiResponse<{ farm: Farm }>> {
+    return this.makeRequest<{ farm: Farm }>(`/farms/${id}`);
   }
 
   async createFarm(
-    farmData: Record<string, unknown>,
-  ): Promise<ApiResponse<unknown>> {
-    return this.makeRequest("/farms", {
+    farmData: CreateFarmData,
+  ): Promise<ApiResponse<{ farm: Farm }>> {
+    return this.makeRequest<{ farm: Farm }>("/farms", {
       method: "POST",
       body: JSON.stringify(farmData),
     });
@@ -246,18 +259,54 @@ class ApiService {
 
   async updateFarm(
     farmId: string,
-    farmData: Record<string, unknown>,
-  ): Promise<ApiResponse<unknown>> {
-    return this.makeRequest(`/farms/${farmId}`, {
+    farmData: UpdateFarmData,
+  ): Promise<ApiResponse<{ farm: Farm }>> {
+    return this.makeRequest<{ farm: Farm }>(`/farms/${farmId}`, {
       method: "PUT",
       body: JSON.stringify(farmData),
     });
   }
 
-  async deleteFarm(farmId: string): Promise<ApiResponse> {
-    return this.makeRequest(`/farms/${farmId}`, {
+  async deleteFarm(farmId: string): Promise<ApiResponse<void>> {
+    return this.makeRequest<void>(`/farms/${farmId}`, {
       method: "DELETE",
     });
+  }
+
+  async getDashboardData(): Promise<ApiResponse<DashboardData>> {
+    return this.makeRequest<DashboardData>("/farms/dashboard");
+  }
+
+  async getFarmStats(): Promise<ApiResponse<FarmStats>> {
+    return this.makeRequest<FarmStats>("/farms/stats");
+  }
+
+  async updatePlot(
+    farmId: string,
+    plotNumber: number,
+    plotData: Partial<PlotData>,
+  ): Promise<ApiResponse<{ farm: Farm; updatedPlot: PlotData }>> {
+    return this.makeRequest<{ farm: Farm; updatedPlot: PlotData }>(
+      `/farms/${farmId}/plots/${plotNumber}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(plotData),
+      },
+    );
+  }
+
+  async addPlotActivity(
+    farmId: string,
+    plotNumber: number,
+    activity: PlotActivity,
+  ): Promise<ApiResponse<{ activity: PlotActivity; plot: PlotData }>> {
+    return this.makeRequest<{ activity: PlotActivity; plot: PlotData }>(
+      `/farms/${farmId}/plots/${plotNumber}/activities`,
+      {
+        method: "POST",
+        body: JSON.stringify(activity),
+      },
+    );
   }
 
   // Crop management methods (for future use)
