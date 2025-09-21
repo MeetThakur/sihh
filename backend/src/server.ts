@@ -57,24 +57,9 @@ app.use(
   }),
 );
 
-// CORS configuration
+// CORS configuration - Permissive for development
 const corsOptions = {
-  origin: function (origin: string | undefined, callback: Function) {
-    const allowedOrigins = process.env.CORS_ORIGIN?.split(",") || [
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "https://khetsetu.vercel.app",
-    ];
-
-    // Allow requests with no origin (mobile apps, etc.)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: true, // Allow all origins for development
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: [

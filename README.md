@@ -18,9 +18,17 @@
 - **Frontend**: React 18 + TypeScript + Tailwind CSS + Vite
 - **Backend**: Node.js + Express + TypeScript + MongoDB
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT-based secure authentication
+- **Authentication**: JWT-based secure authentication with refresh tokens
 - **AI Integration**: Google Gemini AI for smart recommendations
 - **Deployment**: Production-ready with Docker support
+
+### 🔐 **Authentication System**
+- **User Registration** - Multi-step registration with profile setup
+- **Secure Login** - JWT-based authentication with automatic token refresh
+- **User Profiles** - Comprehensive farmer profiles with location and farm data
+- **Password Management** - Secure password reset via email
+- **Role-based Access** - Support for farmers, advisors, and administrators
+- **Session Management** - Automatic logout and token cleanup
 
 ### 📱 **User Experience**
 - **Responsive Design** - Works seamlessly on mobile and desktop
@@ -78,10 +86,10 @@ cd khetsetu
 2. **Set up MongoDB** (choose one option)
 ```bash
 # Option A: Local MongoDB
-./install-mongodb.sh
+./scripts/install-mongodb.sh
 
 # Option B: MongoDB Atlas (cloud)
-# Follow MONGODB_ATLAS_SETUP.md guide
+# Follow docs/MONGODB_ATLAS_SETUP.md guide
 ```
 
 3. **Configure Backend**
@@ -89,18 +97,45 @@ cd khetsetu
 cd backend
 npm install
 cp .env.example .env
-# Edit .env with your MongoDB URI and API keys
+# Edit .env with your MongoDB URI and JWT secrets
+```
+
+**Required Environment Variables:**
+```env
+# Database
+MONGODB_URI=mongodb://localhost:27017/khetsetu
+
+# JWT Authentication
+JWT_SECRET=your_super_secret_jwt_key_here
+JWT_REFRESH_SECRET=your_super_secret_refresh_key_here
+JWT_EXPIRE=7d
+JWT_REFRESH_EXPIRE=30d
+
+# CORS
+CORS_ORIGIN=http://localhost:5173
 ```
 
 4. **Configure Frontend**
 ```bash
 cd ../frontend
 npm install
-cp .env.example .env.local
-# Edit .env.local with your environment variables
+# .env file is automatically created with default values
+```
+
+**Frontend Environment (.env):**
+```env
+VITE_API_URL=http://localhost:5000/api
 ```
 
 5. **Start Development Servers**
+
+**Option A: Start Both Servers at Once**
+```bash
+# From project root
+./scripts/start-dev.sh
+```
+
+**Option B: Start Servers Separately**
 ```bash
 # Terminal 1 - Backend
 cd backend && npm run dev
@@ -110,9 +145,52 @@ cd frontend && npm run dev
 ```
 
 6. **Access the Application**
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:5000
-- Health Check: http://localhost:5000/health
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:5000
+- **API Health Check**: http://localhost:5000/health
+
+## 🔐 Authentication System
+
+KhetSetu includes a complete authentication system with user registration, login, profile management, and secure session handling.
+
+### First Time Setup
+
+1. **Start the servers** using the instructions above
+2. **Open the frontend** at http://localhost:5173
+3. **Register a new account** using the registration form
+4. **Complete your profile** with farm details (optional)
+5. **Start using the platform** with your authenticated account
+
+### User Registration Process
+
+The registration is a 3-step process:
+
+1. **Basic Information**: Name, email, password, phone (optional)
+2. **Location Details**: State, district, village, preferred language
+3. **Farm Details**: Farm size, soil type, experience, primary crops (optional)
+
+### Features Included
+
+- ✅ **Secure Registration** with validation
+- ✅ **JWT-based Authentication** with automatic token refresh
+- ✅ **Password Management** (change password, forgot password)
+- ✅ **User Profile Management** with farm details
+- ✅ **Multi-language Support** (English/Hindi)
+- ✅ **Role-based Access** (farmer, advisor, admin)
+- ✅ **Session Persistence** across browser sessions
+- ✅ **Automatic Logout** on token expiration
+
+### Testing Authentication
+
+Test the authentication system:
+
+```bash
+# Install test dependencies
+npm install -g axios colors
+
+# Run authentication tests
+node scripts/test-auth-api.js
+```
 
 ## 📊 API Endpoints
 

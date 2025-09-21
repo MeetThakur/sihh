@@ -1,5 +1,16 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import ApiService, { User, LoginCredentials, RegisterData } from '../services/api';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from "react";
+import ApiService, {
+  User,
+  LoginCredentials,
+  RegisterData,
+} from "../services/api";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -9,12 +20,12 @@ interface AuthState {
 }
 
 type AuthAction =
-  | { type: 'AUTH_START' }
-  | { type: 'AUTH_SUCCESS'; payload: User }
-  | { type: 'AUTH_FAILURE'; payload: string }
-  | { type: 'LOGOUT' }
-  | { type: 'CLEAR_ERROR' }
-  | { type: 'UPDATE_USER'; payload: User };
+  | { type: "AUTH_START" }
+  | { type: "AUTH_SUCCESS"; payload: User }
+  | { type: "AUTH_FAILURE"; payload: string }
+  | { type: "LOGOUT" }
+  | { type: "CLEAR_ERROR" }
+  | { type: "UPDATE_USER"; payload: User };
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -25,13 +36,13 @@ const initialState: AuthState = {
 
 function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
-    case 'AUTH_START':
+    case "AUTH_START":
       return {
         ...state,
         loading: true,
         error: null,
       };
-    case 'AUTH_SUCCESS':
+    case "AUTH_SUCCESS":
       return {
         ...state,
         isAuthenticated: true,
@@ -39,7 +50,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         loading: false,
         error: null,
       };
-    case 'AUTH_FAILURE':
+    case "AUTH_FAILURE":
       return {
         ...state,
         isAuthenticated: false,
@@ -47,7 +58,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         loading: false,
         error: action.payload,
       };
-    case 'LOGOUT':
+    case "LOGOUT":
       return {
         ...state,
         isAuthenticated: false,
@@ -55,12 +66,12 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         loading: false,
         error: null,
       };
-    case 'CLEAR_ERROR':
+    case "CLEAR_ERROR":
       return {
         ...state,
         error: null,
       };
-    case 'UPDATE_USER':
+    case "UPDATE_USER":
       return {
         ...state,
         user: action.payload,
@@ -76,7 +87,10 @@ interface AuthContextType {
   register: (userData: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (userData: Partial<User>) => Promise<void>;
-  changePassword: (passwords: { currentPassword: string; newPassword: string }) => Promise<void>;
+  changePassword: (passwords: {
+    currentPassword: string;
+    newPassword: string;
+  }) => Promise<void>;
   clearError: () => void;
   checkAuth: () => Promise<void>;
 }
@@ -86,7 +100,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -100,32 +114,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (credentials: LoginCredentials) => {
     try {
-      dispatch({ type: 'AUTH_START' });
+      dispatch({ type: "AUTH_START" });
       const response = await ApiService.login(credentials);
-      
+
       if (response.success && response.data?.user) {
-        dispatch({ type: 'AUTH_SUCCESS', payload: response.data.user });
+        dispatch({ type: "AUTH_SUCCESS", payload: response.data.user });
       } else {
-        throw new Error(response.message || 'Login failed');
+        console.error("Login failed - Response:", response);
+        throw new Error(response.message || "Login failed");
       }
     } catch (error) {
-      dispatch({ type: 'AUTH_FAILURE', payload: error instanceof Error ? error.message : 'Login failed' });
+      console.error("Login error details:", error);
+      dispatch({
+        type: "AUTH_FAILURE",
+        payload: error instanceof Error ? error.message : "Login failed",
+      });
       throw error;
     }
   };
 
   const register = async (userData: RegisterData) => {
     try {
-      dispatch({ type: 'AUTH_START' });
+      dispatch({ type: "AUTH_START" });
+      console.log("Sending registration data:", userData);
       const response = await ApiService.register(userData);
-      
+
+      console.log("Registration API response:", response);
+
       if (response.success && response.data?.user) {
-        dispatch({ type: 'AUTH_SUCCESS', payload: response.data.user });
+        dispatch({ type: "AUTH_SUCCESS", payload: response.data.user });
       } else {
-        throw new Error(response.message || 'Registration failed');
+        console.error("Registration failed - Full response:", response);
+        if (response.errors) {
+          console.error("Validation errors:", response.errors);
+          response.errors.forEach((error: any, index: number) => {
+            console.error(`Validation error ${index + 1}:`, error);
+          });
+        }
+        throw new Error(response.message || "Registration failed");
       }
     } catch (error) {
-      dispatch({ type: 'AUTH_FAILURE', payload: error instanceof Error ? error.message : 'Registration failed' });
+      console.error("Registration error details:", error);
+      dispatch({
+        type: "AUTH_FAILURE",
+        payload: error instanceof Error ? error.message : "Registration failed",
+      });
       throw error;
     }
   };
@@ -134,70 +167,65 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await ApiService.logout();
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
-      dispatch({ type: 'LOGOUT' });
+      dispatch({ type: "LOGOUT" });
     }
   };
 
   const updateProfile = async (userData: Partial<User>) => {
-    try {
-      const response = await ApiService.updateProfile(userData);
-      
-      if (response.success && response.data?.user) {
-        dispatch({ type: 'UPDATE_USER', payload: response.data.user });
-      } else {
-        throw new Error(response.message || 'Profile update failed');
-      }
-    } catch (error) {
-      throw error;
+    const response = await ApiService.updateProfile(userData);
+
+    if (response.success && response.data?.user) {
+      dispatch({ type: "UPDATE_USER", payload: response.data.user });
+    } else {
+      throw new Error(response.message || "Profile update failed");
     }
   };
 
-  const changePassword = async (passwords: { currentPassword: string; newPassword: string }) => {
-    try {
-      const response = await ApiService.changePassword(passwords);
-      
-      if (!response.success) {
-        throw new Error(response.message || 'Password change failed');
-      }
-    } catch (error) {
-      throw error;
+  const changePassword = async (passwords: {
+    currentPassword: string;
+    newPassword: string;
+  }) => {
+    const response = await ApiService.changePassword(passwords);
+
+    if (!response.success) {
+      throw new Error(response.message || "Password change failed");
     }
   };
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     const token = ApiService.getToken();
     if (!token) {
       return;
     }
 
     try {
-      dispatch({ type: 'AUTH_START' });
+      dispatch({ type: "AUTH_START" });
       const response = await ApiService.getProfile();
-      
+
       if (response.success && response.data?.user) {
-        dispatch({ type: 'AUTH_SUCCESS', payload: response.data.user });
+        dispatch({ type: "AUTH_SUCCESS", payload: response.data.user });
       } else {
         // Token is invalid, remove it
         ApiService.clearToken();
-        dispatch({ type: 'LOGOUT' });
+        dispatch({ type: "LOGOUT" });
       }
-    } catch (error) {
+    } catch {
       // Token is invalid, remove it
       ApiService.clearToken();
-      dispatch({ type: 'LOGOUT' });
+      dispatch({ type: "LOGOUT" });
     }
-  };
+  }, []);
 
   const clearError = () => {
-    dispatch({ type: 'CLEAR_ERROR' });
+    dispatch({ type: "CLEAR_ERROR" });
   };
 
   // Check authentication status on mount
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [checkAuth]);
 
   const value: AuthContextType = {
     state,

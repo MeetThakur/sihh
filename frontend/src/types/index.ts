@@ -1,3 +1,97 @@
+// Authentication Types
+export interface User {
+  _id: string;
+  email: string;
+  name: string;
+  phone?: string;
+  role: "farmer" | "advisor" | "admin";
+  profile: {
+    farmSize?: number;
+    location?: {
+      state: string;
+      district: string;
+      village?: string;
+      coordinates?: {
+        latitude: number;
+        longitude: number;
+      };
+    };
+    soilType?: "clay" | "sandy" | "loamy" | "silt" | "peat" | "chalk";
+    farmingExperience?: number;
+    primaryCrops?: string[];
+    preferredLanguage: "en" | "hi";
+    avatar?: string;
+  };
+  subscription?: {
+    plan: "free" | "basic" | "premium";
+    expiresAt?: string;
+    features: string[];
+  };
+  preferences: {
+    notifications: {
+      email: boolean;
+      sms: boolean;
+      push: boolean;
+      weatherAlerts: boolean;
+      pestAlerts: boolean;
+      marketUpdates: boolean;
+    };
+    units: {
+      area: "acres" | "hectares";
+      temperature: "celsius" | "fahrenheit";
+      currency: "INR" | "USD";
+    };
+  };
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  lastLogin?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  profileCompletion?: number;
+  subscriptionStatus?: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  email: string;
+  password: string;
+  name: string;
+  phone?: string;
+  role?: "farmer" | "advisor" | "admin";
+  profile?: {
+    farmSize?: number;
+    location?: {
+      state: string;
+      district: string;
+      village?: string;
+    };
+    soilType?: "clay" | "sandy" | "loamy" | "silt" | "peat" | "chalk";
+    farmingExperience?: number;
+    primaryCrops?: string[];
+    preferredLanguage?: "en" | "hi";
+  };
+}
+
+// API Response Types
+export interface ApiResponse<T = unknown> {
+  success: boolean;
+  message: string;
+  data?: T;
+  error?: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+  refreshToken: string;
+}
+
+// Farm Types
 export interface FarmInput {
   budget: string;
   season: string;
@@ -9,7 +103,7 @@ export interface FarmInput {
 
 export interface CropRecommendation {
   name: string;
-  suitability: 'High' | 'Medium' | 'Low';
+  suitability: "High" | "Medium" | "Low";
   suitabilityScore?: number;
   expectedYield: string;
   roi: string;
@@ -20,8 +114,8 @@ export interface CropRecommendation {
 export interface PlotData {
   id: string;
   crop: string;
-  health: 'excellent' | 'good' | 'warning' | 'poor';
-  soilMoisture: 'high' | 'medium' | 'low';
+  health: "excellent" | "good" | "warning" | "poor";
+  soilMoisture: "high" | "medium" | "low";
   pestAlert: boolean;
 }
 
@@ -29,7 +123,7 @@ export interface PestReport {
   id: string;
   location: string;
   pestType: string;
-  severity: 'Low' | 'Medium' | 'High';
+  severity: "Low" | "Medium" | "High";
   crop: string;
   reportedBy: string;
   timestamp: string;
@@ -48,7 +142,7 @@ export interface MarketPrice {
 export interface Buyer {
   id: string;
   name: string;
-  type: 'FPO' | 'Trader' | 'Processor';
+  type: "FPO" | "Trader" | "Processor";
   location: string;
   crops: string[];
   rating: number;
@@ -61,6 +155,6 @@ export interface SeasonData {
   cropsGrown: string[];
   totalYield: string;
   revenue: string;
-  soilHealth: 'Excellent' | 'Good' | 'Average' | 'Poor';
+  soilHealth: "Excellent" | "Good" | "Average" | "Poor";
   pestIncidents: number;
 }

@@ -4,11 +4,11 @@ Your KhetSetu Smart Agricultural Platform is now fully set up with MongoDB and a
 
 ## 🎯 Current Status
 
-✅ **MongoDB**: Installed and running locally  
-✅ **Backend**: Built successfully with 0 TypeScript errors  
-✅ **Frontend**: Built successfully  
-✅ **Database Connection**: Tested and working  
-✅ **Environment**: Configured for development  
+✅ **MongoDB**: Installed and running locally
+✅ **Backend**: Built successfully with 0 TypeScript errors
+✅ **Frontend**: Built successfully
+✅ **Database Connection**: Tested and working
+✅ **Environment**: Configured for development
 
 ## 📋 Immediate Next Steps
 
@@ -93,7 +93,7 @@ curl -X POST http://localhost:5000/api/farms \
 
 1. **Open Frontend**: Go to http://localhost:5173
 2. **Register/Login**: Use the test credentials above
-3. **Test Features**: 
+3. **Test Features**:
    - Create farms
    - Add crops
    - Test AI recommendations
