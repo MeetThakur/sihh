@@ -60,11 +60,9 @@ KhetSetu/
 │   │   └── App.tsx        # Main React application
 │   └── package.json       # Frontend dependencies
 ├── docs/                   # Documentation
-│   ├── README.md          # Documentation index
 │   ├── development-guide.md # Development roadmap
-│   └── mongodb-atlas-setup.md # Cloud database setup
+│   └── authentication.md  # Authentication system details
 └── scripts/               # Utility scripts
-    ├── README.md          # Scripts documentation
     └── simple-test.sh     # API testing script
 ```
 
@@ -83,31 +81,26 @@ git clone https://github.com/yourusername/khetsetu.git
 cd khetsetu
 ```
 
-2. **Set up MongoDB** (choose one option)
-```bash
-# Option A: Local MongoDB
-./scripts/install-mongodb.sh
-
-# Option B: MongoDB Atlas (cloud)
-# Follow docs/MONGODB_ATLAS_SETUP.md guide
-```
+2. **Set up MongoDB Atlas**
+- Sign up at [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+- Create a free M0 cluster
+- Create database user and get connection string
 
 3. **Configure Backend**
 ```bash
 cd backend
 npm install
-cp .env.example .env
-# Edit .env with your MongoDB URI and JWT secrets
+# Create .env file with your MongoDB Atlas connection string
 ```
 
 **Required Environment Variables:**
 ```env
-# Database
-MONGODB_URI=mongodb://localhost:27017/khetsetu
+# MongoDB Atlas Database
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/khetsetu?retryWrites=true&w=majority
 
-# JWT Authentication
-JWT_SECRET=your_super_secret_jwt_key_here
-JWT_REFRESH_SECRET=your_super_secret_refresh_key_here
+# JWT Authentication (generate secure random strings)
+JWT_SECRET=your_super_secure_jwt_secret_minimum_32_characters_long
+JWT_REFRESH_SECRET=your_super_secure_refresh_secret_minimum_32_characters_long
 JWT_EXPIRE=7d
 JWT_REFRESH_EXPIRE=30d
 
@@ -129,13 +122,7 @@ VITE_API_URL=http://localhost:5000/api
 
 5. **Start Development Servers**
 
-**Option A: Start Both Servers at Once**
-```bash
-# From project root
-./scripts/start-dev.sh
-```
-
-**Option B: Start Servers Separately**
+**Start Servers Separately**
 ```bash
 # Terminal 1 - Backend
 cd backend && npm run dev
@@ -228,11 +215,11 @@ node scripts/test-auth-api.js
 
 ### Run API Tests
 ```bash
-# Test all endpoints
-./scripts/simple-test.sh
-
-# Manual testing with curl
+# Test health endpoint
 curl http://localhost:5000/health
+
+# Test all endpoints with provided script
+./scripts/simple-test.sh
 ```
 
 ### Test Credentials
@@ -263,8 +250,9 @@ docker-compose up --build
 ```env
 NODE_ENV=production
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/khetsetu
-JWT_SECRET=your-secure-jwt-secret
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/khetsetu-prod?retryWrites=true&w=majority
+JWT_SECRET=your-secure-jwt-secret-minimum-32-chars
+JWT_REFRESH_SECRET=your-secure-refresh-secret-minimum-32-chars
 GEMINI_API_KEY=your-gemini-api-key
 WEATHER_API_KEY=your-weather-api-key-from-weatherapi.com
 ```
@@ -296,10 +284,8 @@ The weather functionality uses [WeatherAPI.com](https://www.weatherapi.com/) for
 
 ## 📚 Documentation
 
-- **[Documentation Hub](docs/README.md)** - Complete documentation index
 - **[Development Guide](docs/development-guide.md)** - Development roadmap
-- **[MongoDB Atlas Setup](docs/mongodb-atlas-setup.md)** - Cloud database setup
-- **[Scripts Documentation](scripts/README.md)** - Utility scripts guide
+- **[Authentication Guide](docs/authentication.md)** - Authentication system details
 - **[API Documentation](http://localhost:5000/api/docs)** - Interactive API docs
 
 ## 🤝 Contributing

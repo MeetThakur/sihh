@@ -499,6 +499,268 @@ export const updatePlot = async (req: Request, res: Response) => {
   }
 };
 
+// Bulk update multiple plots with the same data
+export const bulkUpdatePlots = async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.error("❌ bulkUpdatePlots validation failed:");
+      console.error("Request body:", JSON.stringify(req.body, null, 2));
+      console.error("Validation errors:", errors.array());
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array(),
+      });
+    }
+
+    const { farmId } = req.params;
+    const { plotNumbers, plotData } = req.body;
+    const userId = req.user!._id;
+
+    if (!mongoose.Types.ObjectId.isValid(farmId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid farm ID",
+        error: "INVALID_FARM_ID",
+      });
+    }
+
+    if (!Array.isArray(plotNumbers) || plotNumbers.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "plotNumbers must be a non-empty array",
+        error: "INVALID_PLOT_NUMBERS",
+      });
+    }
+
+    const farm = await Farm.findOne({
+      _id: farmId,
+      owner: userId,
+      isActive: true,
+    });
+
+    if (!farm) {
+      return res.status(404).json({
+        success: false,
+        message: "Farm not found",
+        error: "FARM_NOT_FOUND",
+      });
+    }
+
+    const updatedPlots: any[] = [];
+    const allowedUpdates = [
+      "crop",
+      "soilHealth",
+      "irrigation",
+      "pestAlerts",
+      "activities",
+    ];
+
+    // Update each specified plot
+    plotNumbers.forEach((plotNumber: number) => {
+      const plotIndex = farm.plots.findIndex(
+        (plot) => plot.plotNumber === plotNumber,
+      );
+
+      if (plotIndex !== -1) {
+        const updates = Object.keys(plotData);
+
+        updates.forEach((update) => {
+          if (
+            allowedUpdates.includes(update) &&
+            plotData[update] !== undefined
+          ) {
+            if (update === "pestAlerts" || update === "activities") {
+              // For arrays, replace with new data
+              farm.plots[plotIndex][update] = plotData[update];
+            } else if (update === "crop") {
+              // Handle crop data with proper date conversion
+              const cropData = plotData[update];
+              const convertedCropData = {
+                ...farm.plots[plotIndex][update],
+                ...cropData,
+              };
+
+              // Convert date strings to Date objects if they exist
+              if (
+                cropData.plantedDate &&
+                typeof cropData.plantedDate === "string"
+              ) {
+                convertedCropData.plantedDate = new Date(cropData.plantedDate);
+              }
+              if (
+                cropData.expectedHarvestDate &&
+                typeof cropData.expectedHarvestDate === "string"
+              ) {
+                convertedCropData.expectedHarvestDate = new Date(
+                  cropData.expectedHarvestDate,
+                );
+              }
+
+              farm.plots[plotIndex][update] = convertedCropData;
+            } else {
+              // For other objects, merge with existing data
+              farm.plots[plotIndex][update] = {
+                ...farm.plots[plotIndex][update],
+                ...plotData[update],
+              };
+            }
+          }
+        });
+
+        updatedPlots.push(farm.plots[plotIndex]);
+      }
+    });
+
+    if (updatedPlots.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No valid plots found to update",
+        error: "NO_PLOTS_FOUND",
+      });
+    }
+
+    await farm.save();
+
+    logger.info(
+      `Bulk updated ${updatedPlots.length} plots in farm ${farmId} by user ${userId}`,
+    );
+
+    res.json({
+      success: true,
+      message: `Successfully updated ${updatedPlots.length} plots`,
+      data: {
+        farm,
+        updatedPlots,
+      },
+    });
+  } catch (error) {
+    logger.error("Bulk update plots error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to bulk update plots",
+      error: "BULK_UPDATE_PLOTS_ERROR",
+    });
+  }
+};
+
+// Bulk clear multiple plots (make them empty)
+export const bulkClearPlots = async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.error("❌ bulkClearPlots validation failed:");
+      console.error("Request body:", JSON.stringify(req.body, null, 2));
+      console.error("Validation errors:", errors.array());
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array(),
+      });
+    }
+
+    const { farmId } = req.params;
+    const { plotNumbers } = req.body;
+    const userId = req.user!._id;
+
+    if (!mongoose.Types.ObjectId.isValid(farmId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid farm ID",
+        error: "INVALID_FARM_ID",
+      });
+    }
+
+    if (!Array.isArray(plotNumbers) || plotNumbers.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "plotNumbers must be a non-empty array",
+        error: "INVALID_PLOT_NUMBERS",
+      });
+    }
+
+    const farm = await Farm.findOne({
+      _id: farmId,
+      owner: userId,
+      isActive: true,
+    });
+
+    if (!farm) {
+      return res.status(404).json({
+        success: false,
+        message: "Farm not found",
+        error: "FARM_NOT_FOUND",
+      });
+    }
+
+    const clearedPlots: number[] = [];
+
+    // Clear each specified plot
+    plotNumbers.forEach((plotNumber: number) => {
+      const plotIndex = farm.plots.findIndex(
+        (plot) => plot.plotNumber === plotNumber,
+      );
+
+      if (plotIndex !== -1) {
+        // Reset plot to empty state
+        farm.plots[plotIndex].crop = {
+          name: "Empty",
+          variety: "",
+          plantedDate: undefined,
+          expectedHarvestDate: undefined,
+          stage: "fallow",
+          health: "good",
+        };
+
+        // Clear pest alerts
+        farm.plots[plotIndex].pestAlerts = [];
+
+        // Add activity for clearing the plot
+        farm.plots[plotIndex].activities.push({
+          type: "other",
+          description: "Plot cleared (bulk operation)",
+          date: new Date(),
+          cost: 0,
+          notes: "Bulk clearing operation",
+        });
+
+        clearedPlots.push(plotNumber);
+      }
+    });
+
+    if (clearedPlots.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No valid plots found to clear",
+        error: "NO_PLOTS_FOUND",
+      });
+    }
+
+    await farm.save();
+
+    logger.info(
+      `Bulk cleared ${clearedPlots.length} plots in farm ${farmId} by user ${userId}`,
+    );
+
+    res.json({
+      success: true,
+      message: `Successfully cleared ${clearedPlots.length} plots`,
+      data: {
+        farm,
+        clearedPlots,
+      },
+    });
+  } catch (error) {
+    logger.error("Bulk clear plots error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to bulk clear plots",
+      error: "BULK_CLEAR_PLOTS_ERROR",
+    });
+  }
+};
+
 // Add a new activity to a plot
 export const addPlotActivity = async (req: Request, res: Response) => {
   try {

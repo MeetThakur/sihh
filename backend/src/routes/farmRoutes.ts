@@ -9,6 +9,8 @@ import {
   getFarmStats,
   getDashboardData,
   updatePlot,
+  bulkUpdatePlots,
+  bulkClearPlots,
   addPlotActivity,
 } from "../controllers/farmController";
 import { authenticate } from "../middleware/auth";
@@ -201,6 +203,40 @@ const addActivityValidation = [
     .withMessage("Labor hours must be non-negative"),
 ];
 
+// Bulk plot operations validation
+const bulkUpdatePlotsValidation = [
+  param("farmId").isMongoId().withMessage("Invalid farm ID"),
+  body("plotNumbers")
+    .isArray({ min: 1 })
+    .withMessage("plotNumbers must be a non-empty array"),
+  body("plotNumbers.*")
+    .custom((value) => {
+      const num = Number(value);
+      if (!Number.isInteger(num) || num < 1) {
+        throw new Error("Each plot number must be a positive integer");
+      }
+      return true;
+    })
+    .customSanitizer((value) => Number(value)),
+  body("plotData").isObject().withMessage("plotData must be an object"),
+];
+
+const bulkClearPlotsValidation = [
+  param("farmId").isMongoId().withMessage("Invalid farm ID"),
+  body("plotNumbers")
+    .isArray({ min: 1 })
+    .withMessage("plotNumbers must be a non-empty array"),
+  body("plotNumbers.*")
+    .custom((value) => {
+      const num = Number(value);
+      if (!Number.isInteger(num) || num < 1) {
+        throw new Error("Each plot number must be a positive integer");
+      }
+      return true;
+    })
+    .customSanitizer((value) => Number(value)),
+];
+
 // Farm ID parameter validation
 const farmIdValidation = [
   param("id").isMongoId().withMessage("Invalid farm ID"),
@@ -218,8 +254,19 @@ router.get("/:id", farmIdValidation, getFarmById);
 router.put("/:id", farmIdValidation, updateFarmValidation, updateFarm);
 router.delete("/:id", farmIdValidation, deleteFarm);
 
-// Plot management routes
+// Plot management routes - specific routes first, then parameterized routes
+router.put(
+  "/:farmId/plots/bulk-update",
+  bulkUpdatePlotsValidation,
+  bulkUpdatePlots,
+);
+router.put(
+  "/:farmId/plots/bulk-clear",
+  bulkClearPlotsValidation,
+  bulkClearPlots,
+);
 router.put("/:farmId/plots/:plotNumber", updatePlotValidation, updatePlot);
+
 router.post(
   "/:farmId/plots/:plotNumber/activities",
   addActivityValidation,

@@ -14,6 +14,11 @@ import {
   Leaf,
   TrendingUp,
   RefreshCw,
+  CheckSquare,
+  Square,
+  Users,
+  Trash2,
+  BarChart3,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import farmService, {
@@ -50,6 +55,12 @@ const FarmVisualization: React.FC = () => {
   const [showFarmConfig, setShowFarmConfig] = useState(false);
   const [showActivityForm, setShowActivityForm] = useState(false);
 
+  // Bulk operations state
+  const [bulkSelectMode, setBulkSelectMode] = useState(false);
+  const [selectedPlots, setSelectedPlots] = useState<Set<number>>(new Set());
+  const [bulkCropSelection, setBulkCropSelection] = useState("");
+  const [bulkOperationLoading, setBulkOperationLoading] = useState(false);
+
   // Farm data state
   const [farms, setFarms] = useState<Farm[]>([]);
   const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
@@ -85,95 +96,21 @@ const FarmVisualization: React.FC = () => {
     "Cotton",
   ];
 
-  useEffect(() => {
-    loadFarms();
-  }, []); // loadFarms is defined inside the component and doesn't need to be in deps
-
-  // Update farm config when selected farm changes
-  useEffect(() => {
-    if (selectedFarm) {
-      console.log(
-        "Selected farm changed, updating config for:",
-        selectedFarm.name,
-      );
-      updateFarmConfig(selectedFarm);
-    }
-  }, [selectedFarm]);
-
-  const loadFarms = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await farmService.getFarms();
-
-      if (response.success && response.data) {
-        console.log(
-          "✅ Farms loaded from backend:",
-          response.data.farms.map((f) => ({
-            id: f._id,
-            name: f.name,
-            totalSize: f.totalSize,
-            plotsCount: f.plots.length,
-            description: f.description,
-          })),
-        );
-        setFarms(response.data.farms);
-        if (response.data.farms.length > 0) {
-          const firstFarm = response.data.farms[0];
-          console.log("🎯 Setting first farm as selected:", {
-            name: firstFarm.name,
-            totalSize: firstFarm.totalSize,
-            plotsCount: firstFarm.plots.length,
-            description: firstFarm.description,
-          });
-          setSelectedFarm(firstFarm);
-        }
-      } else {
-        setError(response.message || "Failed to load farms");
-      }
-    } catch (err) {
-      console.error("Load farms error:", err);
-      setError("Failed to load farm data. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const updateFarmConfig = (farm: Farm) => {
-    console.log("🔧 Updating farm config for farm:", {
-      name: farm.name,
-      id: farm._id,
-      totalSize: farm.totalSize,
-      plotsCount: farm.plots.length,
-      description: farm.description,
-    });
-
     let rows = 4;
     let cols = 4;
 
     // Try to extract grid configuration from farm description
     if (farm.description) {
-      console.log("📝 Parsing farm description:", farm.description);
       const gridMatch = farm.description.match(/Grid: (\d+)x(\d+)/);
-
       if (gridMatch) {
         rows = parseInt(gridMatch[1]);
         cols = parseInt(gridMatch[2]);
-        console.log("✅ Found stored grid config:", { rows, cols });
-      } else {
-        console.log("❌ No grid config found in description");
       }
-    } else {
-      console.log("❌ No farm description found");
     }
 
     // Fallback: infer from actual plot count if no stored config
     if (farm.plots.length > 0 && !farm.description?.includes("Grid:")) {
-      console.log(
-        "No stored config found, inferring from plot count:",
-        farm.plots.length,
-      );
       const maxPlotNumber = Math.max(...farm.plots.map((p) => p.plotNumber));
 
       if (maxPlotNumber <= 16) {
@@ -187,16 +124,21 @@ const FarmVisualization: React.FC = () => {
             factors.push([i, maxPlotNumber / i]);
           }
         }
-        const bestRatio = factors.reduce(
-          (best, [r, c]) => {
-            const ratio = Math.max(r, c) / Math.min(r, c);
-            const bestCurrentRatio =
-              Math.max(best[0], best[1]) / Math.min(best[0], best[1]);
-            return ratio < bestCurrentRatio ? [r, c] : best;
-          },
-          [1, maxPlotNumber],
-        );
-        [rows, cols] = bestRatio;
+
+        if (factors.length > 0) {
+          // Find the most rectangular factor (closest to square but prefer wider)
+          const bestFactor = factors.reduce((prev, current) => {
+            const [prevRows, prevCols] = prev;
+            const [currentRows, currentCols] = current;
+            const prevRatio =
+              Math.max(prevRows, prevCols) / Math.min(prevRows, prevCols);
+            const currentRatio =
+              Math.max(currentRows, currentCols) /
+              Math.min(currentRows, currentCols);
+            return currentRatio < prevRatio ? current : prev;
+          });
+          [rows, cols] = bestFactor;
+        }
       }
     }
 
@@ -206,15 +148,48 @@ const FarmVisualization: React.FC = () => {
       totalPlots > 0 ? farm.totalSize / totalPlots : 0.16;
 
     const newConfig = {
+      rows,
+      cols,
       totalAcres: farm.totalSize,
       plotSizeAcres: calculatedPlotSize,
-      rows: rows,
-      cols: cols,
     };
 
-    console.log("📊 Final farm config being set:", newConfig);
-    console.log("🔄 Previous farm config was:", farmConfig);
     setFarmConfig(newConfig);
+  };
+
+  useEffect(() => {
+    loadFarms();
+  }, []); // loadFarms is defined inside the component and doesn't need to be in deps
+
+  // Update farm config when selected farm changes
+  useEffect(() => {
+    if (selectedFarm) {
+      updateFarmConfig(selectedFarm);
+    }
+  }, [selectedFarm]);
+
+  const loadFarms = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await farmService.getFarms();
+
+      if (response.success && response.data) {
+        setFarms(response.data.farms);
+        if (response.data.farms.length > 0) {
+          const firstFarm = response.data.farms[0];
+          setSelectedFarm(firstFarm);
+        }
+      } else {
+        setError(response.message || "Failed to load farms");
+      }
+    } catch (err) {
+      console.error("Load farms error:", err);
+      setError("Failed to load farm data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const createDefaultFarm = async () => {
@@ -461,6 +436,169 @@ const FarmVisualization: React.FC = () => {
     }
   };
 
+  // Bulk operation functions
+  const toggleBulkSelectMode = () => {
+    setBulkSelectMode(!bulkSelectMode);
+    setSelectedPlots(new Set());
+    if (bulkSelectMode) {
+      setSelectedPlot(null);
+    }
+  };
+
+  const togglePlotSelection = (plotNumber: number) => {
+    if (!bulkSelectMode) return;
+
+    // Ensure plotNumber is an integer
+    const intPlotNumber = parseInt(String(plotNumber), 10);
+
+    if (!Number.isInteger(intPlotNumber) || intPlotNumber < 1) {
+      console.error("Invalid plot number:", plotNumber, "->", intPlotNumber);
+      return;
+    }
+
+    console.log("Plot selection:", intPlotNumber, typeof intPlotNumber);
+
+    const newSelectedPlots = new Set(selectedPlots);
+    if (newSelectedPlots.has(intPlotNumber)) {
+      newSelectedPlots.delete(intPlotNumber);
+    } else {
+      newSelectedPlots.add(intPlotNumber);
+    }
+
+    setSelectedPlots(newSelectedPlots);
+  };
+
+  const selectAllPlots = () => {
+    if (!selectedFarm) return;
+
+    // Convert all plot numbers to guaranteed integers
+    const integerPlotNumbers = selectedFarm.plots
+      .map((plot) => Math.floor(Number(plot.plotNumber)))
+      .filter((n) => Number.isInteger(n) && n > 0);
+
+    setSelectedPlots(new Set(integerPlotNumbers));
+  };
+
+  const clearPlotSelection = () => {
+    setSelectedPlots(new Set());
+  };
+
+  const bulkPlantCrop = async () => {
+    if (!selectedFarm || selectedPlots.size === 0 || !bulkCropSelection) return;
+
+    try {
+      setBulkOperationLoading(true);
+      setError(null);
+
+      const plotNumbers = Array.from(selectedPlots);
+
+      // Ensure all plot numbers are valid integers
+      const validPlotNumbers = plotNumbers
+        .map((num) => Math.floor(Number(num)))
+        .filter((num) => Number.isInteger(num) && num > 0);
+
+      if (validPlotNumbers.length === 0) {
+        setError("Invalid plot numbers selected");
+        return;
+      }
+
+      // Calculate expected harvest date (3 months from now as default)
+      const plantedDate = new Date();
+      const expectedHarvestDate = new Date();
+      expectedHarvestDate.setMonth(expectedHarvestDate.getMonth() + 3);
+
+      const cropData = {
+        crop: {
+          name: bulkCropSelection,
+          variety: "",
+          plantedDate: plantedDate.toISOString(),
+          expectedHarvestDate: expectedHarvestDate.toISOString(),
+          stage: "planted" as const,
+          health: "good" as const,
+        },
+      };
+
+      const response = await farmService.bulkUpdatePlots(
+        selectedFarm._id,
+        validPlotNumbers,
+        cropData,
+      );
+
+      if (response.success) {
+        await loadFarms();
+        setSelectedPlots(new Set());
+        setBulkCropSelection("");
+        setBulkSelectMode(false);
+      } else {
+        console.error("Bulk planting failed:", response);
+        console.error("Full error details:", JSON.stringify(response, null, 2));
+        if (response.errors && Array.isArray(response.errors)) {
+          console.error("Individual errors:", response.errors);
+          const errorMessages = response.errors
+            .map((err) => err.msg || err.message)
+            .join(", ");
+          setError(`Validation failed: ${errorMessages}`);
+        } else {
+          setError(response.message || "Failed to plant crops in bulk");
+        }
+      }
+    } catch (err) {
+      console.error("Bulk plant crop error:", err);
+      setError("Failed to plant crops in bulk. Please try again.");
+    } finally {
+      setBulkOperationLoading(false);
+    }
+  };
+
+  const bulkClearPlots = async () => {
+    if (!selectedFarm || selectedPlots.size === 0) return;
+
+    try {
+      setBulkOperationLoading(true);
+      setError(null);
+
+      const plotNumbers = Array.from(selectedPlots);
+
+      // Ensure all plot numbers are valid integers
+      const validPlotNumbers = plotNumbers
+        .map((num) => Math.floor(Number(num)))
+        .filter((num) => Number.isInteger(num) && num > 0);
+
+      if (validPlotNumbers.length === 0) {
+        setError("Invalid plot numbers selected");
+        return;
+      }
+
+      const response = await farmService.bulkClearPlots(
+        selectedFarm._id,
+        validPlotNumbers,
+      );
+
+      if (response.success) {
+        await loadFarms();
+        setSelectedPlots(new Set());
+        setBulkSelectMode(false);
+      } else {
+        console.error("Bulk clearing failed:", response);
+        console.error("Full error details:", JSON.stringify(response, null, 2));
+        if (response.errors && Array.isArray(response.errors)) {
+          console.error("Individual errors:", response.errors);
+          const errorMessages = response.errors
+            .map((err) => err.msg || err.message)
+            .join(", ");
+          setError(`Validation failed: ${errorMessages}`);
+        } else {
+          setError(response.message || "Failed to clear plots in bulk");
+        }
+      }
+    } catch (err) {
+      console.error("Bulk clear plots error:", err);
+      setError("Failed to clear plots in bulk. Please try again.");
+    } finally {
+      setBulkOperationLoading(false);
+    }
+  };
+
   // Generate farm data based on current farm's plots
   const generateFarmData = (rows: number, cols: number): PlotData[] => {
     const newData: PlotData[] = [];
@@ -471,18 +609,20 @@ const FarmVisualization: React.FC = () => {
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const plotNumber = row * cols + col + 1;
-        const existingPlot = selectedFarm?.plots.find(
-          (plot) => plot.plotNumber === plotNumber,
-        );
+        const existingPlot = selectedFarm?.plots.find((plot) => {
+          const backendPlotNumber = Math.floor(Number(plot.plotNumber));
+          return backendPlotNumber === plotNumber;
+        });
 
         newData.push(
           existingPlot
             ? {
                 ...existingPlot,
-                size: calculatedPlotSize, // Update existing plot size
+                plotNumber: Math.floor(Number(existingPlot.plotNumber)),
+                size: calculatedPlotSize,
               }
             : {
-                plotNumber,
+                plotNumber: plotNumber,
                 size: calculatedPlotSize,
                 crop: {
                   name: "Empty",
@@ -512,13 +652,72 @@ const FarmVisualization: React.FC = () => {
     return newData;
   };
 
+  // Crop color mapping for different crop types
+  const getCropColor = (cropName: string): string => {
+    const cropColors: { [key: string]: string } = {
+      // Grains
+      Rice: "bg-yellow-100 border-yellow-400 hover:bg-yellow-200",
+      Wheat: "bg-amber-100 border-amber-400 hover:bg-amber-200",
+      Corn: "bg-yellow-200 border-yellow-500 hover:bg-yellow-300",
+      Barley: "bg-orange-100 border-orange-400 hover:bg-orange-200",
+      Millet: "bg-yellow-50 border-yellow-300 hover:bg-yellow-100",
+
+      // Vegetables
+      Tomato: "bg-red-100 border-red-400 hover:bg-red-200",
+      Potato: "bg-amber-50 border-amber-300 hover:bg-amber-100",
+      Onion: "bg-purple-100 border-purple-400 hover:bg-purple-200",
+      Carrot: "bg-orange-200 border-orange-500 hover:bg-orange-300",
+      Cabbage: "bg-green-100 border-green-400 hover:bg-green-200",
+      Lettuce: "bg-green-50 border-green-300 hover:bg-green-100",
+      Spinach: "bg-emerald-100 border-emerald-400 hover:bg-emerald-200",
+      Broccoli: "bg-green-200 border-green-500 hover:bg-green-300",
+      Cauliflower: "bg-gray-100 border-gray-400 hover:bg-gray-200",
+      "Bell Pepper": "bg-red-50 border-red-300 hover:bg-red-100",
+      Cucumber: "bg-green-50 border-green-200 hover:bg-green-100",
+      Eggplant: "bg-purple-200 border-purple-500 hover:bg-purple-300",
+
+      // Legumes
+      Soybean: "bg-lime-100 border-lime-400 hover:bg-lime-200",
+      Peas: "bg-green-100 border-green-300 hover:bg-green-200",
+      Beans: "bg-emerald-50 border-emerald-300 hover:bg-emerald-100",
+      Lentils: "bg-orange-50 border-orange-300 hover:bg-orange-100",
+      Chickpeas: "bg-yellow-50 border-yellow-200 hover:bg-yellow-100",
+
+      // Fruits
+      Strawberry: "bg-pink-100 border-pink-400 hover:bg-pink-200",
+      Watermelon: "bg-green-200 border-green-400 hover:bg-green-300",
+      Pumpkin: "bg-orange-200 border-orange-400 hover:bg-orange-300",
+      Melon: "bg-green-100 border-green-300 hover:bg-green-200",
+
+      // Cash crops
+      Cotton: "bg-white border-gray-300 hover:bg-gray-50",
+      Sugarcane: "bg-green-300 border-green-600 hover:bg-green-400",
+      Tobacco: "bg-amber-200 border-amber-500 hover:bg-amber-300",
+
+      // Herbs & Spices
+      Basil: "bg-green-100 border-green-300 hover:bg-green-200",
+      Mint: "bg-green-50 border-green-200 hover:bg-green-100",
+      Cilantro: "bg-emerald-50 border-emerald-200 hover:bg-emerald-100",
+      Parsley: "bg-green-100 border-green-200 hover:bg-green-200",
+
+      // Oilseeds
+      Sunflower: "bg-yellow-200 border-yellow-500 hover:bg-yellow-300",
+      Mustard: "bg-yellow-100 border-yellow-300 hover:bg-yellow-200",
+      Sesame: "bg-orange-50 border-orange-200 hover:bg-orange-100",
+    };
+
+    return (
+      cropColors[cropName] || "bg-blue-100 border-blue-400 hover:bg-blue-200"
+    );
+  };
+
   // Get plot color based on view mode
   const getPlotColor = (plot: PlotData): string => {
     switch (viewMode) {
       case "crops":
         if (!plot.crop || plot.crop.name === "Empty")
           return "bg-gray-200 border-gray-300";
-        return "bg-green-100 border-green-300 hover:bg-green-200";
+        return getCropColor(plot.crop.name);
 
       case "health":
         if (!plot.crop || plot.crop.name === "Empty")
@@ -711,6 +910,52 @@ const FarmVisualization: React.FC = () => {
           >
             <RefreshCw size={20} />
           </button>
+
+          <button
+            onClick={async () => {
+              console.log("🧪 Testing plot number validation:");
+              const plotNumbers = Array.from(selectedPlots);
+              console.log("- selectedPlots Set:", selectedPlots);
+              console.log("- Array from Set:", plotNumbers);
+              console.log(
+                "- Types:",
+                plotNumbers.map((n) => typeof n),
+              );
+              console.log(
+                "- All integers?",
+                plotNumbers.every((n) => Number.isInteger(n)),
+              );
+              console.log(
+                "- All positive?",
+                plotNumbers.every((n) => n > 0),
+              );
+
+              const testData = {
+                plotNumbers: plotNumbers,
+              };
+              console.log("- Test JSON:", JSON.stringify(testData));
+
+              // Call test endpoint
+              try {
+                const response = await fetch("/api/farms/test-plot-numbers", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                  body: JSON.stringify(testData),
+                });
+                const result = await response.json();
+                console.log("🧪 Test endpoint response:", result);
+              } catch (error) {
+                console.error("🧪 Test endpoint error:", error);
+              }
+            }}
+            className="p-2 text-purple-600 hover:text-purple-900 border border-purple-300 rounded-md"
+            title="Test Plot Numbers"
+          >
+            🧪
+          </button>
         </div>
       </div>
 
@@ -777,10 +1022,13 @@ const FarmVisualization: React.FC = () => {
           </div>
         </div>
       )}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {selectedFarm?.name}
+        </h1>
 
-      {/* View Mode Selector */}
-      <div className="flex items-center justify-center space-x-4">
-        <div className="flex bg-gray-100 rounded-lg p-1">
+        {/* View Mode Selector */}
+        <div className="bg-gray-100 p-1 rounded-lg flex space-x-1">
           <button
             onClick={() => setViewMode("crops")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -789,7 +1037,6 @@ const FarmVisualization: React.FC = () => {
                 : "text-gray-600 hover:text-gray-900"
             }`}
           >
-            <Leaf className="w-4 h-4 mr-2 inline" />
             Crops
           </button>
           <button
@@ -800,7 +1047,6 @@ const FarmVisualization: React.FC = () => {
                 : "text-gray-600 hover:text-gray-900"
             }`}
           >
-            <TrendingUp className="w-4 h-4 mr-2 inline" />
             Health
           </button>
           <button
@@ -811,10 +1057,162 @@ const FarmVisualization: React.FC = () => {
                 : "text-gray-600 hover:text-gray-900"
             }`}
           >
-            <Droplets className="w-4 h-4 mr-2 inline" />
             Moisture
           </button>
         </div>
+      </div>
+
+      {/* Crop Distribution Statistics */}
+      <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-gray-200">
+        <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
+          <BarChart3 className="w-4 h-4 mr-2" />
+          Farm Overview
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {(() => {
+            const cropCounts =
+              selectedFarm?.plots.reduce(
+                (acc, plot) => {
+                  const cropName = plot.crop?.name || "Empty";
+                  acc[cropName] = (acc[cropName] || 0) + 1;
+                  return acc;
+                },
+                {} as Record<string, number>,
+              ) || {};
+
+            const totalPlots = selectedFarm?.plots.length || 0;
+
+            return Object.entries(cropCounts)
+              .sort(([, a], [, b]) => b - a)
+              .map(([cropName, count]) => (
+                <div key={cropName} className="text-center">
+                  <div className="flex items-center justify-center mb-1">
+                    <div
+                      className={`w-3 h-3 rounded border ${
+                        cropName === "Empty"
+                          ? "bg-gray-200 border-gray-300"
+                          : getCropColor(cropName)
+                              .split(" ")
+                              .slice(0, 2)
+                              .join(" ")
+                      }`}
+                    ></div>
+                  </div>
+                  <div className="text-lg font-semibold text-gray-900">
+                    {count}
+                  </div>
+                  <div className="text-xs text-gray-600 truncate">
+                    {cropName}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {((count / totalPlots) * 100).toFixed(0)}%
+                  </div>
+                </div>
+              ));
+          })()}
+        </div>
+      </div>
+
+      {/* Legends - Show different legends based on view mode */}
+      <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200">
+        {viewMode === "crops" && (
+          <>
+            <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
+              <Leaf className="w-4 h-4 mr-2" />
+              Crop Color Legend
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2">
+              {(() => {
+                const activeCrops =
+                  selectedFarm?.plots
+                    ?.filter((plot) => plot.crop && plot.crop.name !== "Empty")
+                    ?.map((plot) => plot.crop!.name)
+                    ?.filter((crop, index, arr) => arr.indexOf(crop) === index)
+                    ?.sort() || [];
+
+                return activeCrops.map((cropName) => (
+                  <div
+                    key={cropName}
+                    className="flex items-center space-x-2 min-w-0"
+                  >
+                    <div
+                      className={`w-4 h-4 rounded border-2 flex-shrink-0 ${getCropColor(cropName).split(" ").slice(0, 2).join(" ")}`}
+                    ></div>
+                    <span className="text-xs text-gray-600 truncate">
+                      {cropName}
+                    </span>
+                  </div>
+                ));
+              })()}
+              {selectedFarm?.plots.some(
+                (plot) => !plot.crop || plot.crop.name === "Empty",
+              ) && (
+                <div className="flex items-center space-x-2 min-w-0">
+                  <div className="w-4 h-4 rounded border-2 bg-gray-200 border-gray-300 flex-shrink-0"></div>
+                  <span className="text-xs text-gray-600">Empty</span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {viewMode === "health" && (
+          <>
+            <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Plant Health Legend
+            </h3>
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded border-2 bg-green-200 border-green-400"></div>
+                <span className="text-xs text-gray-600">Excellent</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded border-2 bg-green-100 border-green-300"></div>
+                <span className="text-xs text-gray-600">Good</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded border-2 bg-yellow-100 border-yellow-300"></div>
+                <span className="text-xs text-gray-600">Fair</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded border-2 bg-orange-100 border-orange-300"></div>
+                <span className="text-xs text-gray-600">Poor</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded border-2 bg-red-100 border-red-300"></div>
+                <span className="text-xs text-gray-600">Critical</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded border-2 bg-gray-200 border-gray-300"></div>
+                <span className="text-xs text-gray-600">Empty</span>
+              </div>
+            </div>
+          </>
+        )}
+
+        {viewMode === "moisture" && (
+          <>
+            <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
+              <Droplets className="w-4 h-4 mr-2" />
+              Soil Moisture Legend
+            </h3>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded border-2 bg-blue-200 border-blue-400"></div>
+                <span className="text-xs text-gray-600">High (70%+)</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded border-2 bg-blue-100 border-blue-300"></div>
+                <span className="text-xs text-gray-600">Medium (40-70%)</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded border-2 bg-red-100 border-red-300"></div>
+                <span className="text-xs text-gray-600">Low (&lt;40%)</span>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Main Farm View with Responsive Layout */}
@@ -828,12 +1226,33 @@ const FarmVisualization: React.FC = () => {
               </h3>
               <div className="flex items-center space-x-2">
                 <button
+                  onClick={toggleBulkSelectMode}
+                  className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                    bulkSelectMode
+                      ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                      : "bg-purple-100 text-purple-700 hover:bg-purple-200"
+                  }`}
+                >
+                  {bulkSelectMode ? (
+                    <>
+                      <X className="w-4 h-4 mr-1 inline" />
+                      Cancel Selection
+                    </>
+                  ) : (
+                    <>
+                      <Users className="w-4 h-4 mr-1 inline" />
+                      Bulk Operations
+                    </>
+                  )}
+                </button>
+                <button
                   onClick={() => setIsEditing(!isEditing)}
                   className={`px-3 py-2 text-sm rounded-md transition-colors ${
                     isEditing
                       ? "bg-red-100 text-red-700 hover:bg-red-200"
                       : "bg-green-100 text-green-700 hover:bg-green-200"
                   }`}
+                  disabled={bulkSelectMode}
                 >
                   {isEditing ? (
                     <>
@@ -848,6 +1267,55 @@ const FarmVisualization: React.FC = () => {
                   )}
                 </button>
               </div>
+
+              {/* Bulk Selection Info Bar */}
+              {bulkSelectMode && (
+                <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm font-medium text-blue-900">
+                        Bulk Selection Mode
+                      </span>
+                      <span className="text-xs px-2 py-1 bg-blue-200 text-blue-800 rounded-full">
+                        {selectedPlots.size} selected
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={selectAllPlots}
+                        className="text-xs px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                      >
+                        Select All
+                      </button>
+                      <button
+                        onClick={clearPlotSelection}
+                        className="text-xs px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                      >
+                        Clear
+                      </button>
+                      <button
+                        onClick={toggleBulkSelectMode}
+                        className="text-xs px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                      >
+                        Exit
+                      </button>
+                    </div>
+                  </div>
+                  {selectedPlots.size > 0 && (
+                    <div className="mt-3 p-2 bg-white/50 rounded border border-blue-200">
+                      <p className="text-xs text-blue-700 font-medium mb-1">
+                        Selected Plots:
+                      </p>
+                      <p className="text-xs text-blue-600">
+                        {Array.from(selectedPlots)
+                          .sort((a, b) => a - b)
+                          .join(", ")}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Grid Layout */}
@@ -860,26 +1328,80 @@ const FarmVisualization: React.FC = () => {
               {farmData.map((plot) => (
                 <div
                   key={plot.plotNumber}
-                  onClick={() => setSelectedPlot(plot.plotNumber)}
+                  onClick={() => {
+                    const intPlotNumber = Math.floor(Number(plot.plotNumber));
+                    if (bulkSelectMode) {
+                      return togglePlotSelection(intPlotNumber);
+                    } else {
+                      // Ensure selectedPlot is always an integer
+                      setSelectedPlot(intPlotNumber);
+                      return;
+                    }
+                  }}
                   className={`
                     aspect-square border-2 rounded-lg cursor-pointer transition-all duration-200
-                    flex flex-col items-center justify-center p-2 text-center
+                    flex flex-col items-center justify-center p-2 text-center relative
                     ${getPlotColor(plot)}
-                    ${selectedPlot === plot.plotNumber ? "ring-2 ring-green-500 ring-offset-2" : ""}
-                    ${isEditing ? "hover:scale-105" : ""}
+                    ${selectedPlot === Math.floor(Number(plot.plotNumber)) && !bulkSelectMode ? "ring-2 ring-green-500 ring-offset-2" : ""}
+                    ${selectedPlots.has(Math.floor(Number(plot.plotNumber))) ? "ring-2 ring-blue-500 ring-offset-2 bg-blue-50" : ""}
+                    ${isEditing || bulkSelectMode ? "hover:scale-105" : ""}
                   `}
                 >
-                  <div className="text-xs font-medium text-gray-700 mb-1">
+                  {bulkSelectMode && (
+                    <div className="absolute top-1 right-1">
+                      {selectedPlots.has(
+                        Math.floor(Number(plot.plotNumber)),
+                      ) ? (
+                        <CheckSquare className="w-4 h-4 text-blue-600" />
+                      ) : (
+                        <Square className="w-4 h-4 text-gray-400" />
+                      )}
+                    </div>
+                  )}
+                  <div className="text-xs font-semibold text-gray-800 mb-1">
                     Plot {plot.plotNumber}
                   </div>
-                  <div className="text-xs text-gray-600 truncate w-full">
+                  <div
+                    className={`text-xs font-medium truncate w-full px-1 py-0.5 rounded ${
+                      plot.crop?.name && plot.crop.name !== "Empty"
+                        ? "text-gray-800 bg-white/60 backdrop-blur-sm"
+                        : "text-gray-500"
+                    }`}
+                  >
                     {plot.crop?.name || "Empty"}
                   </div>
-                  {plot.pestAlerts.some(
-                    (alert) => alert.status === "active",
-                  ) && (
-                    <div className="w-2 h-2 bg-red-500 rounded-full mt-1"></div>
+                  {plot.crop?.stage && plot.crop.name !== "Empty" && (
+                    <div className="text-xs text-gray-600 mt-0.5 capitalize px-1 py-0.5 bg-white/40 rounded text-center">
+                      {plot.crop.stage.replace("_", " ")}
+                    </div>
                   )}
+                  <div className="flex items-center justify-center mt-1 space-x-1">
+                    {plot.pestAlerts.some(
+                      (alert) => alert.status === "active",
+                    ) && (
+                      <div
+                        className="w-2 h-2 bg-red-500 rounded-full"
+                        title="Pest Alert"
+                      ></div>
+                    )}
+                    {plot.crop?.health &&
+                      plot.crop.health !== "good" &&
+                      plot.crop.health !== "excellent" &&
+                      plot.crop.name !== "Empty" && (
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            plot.crop.health === "fair"
+                              ? "bg-yellow-500"
+                              : plot.crop.health === "poor"
+                                ? "bg-orange-500"
+                                : plot.crop.health === "critical"
+                                  ? "bg-red-600"
+                                  : ""
+                          }`}
+                          title={`Health: ${plot.crop.health}`}
+                        ></div>
+                      )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -887,7 +1409,146 @@ const FarmVisualization: React.FC = () => {
         </div>
 
         {/* Plot Details Sidebar - Takes 1 column on desktop, full width on mobile */}
-        <div className="xl:col-span-1">
+        <div className="xl:col-span-1 space-y-4">
+          {/* Bulk Actions Sidebar */}
+          {bulkSelectMode && (
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden sticky top-4">
+              <div className="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 border-b border-green-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-green-900 flex items-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    Bulk Actions
+                  </h3>
+                  <span className="text-xs px-2 py-1 bg-green-200 text-green-800 rounded-full">
+                    {selectedPlots.size} plots
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                {/* Error Display */}
+                {error && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <svg
+                          className="h-5 w-5 text-red-400"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-red-800">{error}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {selectedPlots.size === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Plus className="w-6 h-6 text-gray-400" />
+                    </div>
+                    <p className="text-sm text-gray-500 mb-2">
+                      No plots selected
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Select plots from the grid to perform bulk actions
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {/* Plant Same Crop */}
+                    <div>
+                      <div className="flex items-center mb-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                          <Plus className="w-4 h-4 text-green-600" />
+                        </div>
+                        <h4 className="font-medium text-gray-900">
+                          Plant Crop
+                        </h4>
+                      </div>
+                      <div className="space-y-3 ml-11">
+                        <select
+                          value={bulkCropSelection}
+                          onChange={(e) => setBulkCropSelection(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                        >
+                          <option value="">Select crop to plant</option>
+                          {availableCrops
+                            .filter((crop) => crop !== "Empty")
+                            .map((crop) => (
+                              <option key={crop} value={crop}>
+                                {crop}
+                              </option>
+                            ))}
+                        </select>
+                        <button
+                          onClick={bulkPlantCrop}
+                          disabled={
+                            !bulkCropSelection ||
+                            bulkOperationLoading ||
+                            selectedPlots.size === 0
+                          }
+                          className="w-full px-4 py-2.5 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors shadow-sm"
+                        >
+                          {bulkOperationLoading ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          ) : (
+                            <Plus className="w-4 h-4 mr-2" />
+                          )}
+                          Plant in {selectedPlots.size} plot
+                          {selectedPlots.size !== 1 ? "s" : ""}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="border-t border-gray-200"></div>
+
+                    {/* Clear Plots */}
+                    <div>
+                      <div className="flex items-center mb-3">
+                        <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </div>
+                        <h4 className="font-medium text-gray-900">
+                          Clear Plots
+                        </h4>
+                      </div>
+                      <div className="space-y-3 ml-11">
+                        <p className="text-sm text-gray-600">
+                          Remove crops from selected plots and make them empty
+                        </p>
+                        <button
+                          onClick={bulkClearPlots}
+                          disabled={
+                            bulkOperationLoading || selectedPlots.size === 0
+                          }
+                          className="w-full px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors shadow-sm"
+                        >
+                          {bulkOperationLoading ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4 mr-2" />
+                          )}
+                          Clear {selectedPlots.size} plot
+                          {selectedPlots.size !== 1 ? "s" : ""}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {selectedPlotData ? (
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden sticky top-4">
               <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
@@ -1235,7 +1896,7 @@ const FarmVisualization: React.FC = () => {
                 ) : null}
               </div>
             </div>
-          ) : (
+          ) : !bulkSelectMode ? (
             /* No Plot Selected State */
             <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1255,7 +1916,7 @@ const FarmVisualization: React.FC = () => {
                 <p>• Monitor soil health and irrigation</p>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 

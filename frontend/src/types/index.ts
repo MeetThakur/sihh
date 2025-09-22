@@ -83,6 +83,12 @@ export interface ApiResponse<T = unknown> {
   message: string;
   data?: T;
   error?: string;
+  errors?: Array<{
+    msg?: string;
+    message?: string;
+    param?: string;
+    value?: unknown;
+  }>;
 }
 
 export interface AuthResponse {

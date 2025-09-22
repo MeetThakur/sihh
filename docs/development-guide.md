@@ -1,10 +1,10 @@
 # 🚀 KhetSetu Next Steps Guide
 
-Your KhetSetu Smart Agricultural Platform is now fully set up with MongoDB and a working backend! Here's your comprehensive guide to proceed with development and testing.
+Your KhetSetu Smart Agricultural Platform is now fully set up with MongoDB Atlas and a working backend! Here's your comprehensive guide to proceed with development and testing.
 
 ## 🎯 Current Status
 
-✅ **MongoDB**: Installed and running locally
+✅ **MongoDB Atlas**: Connected and running in the cloud
 ✅ **Backend**: Built successfully with 0 TypeScript errors
 ✅ **Frontend**: Built successfully
 ✅ **Database Connection**: Tested and working
@@ -168,11 +168,24 @@ curl -X POST http://localhost:5000/api/farms \
 
 ### **View Your Data**
 
-Connect to MongoDB and explore your data:
+You can view your MongoDB Atlas data in several ways:
 
+**Option 1: MongoDB Atlas Dashboard**
+1. Go to [https://cloud.mongodb.com](https://cloud.mongodb.com)
+2. Navigate to your `khetsetu` cluster
+3. Click "Browse Collections"
+4. Explore your data visually
+
+**Option 2: MongoDB Compass (GUI)**
 ```bash
-# Connect to MongoDB shell
-mongosh khetsetu
+# Connection string for Compass:
+mongodb+srv://khetsetu-admin:meet11@khetsetu.bwxigt3.mongodb.net/khetsetu
+```
+
+**Option 3: MongoDB Shell**
+```bash
+# Connect to Atlas via mongosh
+mongosh "mongodb+srv://khetsetu.bwxigt3.mongodb.net/khetsetu" --username khetsetu-admin
 
 # List collections
 show collections
@@ -214,9 +227,11 @@ Create `.env.production` with:
 ```env
 NODE_ENV=production
 PORT=5000
-MONGODB_URI=mongodb://your-production-db-uri
-JWT_SECRET=your-super-secure-production-jwt-secret
+MONGODB_URI=mongodb+srv://khetsetu-admin:YOUR_PASSWORD@khetsetu.bwxigt3.mongodb.net/khetsetu-prod?retryWrites=true&w=majority
+JWT_SECRET=your-super-secure-production-jwt-secret-32-chars-minimum
+JWT_REFRESH_SECRET=your-super-secure-refresh-secret-32-chars-minimum
 GEMINI_API_KEY=your-production-gemini-key
+WEATHER_API_KEY=your-weather-api-key
 # Add other production keys
 ```
 
@@ -227,25 +242,15 @@ Create `docker-compose.yml`:
 ```yaml
 version: '3.8'
 services:
-  mongodb:
-    image: mongo:7.0
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    environment:
-      MONGO_INITDB_DATABASE: khetsetu
-
   backend:
     build: ./backend
     restart: always
     ports:
       - "5000:5000"
-    depends_on:
-      - mongodb
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/khetsetu
+      MONGODB_URI: mongodb+srv://khetsetu-admin:YOUR_PASSWORD@khetsetu.bwxigt3.mongodb.net/khetsetu?retryWrites=true&w=majority
+      JWT_SECRET: your-jwt-secret-here
+      NODE_ENV: production
 
   frontend:
     build: ./frontend
@@ -254,9 +259,8 @@ services:
       - "3000:3000"
     depends_on:
       - backend
-
-volumes:
-  mongodb_data:
+    environment:
+      VITE_API_URL: http://backend:5000/api
 ```
 
 ## 🔍 Troubleshooting
@@ -265,11 +269,14 @@ volumes:
 
 **Backend won't start:**
 ```bash
-# Check MongoDB status
-sudo systemctl status mongod
-
-# Restart MongoDB if needed
-sudo systemctl restart mongod
+# Test MongoDB Atlas connection
+cd backend && node -e "
+const mongoose = require('mongoose');
+require('dotenv').config();
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('✅ Atlas Connected'))
+  .catch(err => console.error('❌ Connection failed:', err.message));
+"
 
 # Check backend logs
 cd backend && npm run dev
@@ -286,11 +293,14 @@ curl http://localhost:5000/health
 
 **Database connection issues:**
 ```bash
-# Test MongoDB connection
-mongosh khetsetu
+# Test MongoDB Atlas connection
+mongosh "mongodb+srv://khetsetu.bwxigt3.mongodb.net/khetsetu" --username khetsetu-admin
 
 # Check environment variables
 cat backend/.env | grep MONGODB_URI
+
+# Verify Atlas network access (IP whitelist)
+# Check Atlas dashboard for connection issues
 ```
 
 ### **Performance Monitoring**
@@ -298,11 +308,14 @@ cat backend/.env | grep MONGODB_URI
 Monitor your application:
 
 ```bash
-# Check MongoDB performance
-mongosh khetsetu --eval "db.stats()"
+# Check MongoDB Atlas performance via dashboard
+# Visit: https://cloud.mongodb.com -> Your Cluster -> Metrics
+
+# Check database stats via shell
+mongosh "mongodb+srv://khetsetu.bwxigt3.mongodb.net/khetsetu" --username khetsetu-admin --eval "db.stats()"
 
 # Monitor backend logs
-tail -f backend/logs/app.log
+tail -f backend/backend.log
 
 # Check system resources
 htop
@@ -415,10 +428,11 @@ Track these metrics to measure success:
 
 You now have a fully functional smart agricultural platform with:
 - ✅ Modern, scalable architecture
+- ✅ Cloud-hosted MongoDB Atlas database
 - ✅ Real-time data management
 - ✅ AI-powered recommendations
 - ✅ Mobile-responsive design
-- ✅ Production-ready database
+- ✅ Production-ready infrastructure
 
 **Start with Step 1 above and begin developing your agricultural revolution!** 🚜💚
 

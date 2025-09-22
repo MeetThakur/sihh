@@ -32,7 +32,7 @@ class ApiService {
   }
 
   // Helper method to make HTTP requests
-  private async makeRequest<T>(
+  public async makeRequest<T>(
     endpoint: string,
     options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
@@ -291,6 +291,58 @@ class ApiService {
       {
         method: "PUT",
         body: JSON.stringify(plotData),
+      },
+    );
+  }
+
+  async bulkUpdatePlots(
+    farmId: string,
+    plotNumbers: number[],
+    plotData: Partial<PlotData>,
+  ): Promise<ApiResponse<{ farm: Farm; updatedPlots: PlotData[] }>> {
+    // Force convert to integers to be absolutely sure
+    const safeIntegerPlotNumbers = plotNumbers
+      .map((n) => Math.floor(Number(n)))
+      .filter((n) => Number.isInteger(n) && n > 0);
+
+    const requestBody = {
+      plotNumbers: safeIntegerPlotNumbers,
+      plotData,
+    };
+
+    console.log("API Request:", {
+      url: `/farms/${farmId}/plots/bulk-update`,
+      plotNumbers: safeIntegerPlotNumbers,
+      plotData: plotData,
+    });
+
+    return this.makeRequest<{ farm: Farm; updatedPlots: PlotData[] }>(
+      `/farms/${farmId}/plots/bulk-update`,
+      {
+        method: "PUT",
+        body: JSON.stringify(requestBody),
+      },
+    );
+  }
+
+  async bulkClearPlots(
+    farmId: string,
+    plotNumbers: number[],
+  ): Promise<ApiResponse<{ farm: Farm; clearedPlots: number[] }>> {
+    // Force convert to integers to be absolutely sure
+    const safeIntegerPlotNumbers = plotNumbers
+      .map((n) => Math.floor(Number(n)))
+      .filter((n) => Number.isInteger(n) && n > 0);
+
+    const requestBody = {
+      plotNumbers: safeIntegerPlotNumbers,
+    };
+
+    return this.makeRequest<{ farm: Farm; clearedPlots: number[] }>(
+      `/farms/${farmId}/plots/bulk-clear`,
+      {
+        method: "PUT",
+        body: JSON.stringify(requestBody),
       },
     );
   }

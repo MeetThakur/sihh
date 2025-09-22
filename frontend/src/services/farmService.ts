@@ -285,6 +285,23 @@ class FarmService {
     return ApiService.updatePlot(farmId, plotNumber, plotData);
   }
 
+  // Bulk update multiple plots with same data
+  async bulkUpdatePlots(
+    farmId: string,
+    plotNumbers: number[],
+    plotData: Partial<PlotData>,
+  ): Promise<ApiResponse<{ farm: Farm; updatedPlots: PlotData[] }>> {
+    return ApiService.bulkUpdatePlots(farmId, plotNumbers, plotData);
+  }
+
+  // Bulk clear multiple plots (make them empty)
+  async bulkClearPlots(
+    farmId: string,
+    plotNumbers: number[],
+  ): Promise<ApiResponse<{ farm: Farm; clearedPlots: number[] }>> {
+    return ApiService.bulkClearPlots(farmId, plotNumbers);
+  }
+
   // Add activity to a plot
   async addPlotActivity(
     farmId: string,
