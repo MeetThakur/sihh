@@ -23,7 +23,8 @@ const getApiBaseUrl = (): string => {
   const envApiUrl = import.meta.env.VITE_API_URL;
 
   if (envApiUrl) {
-    return envApiUrl;
+    // Remove trailing slash to prevent double slashes
+    return envApiUrl.replace(/\/+$/, "");
   }
 
   // Environment-based fallback

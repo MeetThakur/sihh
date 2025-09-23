@@ -107,6 +107,7 @@ Please provide a helpful, practical response focused on agricultural guidance. K
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
+      console.error("Chatbot error:", error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: "I'm sorry, I encountered an error. Please try asking your question again, or check our other agricultural tools for assistance.",

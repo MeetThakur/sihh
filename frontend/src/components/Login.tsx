@@ -10,9 +10,11 @@ import {
   Wifi,
   WifiOff,
   CheckCircle,
+  Settings,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { LoginCredentials } from "../types";
+import EnvDebug from "./EnvDebug";
 
 interface LoginProps {
   onToggleMode: () => void;
@@ -30,6 +32,7 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
     Partial<LoginCredentials>
   >({});
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [showDebug, setShowDebug] = useState(false);
 
   // Monitor online status
   React.useEffect(() => {
@@ -104,6 +107,21 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
     const error = state.error;
     if (!error) return null;
 
+    // Check for routing issues (double slash in URL)
+    if (
+      error.includes("Route //") ||
+      error.includes("not found") ||
+      error.includes("404")
+    ) {
+      return {
+        type: "routing",
+        message:
+          "API routing error detected. This is likely due to incorrect API URL configuration.",
+        suggestion:
+          "The API URL may have trailing slashes causing double slash issues. Check environment configuration.",
+      };
+    }
+
     if (
       error.includes("Network") ||
       error.includes("fetch") ||
@@ -144,6 +162,24 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
   };
 
   const errorInfo = getErrorMessage();
+
+  if (showDebug) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-4">
+            <button
+              onClick={() => setShowDebug(false)}
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              <span>← Back to Login</span>
+            </button>
+          </div>
+          <EnvDebug />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 px-4 sm:px-6 lg:px-8">
@@ -186,7 +222,9 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                   ? "bg-yellow-50 border-yellow-200"
                   : errorInfo.type === "auth"
                     ? "bg-orange-50 border-orange-200"
-                    : "bg-red-50 border-red-200"
+                    : errorInfo.type === "routing"
+                      ? "bg-purple-50 border-purple-200"
+                      : "bg-red-50 border-red-200"
             }`}
           >
             <div className="flex items-start">
@@ -198,7 +236,9 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                       ? "text-yellow-500"
                       : errorInfo.type === "auth"
                         ? "text-orange-500"
-                        : "text-red-500"
+                        : errorInfo.type === "routing"
+                          ? "text-purple-500"
+                          : "text-red-500"
                 }`}
               />
               <div className="flex-1">
@@ -210,7 +250,9 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                         ? "text-yellow-800"
                         : errorInfo.type === "auth"
                           ? "text-orange-800"
-                          : "text-red-800"
+                          : errorInfo.type === "routing"
+                            ? "text-purple-800"
+                            : "text-red-800"
                   }`}
                 >
                   {errorInfo.message}
@@ -223,11 +265,22 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                         ? "text-yellow-700"
                         : errorInfo.type === "auth"
                           ? "text-orange-700"
-                          : "text-red-700"
+                          : errorInfo.type === "routing"
+                            ? "text-purple-700"
+                            : "text-red-700"
                   }`}
                 >
                   {errorInfo.suggestion}
                 </p>
+                {errorInfo.type === "routing" && (
+                  <button
+                    onClick={() => setShowDebug(true)}
+                    className="mt-2 flex items-center space-x-1 text-xs text-purple-600 hover:text-purple-700 underline"
+                  >
+                    <Settings className="h-3 w-3" />
+                    <span>Debug API Configuration</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
