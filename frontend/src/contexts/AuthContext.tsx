@@ -147,7 +147,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error("Registration failed - Full response:", response);
         if (response.errors) {
           console.error("Validation errors:", response.errors);
-          response.errors.forEach((error: any, index: number) => {
+          response.errors.forEach((error: unknown, index: number) => {
             console.error(`Validation error ${index + 1}:`, error);
           });
         }
@@ -155,9 +155,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.error("Registration error details:", error);
+      const message =
+        error instanceof Error ? error.message : "Registration failed";
       dispatch({
         type: "AUTH_FAILURE",
-        payload: error instanceof Error ? error.message : "Registration failed",
+        payload: message,
       });
       throw error;
     }

@@ -95,7 +95,7 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
 
     try {
       await login(formData);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Login failed:", error);
     }
   };
