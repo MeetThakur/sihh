@@ -22,14 +22,10 @@ import {
   Users,
   BookOpen,
   Star,
-  ChevronRight,
-  ChevronDown,
   Filter,
   RefreshCw,
   Download,
   Share2,
-  Eye,
-  EyeOff,
 } from "lucide-react";
 import { generateCropRecommendations } from "../utils/aiService";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -127,7 +123,6 @@ const CropAdvisory: React.FC = () => {
     [],
   );
   const [loading, setLoading] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
   const [calendarData, setCalendarData] = useState<FasalCalendar | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [marketData, setMarketData] = useState<Record<string, MarketData>>({});
@@ -350,7 +345,8 @@ const CropAdvisory: React.FC = () => {
       const budget = farmInput.budget ? Number(farmInput.budget) : 0;
       if (budget >= 10000) {
         filtered = filtered.filter((rec) => {
-          const cost = (rec as any).estimatedCost || 0;
+          const cost =
+            ((rec as Record<string, unknown>).estimatedCost as number) || 0;
           return cost <= budget;
         });
       }
@@ -407,8 +403,8 @@ const CropAdvisory: React.FC = () => {
             ],
             estimatedCost: 25000,
             marketPrice: "₹2,200/quintal",
-            demandTrend: "High",
-            riskLevel: "Medium",
+            demandTrend: "High" as const,
+            riskLevel: "Medium" as const,
             sustainabilityScore: 75,
           },
           {
@@ -428,8 +424,8 @@ const CropAdvisory: React.FC = () => {
             ],
             estimatedCost: 20000,
             marketPrice: "₹1,800/quintal",
-            demandTrend: "High",
-            riskLevel: "Low",
+            demandTrend: "High" as const,
+            riskLevel: "Low" as const,
             sustainabilityScore: 80,
           },
         ].filter((rec) => budget === 0 || rec.estimatedCost <= budget);
@@ -454,8 +450,8 @@ const CropAdvisory: React.FC = () => {
         ],
         estimatedCost: 30000,
         marketPrice: "Variable",
-        demandTrend: "Medium",
-        riskLevel: "Low",
+        demandTrend: "Medium" as const,
+        riskLevel: "Low" as const,
         sustainabilityScore: 85,
       },
     ];
@@ -1013,7 +1009,6 @@ const CropAdvisory: React.FC = () => {
                     onClick={() => {
                       const calendar = generateFasalCalendar(crop.name);
                       setCalendarData(calendar);
-                      setShowCalendar(true);
                       setActiveTab("calendar");
                     }}
                     className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center"
@@ -1065,7 +1060,13 @@ const CropAdvisory: React.FC = () => {
                           );
                           return (
                             <td key={cropName} className="py-3 px-4">
-                              {crop ? (crop as any)[criteria] || "N/A" : "N/A"}
+                              {crop
+                                ? String(
+                                    (
+                                      crop as unknown as Record<string, unknown>
+                                    )[criteria],
+                                  ) || "N/A"
+                                : "N/A"}
                             </td>
                           );
                         })}
