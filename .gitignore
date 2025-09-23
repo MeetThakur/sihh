@@ -1,370 +1,83 @@
-# ==============================================================================
-# KhetSetu Smart Agricultural Platform - Comprehensive .gitignore
-# ==============================================================================
-
-# Node.js Dependencies
+# Node.js
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+*.tsbuildinfo
 
-# Build Outputs
+# Build outputs
 dist/
 build/
 out/
-dist-ssr/
 .next/
-.nuxt/
-.vuepress/dist/
-*.tsbuildinfo
 
-# Runtime and Process Files
-pids/
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Runtime files
 *.pid
 *.seed
 *.pid.lock
-.lock-wscript
 
-# Coverage and Testing
+# Coverage directory used by tools like istanbul
 coverage/
 *.lcov
-.nyc_output
-.c8
-test-results/
-playwright-report/
-playwright/.cache/
-junit.xml
 
-# Cache Directories
+# Dependency directories
 .npm
+.yarn-integrity
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
 .eslintcache
-.stylelintcache
-.parcel-cache
-.cache/
-.fusebox/
-.dynamodb/
-.tern-port
 
-# Environment Variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.staging
-.env.backup
-*.env
-
-# Logs
-logs/
-*.log
-backend.log
-frontend.log
-app.log
-error.log
-access.log
-
-# Temporary Files
-tmp/
-temp/
-*.tmp
-*.temp
+# IDE/Editor files
+.vscode/
+.idea/
 *.swp
 *.swo
 *~
 
-# Database Files
-*.db
-*.sqlite
-*.sqlite3
-*.db-journal
-data/
-dumps/
-
-# Uploads and User Content
-uploads/
-public/uploads/
-static/uploads/
-assets/uploads/
-
-# SSL Certificates and Keys
-*.pem
-*.key
-*.cert
-*.crt
-*.p12
-*.pfx
-ssl/
-certs/
-
-# Docker
-.docker/
-docker-compose.override.yml
-Dockerfile.dev
-.dockerignore.dev
-
-# Process Management
-ecosystem.config.js
-pm2.config.js
-.pm2/
-
-# Backup Files
-*.backup
-*.bak
-*.old
-*.orig
-
-# Editor and IDE Files
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-*.iml
-*.ipr
-*.iws
-.project
-.classpath
-.settings/
-
-# JetBrains IDEs
-.idea/
-*.iml
-out/
-
-# Visual Studio Code
-.vscode/
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/
-
-# Vim
-*.swp
-*.swo
-Session.vim
-.netrwhist
-
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
-
-# Operating System Files
-# macOS
+# OS generated files
 .DS_Store
 .DS_Store?
 ._*
-.AppleDouble
-.LSOverride
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Windows
 Thumbs.db
 Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
 Desktop.ini
-$RECYCLE.BIN/
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-*.lnk
 
-# Linux
-*~
-.fuse_hidden*
-.directory
-.Trash-*
-.nfs*
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
 
-# Serverless Framework
-.serverless/
-serverless.yml.bak
+# Database
+*.db
+*.sqlite
+*.sqlite3
 
-# Terraform
-*.tfstate
-*.tfstate.*
-.terraform/
-.terraform.lock.hcl
-
-# AWS
-.aws/
-
-# Google Cloud
-.gcloud/
-gcloud-service-key.json
-
-# Azure
-.azure/
-
-# Kubernetes
-*.kubeconfig
-
-# Monitoring and Analytics
-.monitoring/
-*.heap
-*.prof
-
-# Frontend Specific
-# Vite
-.vite/
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
-
-# React
-.eslintrc.cjs
-
-# Webpack
-.webpack/
-
-# Rollup
-.rollup.cache/
-
-# SvelteKit
-.svelte-kit/
-
-# Backend Specific
-# Express
-sessions/
-.sessions/
-
-# Sequelize
-migrations/
-seeders/
-
-# Prisma
-prisma/migrations/
-
-# TypeORM
-ormconfig.json
-
-# MongoDB
-mongodb.log
-
-# Redis
-dump.rdb
-
-# Development Tools
-.husky/_/
-.commitlintrc.*
-.prettierignore
-.stylelintignore
-
-# Security
-.secrets/
-secrets.json
-private-keys/
-*.private
-*.secret
+# SSL certificates
+*.pem
+*.key
+*.cert
 
 # Deployment
-.deploy/
-.deployment/
-deploy.sh
 .vercel
 .netlify
 
-# Local Development
-.local/
-local/
-dev/
-development/
+# Cache
+.cache/
+.parcel-cache/
 
-# Archives
-*.zip
-*.tar
-*.tar.gz
-*.tgz
-*.rar
-*.7z
-
-# Mobile Development (React Native)
-.expo/
-.expo-shared/
-ios/
-android/
-
-# Python (if any Python scripts)
-__pycache__/
-*.py[cod]
-*$py.class
-.Python
-venv/
-env/
-
-# Ruby (if any Ruby scripts)
-*.gem
-.bundle/
-vendor/bundle/
-
-# Go (if any Go code)
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-vendor/
-
-# Rust (if any Rust code)
-target/
-Cargo.lock
-
-# Application Specific
-# KhetSetu specific files
-sensor-data/
-weather-cache/
-market-data-cache/
-ai-model-cache/
-farm-images/
-crop-images/
-user-uploads/
-
-# Testing and QA
-screenshots/
-test-reports/
-e2e-results/
-performance-reports/
-
-# Documentation Build
-docs/build/
-docs/dist/
-.docusaurus/
-
-# Temporary Documentation
-*SETUP*.md
-*INSTALL*.md
-*COMPLETE*.md
-MONGODB_SETUP*.md
-MONGODB_ATLAS*.md
-TEMP_*.md
-temp_*.md
-setup_*.md
-install_*.md
-
-# Miscellaneous
-*.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
-.Spotlight-V100
-.Trashes
+# Testing
+test-results/
+playwright-report/

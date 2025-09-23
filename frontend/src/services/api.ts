@@ -18,8 +18,23 @@ import {
 // Re-export types for easier importing
 export type { User, LoginCredentials, RegisterData, ApiResponse, AuthResponse };
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// Simple API URL configuration with fallback
+const getApiBaseUrl = (): string => {
+  const envApiUrl = import.meta.env.VITE_API_URL;
+
+  if (envApiUrl) {
+    return envApiUrl;
+  }
+
+  // Environment-based fallback
+  if (import.meta.env.PROD) {
+    return "https://khetsetu-backend.onrender.com/api";
+  }
+
+  return "http://localhost:5000/api";
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 class ApiService {
   private token: string | null = null;
@@ -31,7 +46,7 @@ class ApiService {
     this.refreshToken = localStorage.getItem("refreshToken");
   }
 
-  // Helper method to make HTTP requests
+  // Enhanced request method with better error handling
   public async makeRequest<T>(
     endpoint: string,
     options: RequestInit = {},
@@ -39,8 +54,10 @@ class ApiService {
     const url = `${API_BASE_URL}${endpoint}`;
 
     const config: RequestInit = {
+      mode: "cors",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
         ...options.headers,
       },
       ...options,
@@ -65,7 +82,7 @@ class ApiService {
       if (
         response.status === 401 &&
         this.refreshToken &&
-        !endpoint.includes("/auth/refresh-token")
+        !endpoint.includes("/auth/")
       ) {
         const refreshed = await this.refreshAccessToken();
         if (refreshed) {
@@ -78,16 +95,32 @@ class ApiService {
           const retryData = await retryResponse.json();
           return retryData;
         } else {
-          // Refresh failed, clear tokens and redirect to login
+          // Refresh failed, clear tokens
           this.clearTokens();
           throw new Error("Session expired. Please login again.");
         }
       }
 
       const data = await response.json();
+
+      // Handle HTTP error statuses
+      if (!response.ok) {
+        throw new Error(
+          data.message || `HTTP ${response.status}: ${response.statusText}`,
+        );
+      }
+
       return data;
     } catch (error) {
       console.error("API request failed:", error);
+
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Network error: Unable to connect to the server. Please check your internet connection.",
+        );
+      }
+
       throw error;
     }
   }
@@ -127,6 +160,9 @@ class ApiService {
         method: "POST",
       });
       return response;
+    } catch (error) {
+      console.error("Logout error:", error);
+      return { success: true, message: "Logged out locally" };
     } finally {
       this.clearTokens();
     }
@@ -196,19 +232,6 @@ class ApiService {
     return this.makeRequest("/auth/reset-password", {
       method: "POST",
       body: JSON.stringify({ token, newPassword }),
-    });
-  }
-
-  // Email verification
-  async verifyEmail(token: string): Promise<ApiResponse> {
-    return this.makeRequest(`/auth/verify-email/${token}`, {
-      method: "GET",
-    });
-  }
-
-  async resendVerificationEmail(): Promise<ApiResponse> {
-    return this.makeRequest("/auth/resend-verification", {
-      method: "POST",
     });
   }
 
@@ -300,7 +323,6 @@ class ApiService {
     plotNumbers: number[],
     plotData: Partial<PlotData>,
   ): Promise<ApiResponse<{ farm: Farm; updatedPlots: PlotData[] }>> {
-    // Force convert to integers to be absolutely sure
     const safeIntegerPlotNumbers = plotNumbers
       .map((n) => Math.floor(Number(n)))
       .filter((n) => Number.isInteger(n) && n > 0);
@@ -309,12 +331,6 @@ class ApiService {
       plotNumbers: safeIntegerPlotNumbers,
       plotData,
     };
-
-    console.log("API Request:", {
-      url: `/farms/${farmId}/plots/bulk-update`,
-      plotNumbers: safeIntegerPlotNumbers,
-      plotData: plotData,
-    });
 
     return this.makeRequest<{ farm: Farm; updatedPlots: PlotData[] }>(
       `/farms/${farmId}/plots/bulk-update`,
@@ -329,7 +345,6 @@ class ApiService {
     farmId: string,
     plotNumbers: number[],
   ): Promise<ApiResponse<{ farm: Farm; clearedPlots: number[] }>> {
-    // Force convert to integers to be absolutely sure
     const safeIntegerPlotNumbers = plotNumbers
       .map((n) => Math.floor(Number(n)))
       .filter((n) => Number.isInteger(n) && n > 0);
@@ -361,7 +376,7 @@ class ApiService {
     );
   }
 
-  // Crop management methods (for future use)
+  // Crop management methods
   async getCrops(): Promise<ApiResponse<unknown[]>> {
     return this.makeRequest("/crops");
   }
@@ -375,7 +390,7 @@ class ApiService {
     });
   }
 
-  // Weather methods (for future use)
+  // Weather methods
   async getWeather(location: {
     lat: number;
     lon: number;
@@ -383,7 +398,7 @@ class ApiService {
     return this.makeRequest(`/weather?lat=${location.lat}&lon=${location.lon}`);
   }
 
-  // Market prices methods (for future use)
+  // Market prices methods
   async getMarketPrices(
     crop?: string,
     location?: string,
@@ -397,7 +412,7 @@ class ApiService {
     );
   }
 
-  // Pest alerts methods (for future use)
+  // Pest alerts methods
   async getPestAlerts(location?: string): Promise<ApiResponse<unknown[]>> {
     const params = location ? `?location=${location}` : "";
     return this.makeRequest(`/pests/alerts${params}`);
