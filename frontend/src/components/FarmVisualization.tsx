@@ -19,6 +19,12 @@ import {
   Users,
   Trash2,
   BarChart3,
+  Info,
+  Target,
+  Mouse,
+  Sprout,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import farmService, {
@@ -1268,52 +1274,26 @@ const FarmVisualization: React.FC = () => {
                 </button>
               </div>
 
-              {/* Bulk Selection Info Bar */}
+              {/* Simple Bulk Mode Indicator */}
               {bulkSelectMode && (
-                <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg shadow-sm">
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                      <span className="text-sm font-medium text-blue-900">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-blue-800">
                         Bulk Selection Mode
                       </span>
                       <span className="text-xs px-2 py-1 bg-blue-200 text-blue-800 rounded-full">
                         {selectedPlots.size} selected
                       </span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={selectAllPlots}
-                        className="text-xs px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                      >
-                        Select All
-                      </button>
-                      <button
-                        onClick={clearPlotSelection}
-                        className="text-xs px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-                      >
-                        Clear
-                      </button>
-                      <button
-                        onClick={toggleBulkSelectMode}
-                        className="text-xs px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-                      >
-                        Exit
-                      </button>
-                    </div>
+                    <button
+                      onClick={toggleBulkSelectMode}
+                      className="text-xs px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                    >
+                      Exit
+                    </button>
                   </div>
-                  {selectedPlots.size > 0 && (
-                    <div className="mt-3 p-2 bg-white/50 rounded border border-blue-200">
-                      <p className="text-xs text-blue-700 font-medium mb-1">
-                        Selected Plots:
-                      </p>
-                      <p className="text-xs text-blue-600">
-                        {Array.from(selectedPlots)
-                          .sort((a, b) => a - b)
-                          .join(", ")}
-                      </p>
-                    </div>
-                  )}
                 </div>
               )}
             </div>
@@ -1410,141 +1390,29 @@ const FarmVisualization: React.FC = () => {
 
         {/* Plot Details Sidebar - Takes 1 column on desktop, full width on mobile */}
         <div className="xl:col-span-1 space-y-4">
-          {/* Bulk Actions Sidebar */}
-          {bulkSelectMode && (
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden sticky top-4">
-              <div className="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 border-b border-green-200">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-green-900 flex items-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                    Bulk Actions
-                  </h3>
-                  <span className="text-xs px-2 py-1 bg-green-200 text-green-800 rounded-full">
-                    {selectedPlots.size} plots
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
-                {/* Error Display */}
-                {error && (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <svg
-                          className="h-5 w-5 text-red-400"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-sm text-red-800">{error}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {selectedPlots.size === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Plus className="w-6 h-6 text-gray-400" />
-                    </div>
-                    <p className="text-sm text-gray-500 mb-2">
-                      No plots selected
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      Select plots from the grid to perform bulk actions
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {/* Plant Same Crop */}
-                    <div>
-                      <div className="flex items-center mb-3">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                          <Plus className="w-4 h-4 text-green-600" />
-                        </div>
-                        <h4 className="font-medium text-gray-900">
-                          Plant Crop
-                        </h4>
-                      </div>
-                      <div className="space-y-3 ml-11">
-                        <select
-                          value={bulkCropSelection}
-                          onChange={(e) => setBulkCropSelection(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                        >
-                          <option value="">Select crop to plant</option>
-                          {availableCrops
-                            .filter((crop) => crop !== "Empty")
-                            .map((crop) => (
-                              <option key={crop} value={crop}>
-                                {crop}
-                              </option>
-                            ))}
-                        </select>
-                        <button
-                          onClick={bulkPlantCrop}
-                          disabled={
-                            !bulkCropSelection ||
-                            bulkOperationLoading ||
-                            selectedPlots.size === 0
-                          }
-                          className="w-full px-4 py-2.5 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors shadow-sm"
-                        >
-                          {bulkOperationLoading ? (
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          ) : (
-                            <Plus className="w-4 h-4 mr-2" />
-                          )}
-                          Plant in {selectedPlots.size} plot
-                          {selectedPlots.size !== 1 ? "s" : ""}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Divider */}
-                    <div className="border-t border-gray-200"></div>
-
-                    {/* Clear Plots */}
-                    <div>
-                      <div className="flex items-center mb-3">
-                        <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </div>
-                        <h4 className="font-medium text-gray-900">
-                          Clear Plots
-                        </h4>
-                      </div>
-                      <div className="space-y-3 ml-11">
-                        <p className="text-sm text-gray-600">
-                          Remove crops from selected plots and make them empty
-                        </p>
-                        <button
-                          onClick={bulkClearPlots}
-                          disabled={
-                            bulkOperationLoading || selectedPlots.size === 0
-                          }
-                          className="w-full px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors shadow-sm"
-                        >
-                          {bulkOperationLoading ? (
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          ) : (
-                            <Trash2 className="w-4 h-4 mr-2" />
-                          )}
-                          Clear {selectedPlots.size} plot
-                          {selectedPlots.size !== 1 ? "s" : ""}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
+          {/* Simplified Bulk Actions */}
+          {bulkSelectMode && selectedPlots.size === 0 && (
+            <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
+              <Target className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No Plots Selected
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Click on plots to select them for bulk operations
+              </p>
+              <div className="flex justify-center space-x-2">
+                <button
+                  onClick={selectAllPlots}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Select All
+                </button>
+                <button
+                  onClick={toggleBulkSelectMode}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           )}
@@ -2349,6 +2217,112 @@ const FarmVisualization: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Floating Bulk Actions Panel */}
+      {bulkSelectMode && selectedPlots.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-6 min-w-96">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-bold text-blue-600">
+                    {selectedPlots.size}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Bulk Actions</h3>
+                  <p className="text-xs text-gray-500">
+                    {selectedPlots.size} plot
+                    {selectedPlots.size !== 1 ? "s" : ""} selected
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedPlots(new Set());
+                  setBulkSelectMode(false);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              {/* Plant Crop */}
+              <div className="space-y-2">
+                <select
+                  value={bulkCropSelection}
+                  onChange={(e) => setBulkCropSelection(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                >
+                  <option value="">Select crop...</option>
+                  {availableCrops
+                    .filter((crop) => crop !== "Empty")
+                    .map((crop) => (
+                      <option key={crop} value={crop}>
+                        {crop}
+                      </option>
+                    ))}
+                </select>
+                <button
+                  onClick={bulkPlantCrop}
+                  disabled={!bulkCropSelection || bulkOperationLoading}
+                  className="w-full px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                >
+                  {bulkOperationLoading ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Sprout className="w-4 h-4 mr-2" />
+                  )}
+                  Plant Crop
+                </button>
+              </div>
+
+              {/* Clear Plots */}
+              <div className="space-y-2">
+                <div className="h-10 flex items-center justify-center text-xs text-gray-500">
+                  Remove all crops
+                </div>
+                <button
+                  onClick={bulkClearPlots}
+                  disabled={bulkOperationLoading}
+                  className="w-full px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                >
+                  {bulkOperationLoading ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4 mr-2" />
+                  )}
+                  Clear Plots
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex justify-center space-x-2 mt-4 pt-4 border-t border-gray-200">
+              <button
+                onClick={selectAllPlots}
+                className="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Select All
+              </button>
+              <button
+                onClick={clearPlotSelection}
+                className="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Clear Selection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

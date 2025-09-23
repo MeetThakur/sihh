@@ -1,415 +1,1504 @@
-import React, { useState } from 'react';
-import { Star, MessageCircle, Phone, Video, Calendar, User, Badge, Award, Send } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  Star,
+  MessageCircle,
+  Phone,
+  Video,
+  Calendar,
+  User,
+  Badge,
+  Award,
+  Send,
+  Clock,
+  MapPin,
+  Globe,
+  Shield,
+  TrendingUp,
+  Users,
+  CheckCircle,
+  Filter,
+  Search,
+  Heart,
+  BookOpen,
+  Camera,
+  FileText,
+  Zap,
+  Target,
+  ChevronRight,
+  ChevronDown,
+  X,
+  PlayCircle,
+  Download,
+  Share2,
+  Briefcase,
+  GraduationCap,
+  Languages,
+  DollarSign,
+  AlertCircle,
+} from "lucide-react";
 
 interface Expert {
   id: string;
   name: string;
   specialty: string;
+  subSpecialties: string[];
   experience: number;
   rating: number;
   totalConsultations: number;
   languages: string[];
-  availability: 'available' | 'busy' | 'offline';
+  availability: "available" | "busy" | "offline";
   pricePerSession: number;
   imageUrl?: string;
   qualifications: string[];
   description: string;
+  location: string;
+  responseTime: string;
+  successRate: number;
+  specialOffers?: string[];
+  certifications: string[];
+  expertise: string[];
+  consultationTypes: ("chat" | "voice" | "video" | "field")[];
+  slots: string[];
+  reviews: Review[];
+  featured?: boolean;
+}
+
+interface Review {
+  id: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+  verified: boolean;
 }
 
 interface ConsultationRequest {
   expertId: string;
-  type: 'chat' | 'voice' | 'video';
+  type: "chat" | "voice" | "video" | "field";
   description: string;
   preferredTime?: string;
-  urgency: 'low' | 'medium' | 'high';
+  urgency: "low" | "medium" | "high";
+  budget?: number;
+  attachments?: File[];
+}
+
+interface ConsultationHistory {
+  id: string;
+  expertName: string;
+  date: string;
+  type: string;
+  status: "completed" | "scheduled" | "cancelled";
+  rating?: number;
+  notes?: string;
 }
 
 const ExpertConsultation: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<
+    "browse" | "history" | "favorites" | "messages"
+  >("browse");
   const [selectedExpert, setSelectedExpert] = useState<Expert | null>(null);
   const [showBooking, setShowBooking] = useState(false);
-  const [consultationRequest, setConsultationRequest] = useState<ConsultationRequest>({
-    expertId: '',
-    type: 'chat',
-    description: '',
-    urgency: 'medium'
-  });
+  const [showExpertDetails, setShowExpertDetails] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState("all");
+  const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
+  const [availabilityFilter, setAvailabilityFilter] = useState("all");
+  const [showFilters, setShowFilters] = useState(false);
+  const [favoriteExperts, setFavoriteExperts] = useState<string[]>([]);
 
-  // Mock expert data
-  const experts: Expert[] = [
+  const [consultationRequest, setConsultationRequest] =
+    useState<ConsultationRequest>({
+      expertId: "",
+      type: "chat",
+      description: "",
+      urgency: "medium",
+      attachments: [],
+    });
+
+  // Enhanced mock expert data
+  const [experts] = useState<Expert[]>([
     {
-      id: '1',
-      name: 'Dr. Ramesh Kumar',
-      specialty: 'Crop Disease Management',
+      id: "1",
+      name: "Dr. Ramesh Kumar",
+      specialty: "Crop Disease Management",
+      subSpecialties: [
+        "Plant Pathology",
+        "Disease Prevention",
+        "Fungal Control",
+      ],
       experience: 15,
       rating: 4.8,
       totalConsultations: 1250,
-      languages: ['Hindi', 'English', 'Punjabi'],
-      availability: 'available',
+      languages: ["Hindi", "English", "Punjabi"],
+      availability: "available",
       pricePerSession: 500,
-      qualifications: ['PhD in Plant Pathology', 'Certified Crop Advisor'],
-      description: 'Expert in identifying and treating crop diseases with 15+ years of field experience.'
+      qualifications: ["PhD in Plant Pathology", "Certified Crop Advisor"],
+      description:
+        "Expert in identifying and treating crop diseases with 15+ years of field experience. Specializes in integrated disease management and sustainable farming practices.",
+      location: "Punjab, India",
+      responseTime: "< 2 hours",
+      successRate: 95,
+      specialOffers: ["First consultation FREE", "Package deals available"],
+      certifications: ["ICAR Certified", "Plant Protection Specialist"],
+      expertise: [
+        "Fungal Disease Control",
+        "Bacterial Infections",
+        "Viral Disease Management",
+        "IPM Strategies",
+      ],
+      consultationTypes: ["chat", "voice", "video", "field"],
+      slots: ["9:00 AM", "2:00 PM", "6:00 PM"],
+      reviews: [
+        {
+          id: "1",
+          userId: "u1",
+          userName: "Farmer Singh",
+          rating: 5,
+          comment: "Excellent advice on wheat rust management. Saved my crop!",
+          date: "2024-01-15",
+          verified: true,
+        },
+      ],
+      featured: true,
     },
     {
-      id: '2',
-      name: 'Priya Sharma',
-      specialty: 'Organic Farming',
+      id: "2",
+      name: "Priya Sharma",
+      specialty: "Organic Farming",
+      subSpecialties: ["Soil Health", "Composting", "Natural Pest Control"],
       experience: 12,
       rating: 4.9,
       totalConsultations: 890,
-      languages: ['Hindi', 'English'],
-      availability: 'available',
+      languages: ["Hindi", "English"],
+      availability: "available",
       pricePerSession: 450,
-      qualifications: ['MSc Agriculture', 'Organic Certification Expert'],
-      description: 'Specialist in sustainable and organic farming practices, soil health management.'
+      qualifications: ["MSc Agriculture", "Organic Certification Expert"],
+      description:
+        "Specialist in sustainable and organic farming practices, soil health management, and natural pest control methods.",
+      location: "Maharashtra, India",
+      responseTime: "< 1 hour",
+      successRate: 98,
+      specialOffers: ["Organic certification guidance included"],
+      certifications: ["Organic India Certified", "Permaculture Design"],
+      expertise: [
+        "Organic Certification",
+        "Composting Techniques",
+        "Biofertilizers",
+        "Natural Pesticides",
+      ],
+      consultationTypes: ["chat", "voice", "video"],
+      slots: ["8:00 AM", "1:00 PM", "5:00 PM"],
+      reviews: [
+        {
+          id: "2",
+          userId: "u2",
+          userName: "Organic Farmer",
+          rating: 5,
+          comment: "Helped me transition to organic farming successfully!",
+          date: "2024-01-10",
+          verified: true,
+        },
+      ],
+      featured: true,
     },
     {
-      id: '3',
-      name: 'Suresh Patel',
-      specialty: 'Irrigation & Water Management',
+      id: "3",
+      name: "Suresh Patel",
+      specialty: "Irrigation & Water Management",
+      subSpecialties: ["Drip Irrigation", "Water Conservation", "Hydroponics"],
       experience: 18,
       rating: 4.7,
       totalConsultations: 1500,
-      languages: ['Hindi', 'Gujarati', 'English'],
-      availability: 'busy',
+      languages: ["Hindi", "Gujarati", "English"],
+      availability: "busy",
       pricePerSession: 600,
-      qualifications: ['Water Management Engineer', '20+ Years Field Experience'],
-      description: 'Expert in modern irrigation techniques, water conservation, and efficient farming.'
+      qualifications: [
+        "Water Management Engineer",
+        "20+ Years Field Experience",
+      ],
+      description:
+        "Expert in modern irrigation techniques, water conservation, and efficient farming with focus on sustainable water usage.",
+      location: "Gujarat, India",
+      responseTime: "< 3 hours",
+      successRate: 92,
+      certifications: ["Water Management Expert", "Irrigation Specialist"],
+      expertise: [
+        "Drip Irrigation Design",
+        "Sprinkler Systems",
+        "Water Quality Testing",
+        "Smart Irrigation",
+      ],
+      consultationTypes: ["chat", "video", "field"],
+      slots: ["10:00 AM", "3:00 PM"],
+      reviews: [],
     },
     {
-      id: '4',
-      name: 'Dr. Anjali Singh',
-      specialty: 'Soil Science & Fertilizers',
+      id: "4",
+      name: "Dr. Anjali Singh",
+      specialty: "Soil Science & Fertilizers",
+      subSpecialties: ["Soil Testing", "Nutrient Management", "pH Correction"],
       experience: 10,
       rating: 4.6,
       totalConsultations: 750,
-      languages: ['Hindi', 'English'],
-      availability: 'available',
+      languages: ["Hindi", "English"],
+      availability: "available",
       pricePerSession: 400,
-      qualifications: ['PhD Soil Science', 'Fertilizer Specialist'],
-      description: 'Soil testing expert and fertilizer recommendation specialist for better yields.'
+      qualifications: ["PhD Soil Science", "Fertilizer Specialist"],
+      description:
+        "Soil testing expert and fertilizer recommendation specialist for better yields and sustainable farming.",
+      location: "Uttar Pradesh, India",
+      responseTime: "< 2 hours",
+      successRate: 94,
+      certifications: ["Soil Science Society Member", "Nutrient Expert"],
+      expertise: [
+        "Soil Analysis",
+        "Micronutrient Management",
+        "Fertilizer Planning",
+        "Soil Health Cards",
+      ],
+      consultationTypes: ["chat", "voice", "video"],
+      slots: ["9:00 AM", "2:00 PM", "7:00 PM"],
+      reviews: [],
     },
     {
-      id: '5',
-      name: 'Vikram Joshi',
-      specialty: 'Market Linkage & Pricing',
+      id: "5",
+      name: "Vikram Joshi",
+      specialty: "Market Linkage & Pricing",
+      subSpecialties: [
+        "Price Analysis",
+        "Marketing Strategy",
+        "Export Markets",
+      ],
       experience: 8,
       rating: 4.5,
       totalConsultations: 600,
-      languages: ['Hindi', 'English', 'Marathi'],
-      availability: 'offline',
+      languages: ["Hindi", "English", "Marathi"],
+      availability: "available",
       pricePerSession: 350,
-      qualifications: ['MBA Agribusiness', 'Market Analysis Expert'],
-      description: 'Expert in crop pricing, market trends, and connecting farmers with buyers.'
-    }
-  ];
+      qualifications: ["MBA Agribusiness", "Market Analysis Expert"],
+      description:
+        "Expert in crop pricing, market trends, and connecting farmers with buyers for maximum profitability.",
+      location: "Maharashtra, India",
+      responseTime: "< 4 hours",
+      successRate: 89,
+      certifications: ["Market Analyst", "Export Consultant"],
+      expertise: [
+        "Price Forecasting",
+        "Market Research",
+        "Export Documentation",
+        "Value Addition",
+      ],
+      consultationTypes: ["chat", "voice", "video"],
+      slots: ["11:00 AM", "4:00 PM"],
+      reviews: [],
+    },
+  ]);
+
+  const [consultationHistory] = useState<ConsultationHistory[]>([
+    {
+      id: "1",
+      expertName: "Dr. Ramesh Kumar",
+      date: "2024-01-20",
+      type: "Video Call",
+      status: "completed",
+      rating: 5,
+      notes: "Excellent guidance on wheat disease management",
+    },
+    {
+      id: "2",
+      expertName: "Priya Sharma",
+      date: "2024-01-25",
+      type: "Chat",
+      status: "scheduled",
+    },
+  ]);
+
+  // Filter experts based on search and filters
+  const filteredExperts = experts.filter((expert) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      expert.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      expert.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      expert.subSpecialties.some((sub) =>
+        sub.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+
+    const matchesSpecialty =
+      selectedSpecialty === "all" ||
+      expert.specialty.toLowerCase().includes(selectedSpecialty.toLowerCase());
+
+    const matchesLanguage =
+      selectedLanguage === "all" ||
+      expert.languages.some((lang) =>
+        lang.toLowerCase().includes(selectedLanguage.toLowerCase()),
+      );
+
+    const matchesPrice =
+      expert.pricePerSession >= priceRange.min &&
+      expert.pricePerSession <= priceRange.max;
+
+    const matchesAvailability =
+      availabilityFilter === "all" ||
+      expert.availability === availabilityFilter;
+
+    return (
+      matchesSearch &&
+      matchesSpecialty &&
+      matchesLanguage &&
+      matchesPrice &&
+      matchesAvailability
+    );
+  });
 
   const getAvailabilityColor = (availability: string) => {
     switch (availability) {
-      case 'available': return 'text-green-600 bg-green-100';
-      case 'busy': return 'text-yellow-600 bg-yellow-100';
-      case 'offline': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case "available":
+        return "bg-green-500";
+      case "busy":
+        return "bg-yellow-500";
+      case "offline":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
     }
   };
 
   const getAvailabilityText = (availability: string) => {
     switch (availability) {
-      case 'available': return 'Available Now';
-      case 'busy': return 'Busy';
-      case 'offline': return 'Offline';
-      default: return 'Unknown';
+      case "available":
+        return "Available Now";
+      case "busy":
+        return "Busy";
+      case "offline":
+        return "Offline";
+      default:
+        return "Unknown";
     }
   };
 
   const handleBookConsultation = (expert: Expert) => {
     setSelectedExpert(expert);
-    setConsultationRequest(prev => ({ ...prev, expertId: expert.id }));
+    setConsultationRequest((prev) => ({ ...prev, expertId: expert.id }));
     setShowBooking(true);
   };
 
   const handleSubmitRequest = () => {
-    // Here you would typically send the consultation request to your backend
-    console.log('Consultation request:', consultationRequest);
-    alert(`Consultation request sent to ${selectedExpert?.name}! You will receive a confirmation shortly.`);
+    console.log("Consultation request:", consultationRequest);
+    alert(
+      `Consultation request sent to ${selectedExpert?.name}! You will receive a confirmation shortly.`,
+    );
     setShowBooking(false);
     setSelectedExpert(null);
     setConsultationRequest({
-      expertId: '',
-      type: 'chat',
-      description: '',
-      urgency: 'medium'
+      expertId: "",
+      type: "chat",
+      description: "",
+      urgency: "medium",
+      attachments: [],
     });
   };
 
-  return (
-    <div className="space-y-8">
-      {/* Minimal Header */}
-      <div className="text-center">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-          Expert Consultation
-        </h1>
-        <p className="text-gray-600">
-          Connect with agricultural experts for personalized farming advice
-        </p>
-      </div>
+  const toggleFavorite = (expertId: string) => {
+    setFavoriteExperts((prev) =>
+      prev.includes(expertId)
+        ? prev.filter((id) => id !== expertId)
+        : [...prev, expertId],
+    );
+  };
 
-      {/* First Session Free Banner */}
-      <div className="minimal-card p-6 bg-green-50 border-green-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-green-800 mb-2">🎉 First Session FREE!</h2>
-            <p className="text-green-700">
-              Get your first consultation with any expert absolutely free. No hidden charges.
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-green-800">₹0</div>
-            <div className="text-sm text-green-600">First Session</div>
+  const uniqueSpecialties = [
+    ...new Set(experts.map((expert) => expert.specialty)),
+  ];
+  const uniqueLanguages = [
+    ...new Set(experts.flatMap((expert) => expert.languages)),
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Enhanced Header */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                <Users className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-blue-600" />
+                <span>Expert Consultation</span>
+                <span className="ml-3 px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
+                  First Session FREE
+                </span>
+              </h1>
+              <p className="text-gray-600 text-sm sm:text-base">
+                Connect with certified agricultural experts for personalized
+                farming guidance
+              </p>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">
+                  {experts.length}
+                </div>
+                <div className="text-xs text-gray-500">Expert Advisors</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">4.7★</div>
+                <div className="text-xs text-gray-500">Avg Rating</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">24/7</div>
+                <div className="text-xs text-gray-500">Available</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Expert List */}
-      <div className="minimal-card p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Available Experts</h2>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {experts.map((expert) => (
-            <div key={expert.id} className="border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                    <User className="text-gray-600" size={20} />
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-lg font-semibold text-gray-900">{expert.name}</h3>
-                    <p className="text-gray-600 font-medium">{expert.specialty}</p>
-                  </div>
-                </div>
-                <span className={`px-2 py-1 rounded text-xs font-medium ${getAvailabilityColor(expert.availability)}`}>
-                  {getAvailabilityText(expert.availability)}
-                </span>
-              </div>
+        {/* Navigation Tabs */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div className="border-b border-gray-200 overflow-x-auto">
+            <nav
+              className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max"
+              aria-label="Tabs"
+            >
+              {[
+                {
+                  id: "browse",
+                  label: "Browse Experts",
+                  icon: Search,
+                  count: filteredExperts.length,
+                },
+                {
+                  id: "history",
+                  label: "My Consultations",
+                  icon: Clock,
+                  count: consultationHistory.length,
+                },
+                {
+                  id: "favorites",
+                  label: "Favorites",
+                  icon: Heart,
+                  count: favoriteExperts.length,
+                },
+                {
+                  id: "messages",
+                  label: "Messages",
+                  icon: MessageCircle,
+                  count: 3,
+                },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? "border-blue-500 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span>{tab.label}</span>
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full ${
+                      activeTab === tab.id
+                        ? "bg-blue-100 text-blue-700"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
+            </nav>
+          </div>
 
-              <div className="space-y-3 mb-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Experience:</span>
-                  <span className="font-medium">{expert.experience} years</span>
+          {/* Tab Content */}
+          <div className="p-6">
+            {activeTab === "browse" && (
+              <div className="space-y-6">
+                {/* Search and Filters */}
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        placeholder="Search experts by name, specialty, or expertise..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      />
+                    </div>
+                    <button
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center text-sm whitespace-nowrap"
+                    >
+                      <Filter className="w-4 h-4 mr-2" />
+                      Filters
+                      {showFilters ? (
+                        <ChevronDown className="w-4 h-4 ml-2" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 ml-2" />
+                      )}
+                    </button>
+                  </div>
+
+                  {showFilters && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Specialty
+                        </label>
+                        <select
+                          value={selectedSpecialty}
+                          onChange={(e) => setSelectedSpecialty(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="all">All Specialties</option>
+                          {uniqueSpecialties.map((specialty) => (
+                            <option key={specialty} value={specialty}>
+                              {specialty}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Language
+                        </label>
+                        <select
+                          value={selectedLanguage}
+                          onChange={(e) => setSelectedLanguage(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="all">All Languages</option>
+                          {uniqueLanguages.map((language) => (
+                            <option key={language} value={language}>
+                              {language}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Availability
+                        </label>
+                        <select
+                          value={availabilityFilter}
+                          onChange={(e) =>
+                            setAvailabilityFilter(e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="all">All Statuses</option>
+                          <option value="available">Available Now</option>
+                          <option value="busy">Busy</option>
+                          <option value="offline">Offline</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Price Range (₹)
+                        </label>
+                        <div className="flex space-x-2">
+                          <input
+                            type="number"
+                            placeholder="Min"
+                            value={priceRange.min}
+                            onChange={(e) =>
+                              setPriceRange((prev) => ({
+                                ...prev,
+                                min: Number(e.target.value),
+                              }))
+                            }
+                            className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
+                          />
+                          <input
+                            type="number"
+                            placeholder="Max"
+                            value={priceRange.max}
+                            onChange={(e) =>
+                              setPriceRange((prev) => ({
+                                ...prev,
+                                max: Number(e.target.value),
+                              }))
+                            }
+                            className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Rating:</span>
-                  <div className="flex items-center">
-                    <Star className="text-yellow-400 fill-current" size={16} />
-                    <span className="ml-1 font-medium">{expert.rating}</span>
-                    <span className="text-gray-500 ml-1">({expert.totalConsultations})</span>
+
+                {/* Featured Experts Banner */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center">
+                        <Zap className="w-5 h-5 mr-2 text-yellow-500" />
+                        Featured Experts
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        Top-rated experts with proven track records and instant
+                        availability
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-green-600">
+                        FREE
+                      </div>
+                      <div className="text-xs text-gray-500">First Session</div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Session Price:</span>
-                  <div className="flex flex-col items-end">
-                    <span className="font-medium text-green-600">1st Session: FREE</span>
-                    <span className="text-xs text-gray-500">Next: ₹{expert.pricePerSession}</span>
-                  </div>
-                </div>
-              </div>
 
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">Languages:</p>
-                <div className="flex flex-wrap gap-1">
-                  {expert.languages.map((lang, index) => (
-                    <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                      {lang}
-                    </span>
-                  ))}
-                </div>
-              </div>
+                {/* Expert Cards Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {filteredExperts.map((expert) => (
+                    <div
+                      key={expert.id}
+                      className={`bg-white border-2 rounded-xl p-6 hover:shadow-lg transition-all duration-200 ${
+                        expert.featured
+                          ? "border-blue-200 bg-gradient-to-br from-blue-50 to-white"
+                          : "border-gray-200 hover:border-blue-300"
+                      }`}
+                    >
+                      {/* Expert Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center flex-1">
+                          <div className="relative">
+                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                              <User className="text-gray-600 w-8 h-8" />
+                            </div>
+                            <div
+                              className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white ${getAvailabilityColor(expert.availability)}`}
+                            ></div>
+                          </div>
+                          <div className="ml-4 flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="text-lg font-bold text-gray-900">
+                                {expert.name}
+                              </h3>
+                              {expert.featured && (
+                                <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">
+                                  Featured
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-blue-600 font-semibold text-sm">
+                              {expert.specialty}
+                            </p>
+                            <p className="text-gray-500 text-xs">
+                              {expert.location}
+                            </p>
+                          </div>
+                        </div>
 
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">Qualifications:</p>
-                <div className="space-y-1">
-                  {expert.qualifications.map((qual, index) => (
-                    <div key={index} className="flex items-center text-xs text-gray-700">
-                      <Award className="mr-1" size={12} />
-                      {qual}
+                        <div className="flex flex-col items-end gap-2">
+                          <button
+                            onClick={() => toggleFavorite(expert.id)}
+                            className={`p-2 rounded-full transition-colors ${
+                              favoriteExperts.includes(expert.id)
+                                ? "bg-red-100 text-red-600"
+                                : "bg-gray-100 text-gray-400 hover:text-red-500"
+                            }`}
+                          >
+                            <Heart
+                              className={`w-4 h-4 ${
+                                favoriteExperts.includes(expert.id)
+                                  ? "fill-current"
+                                  : ""
+                              }`}
+                            />
+                          </button>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              expert.availability === "available"
+                                ? "bg-green-100 text-green-700"
+                                : expert.availability === "busy"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {getAvailabilityText(expert.availability)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Stats Row */}
+                      <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div className="text-center p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center justify-center mb-1">
+                            <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                            <span className="text-sm font-bold text-gray-900 ml-1">
+                              {expert.rating}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {expert.totalConsultations} reviews
+                          </div>
+                        </div>
+
+                        <div className="text-center p-3 bg-gray-50 rounded-lg">
+                          <div className="text-sm font-bold text-gray-900 mb-1">
+                            {expert.experience}Y
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Experience
+                          </div>
+                        </div>
+
+                        <div className="text-center p-3 bg-gray-50 rounded-lg">
+                          <div className="text-sm font-bold text-green-600 mb-1">
+                            {expert.successRate}%
+                          </div>
+                          <div className="text-xs text-gray-500">Success</div>
+                        </div>
+                      </div>
+
+                      {/* Sub-specialties */}
+                      <div className="mb-4">
+                        <div className="text-xs font-medium text-gray-700 mb-2">
+                          Expertise:
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {expert.subSpecialties
+                            .slice(0, 3)
+                            .map((sub, index) => (
+                              <span
+                                key={index}
+                                className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                              >
+                                {sub}
+                              </span>
+                            ))}
+                          {expert.subSpecialties.length > 3 && (
+                            <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                              +{expert.subSpecialties.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Languages and Response Time */}
+                      <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                        <div className="flex items-center">
+                          <Languages className="w-4 h-4 text-gray-500 mr-2" />
+                          <span className="text-gray-700">
+                            {expert.languages.join(", ")}
+                          </span>
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 text-gray-500 mr-2" />
+                          <span className="text-gray-700">
+                            {expert.responseTime}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                        {expert.description}
+                      </p>
+
+                      {/* Pricing */}
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-lg font-bold text-green-700">
+                              First Session: FREE
+                            </div>
+                            <div className="text-xs text-green-600">
+                              Next sessions: ₹{expert.pricePerSession}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-gray-500">
+                              Response Time
+                            </div>
+                            <div className="text-sm font-medium text-gray-700">
+                              {expert.responseTime}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleBookConsultation(expert)}
+                          disabled={expert.availability === "offline"}
+                          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-sm font-medium"
+                        >
+                          <Calendar className="w-4 h-4 mr-2" />
+                          Book Consultation
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedExpert(expert);
+                            setShowExpertDetails(true);
+                          }}
+                          className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors text-sm font-medium"
+                        >
+                          View Details
+                        </button>
+                      </div>
+
+                      {/* Consultation Types */}
+                      <div className="flex justify-center mt-3 space-x-4">
+                        {expert.consultationTypes.map((type) => (
+                          <div
+                            key={type}
+                            className="flex items-center text-xs text-gray-500"
+                          >
+                            {type === "chat" && (
+                              <MessageCircle className="w-3 h-3 mr-1" />
+                            )}
+                            {type === "voice" && (
+                              <Phone className="w-3 h-3 mr-1" />
+                            )}
+                            {type === "video" && (
+                              <Video className="w-3 h-3 mr-1" />
+                            )}
+                            {type === "field" && (
+                              <MapPin className="w-3 h-3 mr-1" />
+                            )}
+                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
 
-              <p className="text-sm text-gray-600 mb-4">{expert.description}</p>
-
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleBookConsultation(expert)}
-                  disabled={expert.availability === 'offline'}
-                  className="flex-1 minimal-button minimal-button-primary disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  <Calendar size={16} className="mr-2" />
-                  Book Session
-                </button>
-                <button
-                  disabled={expert.availability !== 'available'}
-                  className="minimal-button minimal-button-secondary disabled:border-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed"
-                >
-                  <MessageCircle size={16} />
-                </button>
+                {filteredExperts.length === 0 && (
+                  <div className="text-center py-12">
+                    <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No experts found
+                    </h3>
+                    <p className="text-gray-500">
+                      Try adjusting your filters or search terms
+                    </p>
+                  </div>
+                )}
               </div>
+            )}
+
+            {activeTab === "history" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Consultation History
+                  </h3>
+                  <span className="text-sm text-gray-500">
+                    {consultationHistory.length} consultations
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  {consultationHistory.map((consultation) => (
+                    <div
+                      key={consultation.id}
+                      className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h4 className="text-lg font-semibold text-gray-900">
+                              {consultation.expertName}
+                            </h4>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                consultation.status === "completed"
+                                  ? "bg-green-100 text-green-700"
+                                  : consultation.status === "scheduled"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {consultation.status.charAt(0).toUpperCase() +
+                                consultation.status.slice(1)}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
+                            <div className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              {consultation.date}
+                            </div>
+                            <div className="flex items-center">
+                              <MessageCircle className="w-4 h-4 mr-2" />
+                              {consultation.type}
+                            </div>
+                          </div>
+
+                          {consultation.notes && (
+                            <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg">
+                              {consultation.notes}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col items-end gap-2">
+                          {consultation.rating && (
+                            <div className="flex items-center">
+                              <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                              <span className="text-sm font-medium ml-1">
+                                {consultation.rating}
+                              </span>
+                            </div>
+                          )}
+                          <button className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium hover:bg-blue-200 transition-colors">
+                            View Details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {consultationHistory.length === 0 && (
+                  <div className="text-center py-12">
+                    <Clock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No consultation history
+                    </h3>
+                    <p className="text-gray-500 mb-4">
+                      Start your first consultation with an expert
+                    </p>
+                    <button
+                      onClick={() => setActiveTab("browse")}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Browse Experts
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "favorites" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Favorite Experts
+                  </h3>
+                  <span className="text-sm text-gray-500">
+                    {favoriteExperts.length} favorites
+                  </span>
+                </div>
+
+                {favoriteExperts.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {experts
+                      .filter((expert) => favoriteExperts.includes(expert.id))
+                      .map((expert) => (
+                        <div
+                          key={expert.id}
+                          className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors"
+                        >
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center">
+                              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                <User className="text-gray-600 w-6 h-6" />
+                              </div>
+                              <div className="ml-3">
+                                <h4 className="text-lg font-semibold text-gray-900">
+                                  {expert.name}
+                                </h4>
+                                <p className="text-blue-600 font-medium text-sm">
+                                  {expert.specialty}
+                                </p>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => toggleFavorite(expert.id)}
+                              className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                            >
+                              <Heart className="w-4 h-4 fill-current" />
+                            </button>
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
+                              <span>{expert.rating}</span>
+                              <span className="ml-2">
+                                ({expert.totalConsultations} consultations)
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => handleBookConsultation(expert)}
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                            >
+                              Book Session
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No favorite experts yet
+                    </h3>
+                    <p className="text-gray-500 mb-4">
+                      Add experts to your favorites for quick access
+                    </p>
+                    <button
+                      onClick={() => setActiveTab("browse")}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Browse Experts
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "messages" && (
+              <div className="space-y-6">
+                <div className="text-center py-12">
+                  <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Messages Coming Soon
+                  </h3>
+                  <p className="text-gray-500">
+                    Real-time messaging with experts will be available soon
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 text-center">
+            <div className="text-2xl font-bold text-blue-600 mb-2">
+              1st FREE
             </div>
-          ))}
+            <div className="text-sm text-gray-600">Consultation</div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 text-center">
+            <div className="text-2xl font-bold text-green-600 mb-2">95%</div>
+            <div className="text-sm text-gray-600">Success Rate</div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 text-center">
+            <div className="text-2xl font-bold text-purple-600 mb-2">
+              &lt; 2hrs
+            </div>
+            <div className="text-sm text-gray-600">Response Time</div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 text-center">
+            <div className="text-2xl font-bold text-orange-600 mb-2">5000+</div>
+            <div className="text-sm text-gray-600">Happy Farmers</div>
+          </div>
         </div>
       </div>
 
       {/* Booking Modal */}
       {showBooking && selectedExpert && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Book Consultation</h3>
-              <button
-                onClick={() => setShowBooking(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="mb-4">
-              <p className="text-sm text-gray-600">Expert: <span className="font-medium">{selectedExpert.name}</span></p>
-              <p className="text-sm text-gray-600">Specialty: <span className="font-medium">{selectedExpert.specialty}</span></p>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">Session Price:</p>
-                <div className="text-right">
-                  <p className="text-lg font-bold text-emerald-600">FREE</p>
-                  <p className="text-xs text-gray-500">First consultation is complimentary</p>
-                  <p className="text-xs text-gray-400">Next sessions: ₹{selectedExpert.pricePerSession}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Consultation Type</label>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    onClick={() => setConsultationRequest(prev => ({ ...prev, type: 'chat' }))}
-                    className={`px-3 py-2 text-sm rounded-lg border transition-colors flex items-center justify-center ${
-                      consultationRequest.type === 'chat' 
-                        ? 'bg-emerald-600 text-white border-emerald-600' 
-                        : 'border-gray-300 hover:border-emerald-600'
-                    }`}
-                  >
-                    <MessageCircle size={16} className="mr-1" />
-                    Chat
-                  </button>
-                  <button
-                    onClick={() => setConsultationRequest(prev => ({ ...prev, type: 'voice' }))}
-                    className={`px-3 py-2 text-sm rounded-lg border transition-colors flex items-center justify-center ${
-                      consultationRequest.type === 'voice' 
-                        ? 'bg-emerald-600 text-white border-emerald-600' 
-                        : 'border-gray-300 hover:border-emerald-600'
-                    }`}
-                  >
-                    <Phone size={16} className="mr-1" />
-                    Voice
-                  </button>
-                  <button
-                    onClick={() => setConsultationRequest(prev => ({ ...prev, type: 'video' }))}
-                    className={`px-3 py-2 text-sm rounded-lg border transition-colors flex items-center justify-center ${
-                      consultationRequest.type === 'video' 
-                        ? 'bg-emerald-600 text-white border-emerald-600' 
-                        : 'border-gray-300 hover:border-emerald-600'
-                    }`}
-                  >
-                    <Video size={16} className="mr-1" />
-                    Video
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Urgency Level</label>
-                <select
-                  value={consultationRequest.urgency}
-                  onChange={(e) => setConsultationRequest(prev => ({ ...prev, urgency: e.target.value as 'low' | 'medium' | 'high' }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-900">
+                  Book Consultation
+                </h3>
+                <button
+                  onClick={() => setShowBooking(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
-                  <option value="low">Low - Within a week</option>
-                  <option value="medium">Medium - Within 2-3 days</option>
-                  <option value="high">High - Today/Tomorrow</option>
-                </select>
+                  <X className="w-5 h-5 text-gray-400" />
+                </button>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Describe your issue</label>
-                <textarea
-                  value={consultationRequest.description}
-                  onChange={(e) => setConsultationRequest(prev => ({ ...prev, description: e.target.value }))}
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                  placeholder="Describe your farming issue, crop problem, or what you need help with..."
-                />
+              {/* Expert Info */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                    <User className="text-gray-600 w-6 h-6" />
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <h4 className="font-semibold text-gray-900">
+                      {selectedExpert.name}
+                    </h4>
+                    <p className="text-blue-600 text-sm">
+                      {selectedExpert.specialty}
+                    </p>
+                    <div className="flex items-center text-sm text-gray-600 mt-1">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
+                      <span>{selectedExpert.rating}</span>
+                      <span className="mx-2">•</span>
+                      <span>{selectedExpert.responseTime} response</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-green-600">FREE</div>
+                    <div className="text-xs text-gray-500">First session</div>
+                    <div className="text-xs text-gray-400">
+                      Next: ₹{selectedExpert.pricePerSession}
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Time (Optional)</label>
-                <input
-                  type="datetime-local"
-                  value={consultationRequest.preferredTime}
-                  onChange={(e) => setConsultationRequest(prev => ({ ...prev, preferredTime: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                />
-              </div>
-            </div>
+              <div className="space-y-6">
+                {/* Consultation Type */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Consultation Type
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {selectedExpert.consultationTypes.map((type) => (
+                      <button
+                        key={type}
+                        onClick={() =>
+                          setConsultationRequest((prev) => ({ ...prev, type }))
+                        }
+                        className={`p-4 border-2 rounded-lg transition-all text-center ${
+                          consultationRequest.type === type
+                            ? "border-blue-500 bg-blue-50 text-blue-700"
+                            : "border-gray-200 hover:border-blue-300"
+                        }`}
+                      >
+                        <div className="flex flex-col items-center space-y-2">
+                          {type === "chat" && (
+                            <MessageCircle className="w-5 h-5" />
+                          )}
+                          {type === "voice" && <Phone className="w-5 h-5" />}
+                          {type === "video" && <Video className="w-5 h-5" />}
+                          {type === "field" && <MapPin className="w-5 h-5" />}
+                          <span className="text-sm font-medium capitalize">
+                            {type}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={() => setShowBooking(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitRequest}
-                disabled={!consultationRequest.description.trim()}
-                className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-              >
-                <Send size={16} className="mr-2" />
-                Send Request
-              </button>
+                {/* Priority Level */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Priority Level
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { value: "low", label: "Low", desc: "Within a week" },
+                      { value: "medium", label: "Medium", desc: "2-3 days" },
+                      { value: "high", label: "High", desc: "Today/Tomorrow" },
+                    ].map((priority) => (
+                      <button
+                        key={priority.value}
+                        onClick={() =>
+                          setConsultationRequest((prev) => ({
+                            ...prev,
+                            urgency: priority.value as any,
+                          }))
+                        }
+                        className={`p-3 border-2 rounded-lg transition-all text-center ${
+                          consultationRequest.urgency === priority.value
+                            ? "border-blue-500 bg-blue-50 text-blue-700"
+                            : "border-gray-200 hover:border-blue-300"
+                        }`}
+                      >
+                        <div className="font-medium text-sm">
+                          {priority.label}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {priority.desc}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Describe Your Issue
+                  </label>
+                  <textarea
+                    value={consultationRequest.description}
+                    onChange={(e) =>
+                      setConsultationRequest((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                    placeholder="Please describe your farming issue, crop problem, or what you need help with in detail. Include relevant information like crop type, symptoms, duration, etc."
+                  />
+                  <div className="text-xs text-gray-500 mt-1">
+                    {consultationRequest.description.length}/500 characters
+                  </div>
+                </div>
+
+                {/* Preferred Time */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Preferred Time (Optional)
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={consultationRequest.preferredTime}
+                    onChange={(e) =>
+                      setConsultationRequest((prev) => ({
+                        ...prev,
+                        preferredTime: e.target.value,
+                      }))
+                    }
+                    min={new Date().toISOString().slice(0, 16)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Available Slots */}
+                {selectedExpert.slots.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Available Today
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedExpert.slots.map((slot) => (
+                        <button
+                          key={slot}
+                          className="px-3 py-2 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 text-sm transition-colors"
+                        >
+                          {slot}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3 mt-8 pt-6 border-t border-gray-200">
+                <button
+                  onClick={() => setShowBooking(false)}
+                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmitRequest}
+                  disabled={!consultationRequest.description.trim()}
+                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Send Request
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Quick Tips */}
-      <div className="bg-emerald-50 p-6 rounded-xl border border-emerald-200">
-        <h3 className="text-lg font-semibold text-emerald-900 mb-3 flex items-center">
-          <Badge className="mr-2" size={20} />
-          Tips for Better Consultations
-        </h3>
-        <ul className="space-y-2 text-emerald-800">
-          <li className="flex items-start">
-            <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-            Your first consultation with any expert is completely FREE
-          </li>
-          <li className="flex items-start">
-            <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-            Prepare clear photos of your crops or problems before the session
-          </li>
-          <li className="flex items-start">
-            <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-            Have your farm details ready (size, location, current crops, soil type)
-          </li>
-          <li className="flex items-start">
-            <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-            Write down your specific questions or concerns beforehand
-          </li>
-          <li className="flex items-start">
-            <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-            Choose video calls for visual problems like diseases or pest issues
-          </li>
-        </ul>
-      </div>
+      {/* Expert Details Modal */}
+      {showExpertDetails && selectedExpert && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-900">
+                  Expert Profile
+                </h3>
+                <button
+                  onClick={() => setShowExpertDetails(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-400" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Expert Info */}
+                <div className="lg:col-span-1">
+                  <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                    <div className="text-center mb-4">
+                      <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <User className="text-gray-600 w-10 h-10" />
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">
+                        {selectedExpert.name}
+                      </h4>
+                      <p className="text-blue-600 font-semibold">
+                        {selectedExpert.specialty}
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        {selectedExpert.location}
+                      </p>
+                    </div>
+
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Rating:</span>
+                        <div className="flex items-center">
+                          <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
+                          <span className="font-medium">
+                            {selectedExpert.rating}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Experience:</span>
+                        <span className="font-medium">
+                          {selectedExpert.experience} years
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Consultations:</span>
+                        <span className="font-medium">
+                          {selectedExpert.totalConsultations}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Success Rate:</span>
+                        <span className="font-medium text-green-600">
+                          {selectedExpert.successRate}%
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Response Time:</span>
+                        <span className="font-medium">
+                          {selectedExpert.responseTime}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setShowExpertDetails(false);
+                      handleBookConsultation(selectedExpert);
+                    }}
+                    className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    Book Consultation
+                  </button>
+                </div>
+
+                {/* Detailed Info */}
+                <div className="lg:col-span-2 space-y-6">
+                  <div>
+                    <h5 className="font-semibold text-gray-900 mb-3">About</h5>
+                    <p className="text-gray-700">
+                      {selectedExpert.description}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-semibold text-gray-900 mb-3">
+                      Specializations
+                    </h5>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedExpert.subSpecialties.map((spec, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
+                        >
+                          {spec}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h5 className="font-semibold text-gray-900 mb-3">
+                      Qualifications
+                    </h5>
+                    <ul className="space-y-2">
+                      {selectedExpert.qualifications.map((qual, index) => (
+                        <li key={index} className="flex items-center text-sm">
+                          <GraduationCap className="w-4 h-4 text-blue-600 mr-2" />
+                          {qual}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 className="font-semibold text-gray-900 mb-3">
+                      Certifications
+                    </h5>
+                    <ul className="space-y-2">
+                      {selectedExpert.certifications.map((cert, index) => (
+                        <li key={index} className="flex items-center text-sm">
+                          <Award className="w-4 h-4 text-green-600 mr-2" />
+                          {cert}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 className="font-semibold text-gray-900 mb-3">
+                      Languages
+                    </h5>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedExpert.languages.map((lang, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                        >
+                          {lang}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {selectedExpert.reviews.length > 0 && (
+                    <div>
+                      <h5 className="font-semibold text-gray-900 mb-3">
+                        Recent Reviews
+                      </h5>
+                      <div className="space-y-4">
+                        {selectedExpert.reviews.map((review) => (
+                          <div
+                            key={review.id}
+                            className="bg-gray-50 rounded-lg p-4"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center">
+                                <span className="font-medium text-gray-900">
+                                  {review.userName}
+                                </span>
+                                {review.verified && (
+                                  <CheckCircle className="w-4 h-4 text-green-500 ml-2" />
+                                )}
+                              </div>
+                              <div className="flex items-center">
+                                <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
+                                <span className="text-sm">{review.rating}</span>
+                              </div>
+                            </div>
+                            <p className="text-gray-700 text-sm">
+                              {review.comment}
+                            </p>
+                            <p className="text-gray-500 text-xs mt-2">
+                              {review.date}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

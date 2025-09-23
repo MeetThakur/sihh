@@ -1,8 +1,39 @@
-import React, { useState } from 'react';
-import { Leaf, Calendar, DollarSign, Clock, Bell, CheckCircle, Droplet, AlertCircle } from 'lucide-react';
-import { generateCropRecommendations } from '../utils/aiService';
-import { useLanguage } from '../contexts/LanguageContext';
-import SoilDetection from './SoilDetection';
+import React, { useState, useEffect } from "react";
+import {
+  Leaf,
+  Calendar,
+  DollarSign,
+  Clock,
+  Bell,
+  CheckCircle,
+  Droplet,
+  AlertCircle,
+  TrendingUp,
+  MapPin,
+  Thermometer,
+  Cloud,
+  Sun,
+  BarChart3,
+  PieChart,
+  Target,
+  Shield,
+  Lightbulb,
+  Camera,
+  Users,
+  BookOpen,
+  Star,
+  ChevronRight,
+  ChevronDown,
+  Filter,
+  RefreshCw,
+  Download,
+  Share2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import { generateCropRecommendations } from "../utils/aiService";
+import { useLanguage } from "../contexts/LanguageContext";
+import SoilDetection from "./SoilDetection";
 
 interface FarmInput {
   budget: string;
@@ -10,17 +41,25 @@ interface FarmInput {
   soilType: string;
   weather: string;
   farmSize: string;
+  location?: string;
+  previousCrop?: string;
+  irrigationType?: string;
+  organicPreference?: boolean;
 }
 
 interface CropRecommendation {
   name: string;
-  suitability: 'High' | 'Medium' | 'Low';
+  suitability: "High" | "Medium" | "Low";
   expectedYield: string;
   roi: string;
   requirements: string[];
   tips: string[];
   estimatedCost?: number;
   suitabilityScore?: string;
+  marketPrice?: string;
+  demandTrend?: "High" | "Medium" | "Low";
+  riskLevel?: "Low" | "Medium" | "High";
+  sustainabilityScore?: number;
 }
 
 interface CalendarActivity {
@@ -29,11 +68,19 @@ interface CalendarActivity {
   activity: string;
   description: string;
   icon: string;
-  type: 'sowing' | 'irrigation' | 'fertilizer' | 'pest' | 'harvest';
+  type:
+    | "sowing"
+    | "irrigation"
+    | "fertilizer"
+    | "pest"
+    | "harvest"
+    | "monitoring";
   budget?: string;
   completed?: boolean;
   weatherDependent?: boolean;
   alternatives?: string[];
+  priority: "High" | "Medium" | "Low";
+  estimatedHours?: number;
 }
 
 interface FasalCalendar {
@@ -43,421 +90,750 @@ interface FasalCalendar {
   activities: CalendarActivity[];
   weatherAlerts: string[];
   budgetTotal: string;
+  progressPercentage: number;
 }
+
+interface WeatherData {
+  temperature: number;
+  humidity: number;
+  rainfall: number;
+  forecast: string;
+}
+
+interface MarketData {
+  currentPrice: string;
+  trend: "up" | "down" | "stable";
+  demandLevel: "High" | "Medium" | "Low";
+}
+
+type TabType = "quick" | "detailed" | "calendar" | "analytics" | "history";
 
 const CropAdvisory: React.FC = () => {
   const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState<TabType>("quick");
   const [farmInput, setFarmInput] = useState<FarmInput>({
-    budget: '',
-    season: '',
-    soilType: '',
-    weather: '',
-    farmSize: ''
-  });  const [recommendations, setRecommendations] = useState<CropRecommendation[]>([]);
+    budget: "",
+    season: "",
+    soilType: "",
+    weather: "",
+    farmSize: "",
+    location: "",
+    previousCrop: "",
+    irrigationType: "",
+    organicPreference: false,
+  });
+
+  const [recommendations, setRecommendations] = useState<CropRecommendation[]>(
+    [],
+  );
   const [loading, setLoading] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [calendarData, setCalendarData] = useState<FasalCalendar | null>(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [marketData, setMarketData] = useState<Record<string, MarketData>>({});
+  const [compareMode, setCompareMode] = useState(false);
+  const [selectedCrops, setSelectedCrops] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    suitability: "",
+    riskLevel: "",
+    sustainabilityMin: 0,
+  });
+
+  // Mock weather data
+  useEffect(() => {
+    setWeatherData({
+      temperature: 28,
+      humidity: 65,
+      rainfall: 120,
+      forecast: "Partly cloudy with chance of rain",
+    });
+
+    setMarketData({
+      "Rice (Paddy)": {
+        currentPrice: "₹2,200/quintal",
+        trend: "up",
+        demandLevel: "High",
+      },
+      Wheat: {
+        currentPrice: "₹2,150/quintal",
+        trend: "stable",
+        demandLevel: "Medium",
+      },
+      "Maize (Corn)": {
+        currentPrice: "₹1,800/quintal",
+        trend: "up",
+        demandLevel: "High",
+      },
+      Sugarcane: {
+        currentPrice: "₹380/quintal",
+        trend: "down",
+        demandLevel: "Medium",
+      },
+    });
+  }, []);
+
+  const tabs = [
+    {
+      id: "quick",
+      label: "Quick Advisory",
+      icon: Leaf,
+      desc: "Get instant recommendations",
+    },
+    {
+      id: "detailed",
+      label: "Detailed Analysis",
+      icon: BarChart3,
+      desc: "Comprehensive crop analysis",
+    },
+    {
+      id: "calendar",
+      label: "Fasal Calendar",
+      icon: Calendar,
+      desc: "Step-by-step farming plan",
+    },
+    {
+      id: "analytics",
+      label: "Farm Analytics",
+      icon: PieChart,
+      desc: "Performance insights",
+    },
+    {
+      id: "history",
+      label: "Advisory History",
+      icon: BookOpen,
+      desc: "Past recommendations",
+    },
+  ];
 
   const generateFasalCalendar = (cropName: string): FasalCalendar => {
-    // Generate sample calendar based on crop type and farm inputs
     const baseActivities: CalendarActivity[] = [
       {
-        id: '1',
+        id: "1",
         week: 1,
-        activity: 'Soil Preparation & Sowing',
-        description: 'Prepare soil, select quality seeds, and sow according to recommended spacing',
-        icon: '🌱',
-        type: 'sowing',
-        budget: '₹2,000-3,000',
+        activity: "Land Preparation & Soil Testing",
+        description:
+          "Prepare soil, conduct pH and nutrient testing, select quality seeds",
+        icon: "🌱",
+        type: "sowing",
+        budget: "₹2,500-4,000",
         completed: false,
         weatherDependent: true,
-        alternatives: ['Use organic compost instead of chemical fertilizers']
+        alternatives: ["Use organic compost instead of chemical fertilizers"],
+        priority: "High",
+        estimatedHours: 16,
       },
       {
-        id: '2',
+        id: "2",
         week: 2,
-        activity: 'Initial Irrigation',
-        description: 'Provide adequate water for seed germination',
-        icon: '💧',
-        type: 'irrigation',
-        budget: '₹500-800',
+        activity: "Sowing & Initial Irrigation",
+        description:
+          "Sow seeds with proper spacing and provide initial watering",
+        icon: "💧",
+        type: "irrigation",
+        budget: "₹800-1,200",
         completed: false,
         weatherDependent: true,
-        alternatives: ['Rainwater harvesting if available']
+        alternatives: [
+          "Rainwater harvesting if available",
+          "Drip irrigation for water efficiency",
+        ],
+        priority: "High",
+        estimatedHours: 12,
       },
       {
-        id: '3',
+        id: "3",
         week: 4,
-        activity: 'First Fertilizer Application',
-        description: 'Apply nitrogen-rich fertilizer for initial growth',
-        icon: '🧪',
-        type: 'fertilizer',
-        budget: '₹1,500-2,500',
+        activity: "First Fertilizer Application",
+        description: "Apply nitrogen-rich fertilizer for initial growth boost",
+        icon: "🧪",
+        type: "fertilizer",
+        budget: "₹2,000-3,500",
         completed: false,
-        alternatives: ['Use vermicompost or organic manure']
+        alternatives: [
+          "Use vermicompost or organic manure",
+          "Biofertilizers for sustainable farming",
+        ],
+        priority: "High",
+        estimatedHours: 8,
       },
       {
-        id: '4',
+        id: "4",
         week: 6,
-        activity: 'Pest Monitoring',
-        description: 'Check for early signs of pests and diseases',
-        icon: '🐛',
-        type: 'pest',
-        budget: '₹800-1,200',
+        activity: "Pest & Disease Monitoring",
+        description: "Regular inspection for early signs of pests and diseases",
+        icon: "🐛",
+        type: "pest",
+        budget: "₹1,000-1,500",
         completed: false,
-        alternatives: ['Use neem oil or biological pest control']
+        alternatives: [
+          "Use neem oil or biological pest control",
+          "Integrated pest management",
+        ],
+        priority: "Medium",
+        estimatedHours: 6,
       },
       {
-        id: '5',
+        id: "5",
         week: 8,
-        activity: 'Mid-season Irrigation',
-        description: 'Critical watering during growth phase',
-        icon: '💧',
-        type: 'irrigation',
-        budget: '₹600-1,000',
+        activity: "Mid-season Care & Weeding",
+        description:
+          "Remove weeds, check plant health, apply secondary fertilizers",
+        icon: "🌿",
+        type: "monitoring",
+        budget: "₹1,200-1,800",
         completed: false,
-        weatherDependent: true
+        weatherDependent: false,
+        priority: "Medium",
+        estimatedHours: 14,
       },
       {
-        id: '6',
+        id: "6",
         week: 12,
-        activity: 'Final Pest Check',
-        description: 'Last opportunity to control pests before harvest',
-        icon: '🐛',
-        type: 'pest',
-        budget: '₹500-800',
-        completed: false
+        activity: "Pre-harvest Preparation",
+        description: "Final pest check, prepare harvesting equipment",
+        icon: "🔧",
+        type: "monitoring",
+        budget: "₹800-1,200",
+        completed: false,
+        priority: "Medium",
+        estimatedHours: 8,
       },
       {
-        id: '7',
+        id: "7",
         week: 16,
-        activity: 'Harvest',
-        description: 'Harvest when crop reaches maturity',
-        icon: '🌾',
-        type: 'harvest',
-        budget: '₹2,000-3,000',
+        activity: "Harvest & Post-harvest",
+        description:
+          "Harvest at optimal time, proper storage and market preparation",
+        icon: "🌾",
+        type: "harvest",
+        budget: "₹3,000-5,000",
         completed: false,
-        weatherDependent: true
-      }
+        weatherDependent: true,
+        priority: "High",
+        estimatedHours: 24,
+      },
     ];
+
+    const completedCount = baseActivities.filter((a) => a.completed).length;
+    const progressPercentage = (completedCount / baseActivities.length) * 100;
 
     return {
       cropName,
-      season: farmInput.season || 'Kharif 2025',
+      season: farmInput.season || "Kharif 2025",
       totalWeeks: 16,
       activities: baseActivities,
       weatherAlerts: [
-        'Monitor rainfall patterns - excess water can damage young plants',
-        'Watch for drought conditions during weeks 8-12'
+        "Monitor rainfall patterns - excess water can damage young plants",
+        "Watch for drought conditions during weeks 8-12",
+        "Heavy rain expected next week - postpone fertilizer application",
       ],
-      budgetTotal: '₹8,000-12,000'
+      budgetTotal: "₹12,000-18,000",
+      progressPercentage,
     };
   };
 
-  const generateCalendar = (cropName: string) => {
-    const calendar = generateFasalCalendar(cropName);
-    setCalendarData(calendar);
-    setShowCalendar(true);
-  };
-
-  const toggleActivityComplete = (activityId: string) => {
-    if (calendarData) {
-      const updatedActivities = calendarData.activities.map(activity =>
-        activity.id === activityId
-          ? { ...activity, completed: !activity.completed }
-          : activity
-      );
-      setCalendarData({ ...calendarData, activities: updatedActivities });
-    }
-  };
-
-  const getActivityTypeColor = (type: string) => {
-    switch (type) {
-      case 'sowing': return 'bg-green-100 text-green-800';
-      case 'irrigation': return 'bg-blue-100 text-blue-800';
-      case 'fertilizer': return 'bg-purple-100 text-purple-800';
-      case 'pest': return 'bg-red-100 text-red-800';
-      case 'harvest': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  // Use AI service for dynamic recommendations with ROI in rupees
   const generateRecommendations = async () => {
     setLoading(true);
-    
+
     try {
-      // Call the AI service with farm input data
       const aiRecommendations = await generateCropRecommendations(farmInput);
-      
-      // Filter recommendations based on budget (minimum 10,000)
-      let filtered = aiRecommendations;
+
+      let filtered = aiRecommendations.map((rec) => ({
+        ...rec,
+        marketPrice: marketData[rec.name]?.currentPrice || "N/A",
+        demandTrend: marketData[rec.name]?.demandLevel || "Medium",
+        riskLevel: farmInput.weather === "rainy" ? "Medium" : "Low",
+        sustainabilityScore: Math.floor(Math.random() * 40) + 60, // 60-100
+      }));
+
       const budget = farmInput.budget ? Number(farmInput.budget) : 0;
       if (budget >= 10000) {
-        filtered = aiRecommendations.filter(rec => {
+        filtered = filtered.filter((rec) => {
           const cost = (rec as any).estimatedCost || 0;
           return cost <= budget;
         });
       }
 
+      // Apply filters
+      if (filters.suitability) {
+        filtered = filtered.filter(
+          (rec) => rec.suitability === filters.suitability,
+        );
+      }
+      if (filters.riskLevel) {
+        filtered = filtered.filter(
+          (rec) => rec.riskLevel === filters.riskLevel,
+        );
+      }
+      if (filters.sustainabilityMin > 0) {
+        filtered = filtered.filter(
+          (rec) => (rec.sustainabilityScore || 0) >= filters.sustainabilityMin,
+        );
+      }
+
       setRecommendations(filtered);
     } catch (error) {
-      console.error('Error generating recommendations:', error);
-      // Fallback to static recommendations if AI service fails
-      const fallbackRecommendations = getStaticFallback(farmInput);
+      console.error("Error generating recommendations:", error);
+      const fallbackRecommendations = getEnhancedStaticFallback(farmInput);
       setRecommendations(fallbackRecommendations || []);
     }
-    
+
     setLoading(false);
   };
 
-  // Fallback static recommendations if AI fails - with weather-specific ROI
-  const getStaticFallback = (farmInput: FarmInput): CropRecommendation[] => {
+  const getEnhancedStaticFallback = (
+    farmInput: FarmInput,
+  ): CropRecommendation[] => {
     const budget = Number(farmInput.budget) || 0;
-    
-    if (farmInput.season === 'kharif') {
-      if (farmInput.weather === 'rainy') {
+
+    if (farmInput.season === "kharif") {
+      if (farmInput.weather === "rainy") {
         return [
           {
-            name: 'Rice (Paddy)',
-            suitability: 'High' as const,
-            expectedYield: '45-55 quintals/hectare',
-            roi: '₹45,000 - ₹65,000', // Higher ROI due to optimal water conditions
-            requirements: ['Abundant water supply', 'Well-prepared field', 'Pest management in wet conditions'],
-            tips: ['Monitor for blast disease in rainy conditions', 'Ensure proper drainage', 'Use disease-resistant varieties'],
-            estimatedCost: 25000
+            name: "Rice (Paddy)",
+            suitability: "High" as const,
+            expectedYield: "45-55 quintals/hectare",
+            roi: "₹45,000 - ₹65,000",
+            requirements: [
+              "Abundant water supply",
+              "Well-prepared field",
+              "Pest management",
+            ],
+            tips: [
+              "Monitor for blast disease",
+              "Ensure proper drainage",
+              "Use resistant varieties",
+            ],
+            estimatedCost: 25000,
+            marketPrice: "₹2,200/quintal",
+            demandTrend: "High",
+            riskLevel: "Medium",
+            sustainabilityScore: 75,
           },
           {
-            name: 'Maize (Corn)',
-            suitability: 'High' as const,
-            expectedYield: '65-85 quintals/hectare',
-            roi: '₹45,000 - ₹65,000', // Good ROI with adequate rainfall
-            requirements: ['Well-drained soil to prevent waterlogging', 'Balanced nutrition', 'Fall armyworm monitoring'],
-            tips: ['Ensure good drainage in rainy season', 'Apply fertilizers before heavy rains', 'Monitor for fungal diseases'],
-            estimatedCost: 20000
-          }
-        ].filter(rec => budget === 0 || rec.estimatedCost <= budget);
-      } else if (farmInput.weather === 'hot_humid') {
-        return [
-          {
-            name: 'Rice (Paddy)',
-            suitability: 'Medium' as const,
-            expectedYield: '35-45 quintals/hectare',
-            roi: '₹30,000 - ₹45,000', // Lower ROI due to heat stress and higher irrigation costs
-            requirements: ['Continuous irrigation', 'Heat-tolerant varieties', 'Higher water management costs'],
-            tips: ['Use heat-resistant varieties', 'Increase irrigation frequency', 'Monitor for heat stress symptoms'],
-            estimatedCost: 30000
+            name: "Maize (Corn)",
+            suitability: "High" as const,
+            expectedYield: "65-85 quintals/hectare",
+            roi: "₹45,000 - ₹65,000",
+            requirements: [
+              "Well-drained soil",
+              "Balanced nutrition",
+              "Fall armyworm monitoring",
+            ],
+            tips: [
+              "Ensure good drainage",
+              "Apply fertilizers before rains",
+              "Monitor diseases",
+            ],
+            estimatedCost: 20000,
+            marketPrice: "₹1,800/quintal",
+            demandTrend: "High",
+            riskLevel: "Low",
+            sustainabilityScore: 80,
           },
-          {
-            name: 'Sugarcane',
-            suitability: 'High' as const,
-            expectedYield: '85-105 tonnes/hectare',
-            roi: '₹90,000 - ₹130,000', // Higher ROI as sugarcane thrives in hot humid conditions
-            requirements: ['High water requirement', 'Rich soil', 'Long growing season benefits from heat'],
-            tips: ['Optimal conditions for sugarcane', 'Regular irrigation essential', 'Higher yields expected in hot humid weather'],
-            estimatedCost: 45000
-          }
-        ].filter(rec => budget === 0 || rec.estimatedCost <= budget);
-      } else { // moderate weather
-        return [
-          {
-            name: 'Rice (Paddy)',
-            suitability: 'Medium' as const,
-            expectedYield: '40-50 quintals/hectare',
-            roi: '₹38,000 - ₹55,000', // Moderate ROI for moderate conditions
-            requirements: ['Balanced water supply', 'Good field preparation', 'Standard pest management'],
-            tips: ['Moderate conditions require balanced approach', 'Standard irrigation schedule', 'Regular monitoring needed'],
-            estimatedCost: 26000
-          }
-        ].filter(rec => budget === 0 || rec.estimatedCost <= budget);
-      }
-    } else if (farmInput.season === 'rabi') {
-      if (farmInput.weather === 'cool_dry') {
-        return [
-          {
-            name: 'Wheat',
-            suitability: 'High' as const,
-            expectedYield: '50-60 quintals/hectare',
-            roi: '₹45,000 - ₹60,000', // Optimal ROI for ideal wheat conditions
-            requirements: ['Cool weather ideal for wheat', 'Timely sowing', 'Controlled irrigation'],
-            tips: ['Perfect conditions for wheat', 'Sow in November for best results', 'Expect higher yields'],
-            estimatedCost: 22000
-          },
-          {
-            name: 'Mustard',
-            suitability: 'High' as const,
-            expectedYield: '18-22 quintals/hectare',
-            roi: '₹40,000 - ₹55,000', // Higher ROI in ideal cool dry conditions
-            requirements: ['Cool dry weather perfect for mustard', 'Minimal irrigation needed', 'Timely harvesting'],
-            tips: ['Ideal weather for mustard cultivation', 'Lower input costs due to less irrigation', 'Higher oil content expected'],
-            estimatedCost: 16000
-          }
-        ].filter(rec => budget === 0 || rec.estimatedCost <= budget);
-      } else if (farmInput.weather === 'moderate') {
-        return [
-          {
-            name: 'Wheat',
-            suitability: 'Medium' as const,
-            expectedYield: '40-50 quintals/hectare',
-            roi: '₹35,000 - ₹50,000', // Lower ROI than ideal cool conditions
-            requirements: ['Moderate weather may require more irrigation', 'Disease monitoring needed', 'Temperature fluctuation management'],
-            tips: ['Monitor for temperature stress', 'May need additional irrigation', 'Watch for disease pressure'],
-            estimatedCost: 24000
-          }
-        ].filter(rec => budget === 0 || rec.estimatedCost <= budget);
+        ].filter((rec) => budget === 0 || rec.estimatedCost <= budget);
       }
     }
-    
-    // Default fallback for any other conditions
+
     return [
       {
-        name: 'Mixed Farming',
-        suitability: 'Medium' as const,
-        expectedYield: '200-300 quintals/hectare',
-        roi: farmInput.weather === 'hot_humid' ? '₹60,000 - ₹90,000' : '₹50,000 - ₹80,000',
-        requirements: ['Diversified approach', 'Weather-appropriate crops', 'Risk management'],
-        tips: ['Consult local agricultural officer', 'Choose weather-suitable varieties', 'Market timing important'],
-        estimatedCost: 30000
-      }
-    ].filter(rec => budget === 0 || rec.estimatedCost <= budget);
+        name: "Mixed Farming",
+        suitability: "Medium" as const,
+        expectedYield: "200-300 quintals/hectare",
+        roi: "₹50,000 - ₹80,000",
+        requirements: [
+          "Diversified approach",
+          "Weather-appropriate crops",
+          "Risk management",
+        ],
+        tips: [
+          "Consult local officer",
+          "Choose suitable varieties",
+          "Market timing important",
+        ],
+        estimatedCost: 30000,
+        marketPrice: "Variable",
+        demandTrend: "Medium",
+        riskLevel: "Low",
+        sustainabilityScore: 85,
+      },
+    ];
   };
 
-  const handleInputChange = (field: keyof FarmInput, value: string) => {
-    setFarmInput(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof FarmInput,
+    value: string | boolean,
+  ) => {
+    setFarmInput((prev) => ({ ...prev, [field]: value }));
   };
 
   const getSuitabilityColor = (suitability: string) => {
     switch (suitability) {
-      case 'High': return 'text-emerald-600 bg-emerald-100';
-      case 'Medium': return 'text-amber-600 bg-amber-100';
-      case 'Low': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case "High":
+        return "text-emerald-600 bg-emerald-100 border-emerald-200";
+      case "Medium":
+        return "text-amber-600 bg-amber-100 border-amber-200";
+      case "Low":
+        return "text-red-600 bg-red-100 border-red-200";
+      default:
+        return "text-gray-600 bg-gray-100 border-gray-200";
     }
   };
 
-  return (
-    <div className="space-y-8">
-      {/* Minimal Header */}
-      <div className="text-center">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-          {t('cropAdvisory.title')}
-        </h1>
-        <p className="text-gray-600">Crop Recommendations for Your Farm</p>
-      </div>
+  const getRiskColor = (risk: string) => {
+    switch (risk) {
+      case "Low":
+        return "text-green-600 bg-green-50";
+      case "Medium":
+        return "text-yellow-600 bg-yellow-50";
+      case "High":
+        return "text-red-600 bg-red-50";
+      default:
+        return "text-gray-600 bg-gray-50";
+    }
+  };
 
-      {/* Minimal Input Form */}
-      <div className="minimal-card p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-          <Leaf className="text-gray-600 mr-2" size={20} />
-          Farm Information
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('cropAdvisory.budget')} (Min: ₹10,000)
-            </label>
-            <input
-              type="number"
-              value={farmInput.budget}
-              onChange={(e) => handleInputChange('budget', e.target.value)}
-              className="minimal-input"
-              placeholder="50000"
-              min="10000"
-            />
+  const getTrendIcon = (trend: string) => {
+    switch (trend) {
+      case "up":
+        return <TrendingUp className="text-green-500" size={16} />;
+      case "down":
+        return <TrendingUp className="text-red-500 rotate-180" size={16} />;
+      default:
+        return <TrendingUp className="text-gray-500" size={16} />;
+    }
+  };
+
+  const toggleCropSelection = (cropName: string) => {
+    if (selectedCrops.includes(cropName)) {
+      setSelectedCrops(selectedCrops.filter((name) => name !== cropName));
+    } else if (selectedCrops.length < 3) {
+      setSelectedCrops([...selectedCrops, cropName]);
+    }
+  };
+
+  const QuickAdvisoryTab = () => (
+    <div className="space-y-6">
+      {/* Weather Integration */}
+      {weatherData && (
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <Cloud className="mr-2 text-blue-600" size={20} />
+              Current Weather Conditions
+            </h3>
+            <button className="text-blue-600 hover:text-blue-700">
+              <RefreshCw size={16} />
+            </button>
           </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <Thermometer className="text-orange-500 mx-auto mb-2" size={20} />
+              <p className="text-sm text-gray-600">Temperature</p>
+              <p className="font-semibold text-gray-900">
+                {weatherData.temperature}°C
+              </p>
+            </div>
+            <div className="text-center">
+              <Droplet className="text-blue-500 mx-auto mb-2" size={20} />
+              <p className="text-sm text-gray-600">Humidity</p>
+              <p className="font-semibold text-gray-900">
+                {weatherData.humidity}%
+              </p>
+            </div>
+            <div className="text-center">
+              <Cloud className="text-gray-500 mx-auto mb-2" size={20} />
+              <p className="text-sm text-gray-600">Rainfall</p>
+              <p className="font-semibold text-gray-900">
+                {weatherData.rainfall}mm
+              </p>
+            </div>
+            <div className="text-center">
+              <Sun className="text-yellow-500 mx-auto mb-2" size={20} />
+              <p className="text-sm text-gray-600">Forecast</p>
+              <p className="font-semibold text-gray-900 text-xs">
+                Partly Cloudy
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('cropAdvisory.season')}
-            </label>
-            <select
-              value={farmInput.season}
-              onChange={(e) => handleInputChange('season', e.target.value)}
-              className="minimal-input"
+      {/* Enhanced Input Form */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+            <Leaf className="text-green-600 mr-3" size={24} />
+            Farm Information
+          </h2>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 ${
+                showFilters
+                  ? "bg-blue-100 text-blue-700 border border-blue-200"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
             >
-              <option value="">{t('action.select')} {t('cropAdvisory.season')}</option>
-              <option value="kharif">{t('season.kharif')}</option>
-              <option value="rabi">{t('season.rabi')}</option>
-              <option value="zaid">{t('season.zaid')}</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('cropAdvisory.soilType')}
-            </label>
-            <select
-              value={farmInput.soilType}
-              onChange={(e) => handleInputChange('soilType', e.target.value)}
-              className="minimal-input"
-            >
-              <option value="">{t('action.select')} {t('cropAdvisory.soilType')}</option>
-              <option value="clay">{t('soil.clay')}</option>
-              <option value="sandy">{t('soil.sandy')}</option>
-              <option value="loam">{t('soil.loam')}</option>
-              <option value="silt">{t('soil.silt')}</option>
-              <option value="black_cotton">{t('soil.black')}</option>
-              <option value="red">{t('soil.red')}</option>
-            </select>
-          </div>
-
-          {/* Minimal Soil Image Detection */}
-          <div className="col-span-full bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <SoilDetection 
-              onSoilTypeDetected={(detectedSoilType) => handleInputChange('soilType', detectedSoilType)}
-              currentSoilType={farmInput.soilType}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('cropAdvisory.weather')}
-            </label>
-            <select
-              value={farmInput.weather}
-              onChange={(e) => handleInputChange('weather', e.target.value)}
-              className="minimal-input"
-            >
-              <option value="">{t('action.select')} {t('cropAdvisory.weather')}</option>
-              <option value="hot_humid">{t('weather.hotHumid')}</option>
-              <option value="moderate">{t('weather.moderate')}</option>
-              <option value="cool_dry">{t('weather.coolDry')}</option>
-              <option value="rainy">{t('weather.rainy')}</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('cropAdvisory.farmSize')} (acres)
-            </label>
-            <input
-              type="number"
-              value={farmInput.farmSize}
-              onChange={(e) => handleInputChange('farmSize', e.target.value)}
-              className="minimal-input"
-              placeholder="2.5"
-              step="0.1"
-            />
+              <Filter size={16} />
+              <span>Filters</span>
+            </button>
           </div>
         </div>
 
-        <div className="mt-6 text-center">
+        {/* Advanced Filters */}
+        {showFilters && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">
+              Filter Recommendations
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-2">
+                  Suitability
+                </label>
+                <select
+                  value={filters.suitability}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      suitability: e.target.value,
+                    }))
+                  }
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">All Levels</option>
+                  <option value="High">High Suitability</option>
+                  <option value="Medium">Medium Suitability</option>
+                  <option value="Low">Low Suitability</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-2">
+                  Risk Level
+                </label>
+                <select
+                  value={filters.riskLevel}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      riskLevel: e.target.value,
+                    }))
+                  }
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">All Risk Levels</option>
+                  <option value="Low">Low Risk</option>
+                  <option value="Medium">Medium Risk</option>
+                  <option value="High">High Risk</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-2">
+                  Min Sustainability Score
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={filters.sustainabilityMin}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      sustainabilityMin: Number(e.target.value),
+                    }))
+                  }
+                  className="w-full"
+                />
+                <div className="text-xs text-gray-600 mt-1">
+                  {filters.sustainabilityMin}/100
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              {t("cropAdvisory.budget")} (Min: ₹10,000)
+            </label>
+            <div className="relative">
+              <DollarSign
+                className="absolute left-3 top-3 text-gray-400"
+                size={18}
+              />
+              <input
+                type="number"
+                value={farmInput.budget}
+                onChange={(e) => handleInputChange("budget", e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="50000"
+                min="10000"
+              />
+            </div>
+            {farmInput.budget && Number(farmInput.budget) < 10000 && (
+              <p className="text-xs text-red-600">Minimum budget is ₹10,000</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              {t("cropAdvisory.season")}
+            </label>
+            <select
+              value={farmInput.season}
+              onChange={(e) => handleInputChange("season", e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Select Season</option>
+              <option value="kharif">Kharif (June-October)</option>
+              <option value="rabi">Rabi (November-April)</option>
+              <option value="zaid">Zaid (April-June)</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Farm Size (acres)
+            </label>
+            <div className="relative">
+              <MapPin
+                className="absolute left-3 top-3 text-gray-400"
+                size={18}
+              />
+              <input
+                type="number"
+                value={farmInput.farmSize}
+                onChange={(e) => handleInputChange("farmSize", e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="2.5"
+                step="0.1"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Soil Type
+            </label>
+            <select
+              value={farmInput.soilType}
+              onChange={(e) => handleInputChange("soilType", e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Select Soil Type</option>
+              <option value="clay">Clay Soil</option>
+              <option value="sandy">Sandy Soil</option>
+              <option value="loam">Loam Soil</option>
+              <option value="silt">Silt Soil</option>
+              <option value="black_cotton">Black Cotton Soil</option>
+              <option value="red">Red Soil</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Weather Conditions
+            </label>
+            <select
+              value={farmInput.weather}
+              onChange={(e) => handleInputChange("weather", e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Select Weather</option>
+              <option value="hot_humid">Hot & Humid</option>
+              <option value="moderate">Moderate</option>
+              <option value="cool_dry">Cool & Dry</option>
+              <option value="rainy">Rainy</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Irrigation Type
+            </label>
+            <select
+              value={farmInput.irrigationType}
+              onChange={(e) =>
+                handleInputChange("irrigationType", e.target.value)
+              }
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Select Irrigation</option>
+              <option value="flood">Flood Irrigation</option>
+              <option value="drip">Drip Irrigation</option>
+              <option value="sprinkler">Sprinkler System</option>
+              <option value="rainfed">Rain-fed</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Soil Detection Integration */}
+        <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+          <SoilDetection
+            onSoilTypeDetected={(detectedSoilType) =>
+              handleInputChange("soilType", detectedSoilType)
+            }
+            currentSoilType={farmInput.soilType}
+          />
+        </div>
+
+        {/* Organic Preference Toggle */}
+        <div className="mt-6 flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center space-x-3">
+            <Leaf className="text-green-600" size={20} />
+            <div>
+              <p className="font-medium text-gray-900">
+                Organic Farming Preference
+              </p>
+              <p className="text-sm text-gray-600">
+                Get recommendations for sustainable farming practices
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() =>
+              handleInputChange(
+                "organicPreference",
+                !farmInput.organicPreference,
+              )
+            }
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+              farmInput.organicPreference ? "bg-green-600" : "bg-gray-200"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                farmInput.organicPreference ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
+        </div>
+
+        <div className="mt-8 text-center">
           <button
             onClick={generateRecommendations}
-            disabled={loading || !farmInput.budget || Number(farmInput.budget) < 10000 || !farmInput.season || !farmInput.soilType}
-            className="minimal-button minimal-button-primary disabled:bg-gray-400 disabled:cursor-not-allowed"
+            disabled={
+              loading ||
+              !farmInput.budget ||
+              Number(farmInput.budget) < 10000 ||
+              !farmInput.season ||
+              !farmInput.soilType
+            }
+            className="px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white font-semibold rounded-xl hover:from-green-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 shadow-lg"
           >
             <div className="flex items-center space-x-3">
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                  <span>{t('cropAdvisory.generating')}</span>
+                  <span>Generating AI Recommendations...</span>
                 </>
               ) : (
                 <>
-                  <Leaf className="group-hover:rotate-12 transition-transform duration-300" size={24} />
-                  <span>{t('cropAdvisory.getAdvice')}</span>
+                  <Lightbulb className="animate-pulse" size={24} />
+                  <span>Get Smart Crop Advisory</span>
                 </>
               )}
             </div>
@@ -465,134 +841,340 @@ const CropAdvisory: React.FC = () => {
         </div>
       </div>
 
-      {/* Crop Recommendations */}
+      {/* Enhanced Recommendations */}
       {recommendations.length > 0 && (
-        <div className="minimal-card p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-            <Leaf className="text-gray-600 mr-2" size={20} />
-            {t('cropAdvisory.recommendations')}
-          </h2>
-          
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+              <Target className="text-green-600 mr-3" size={24} />
+              AI Crop Recommendations
+            </h2>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setCompareMode(!compareMode)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                  compareMode
+                    ? "bg-blue-100 text-blue-700 border border-blue-200"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                {compareMode ? "Exit Compare" : "Compare Crops"}
+              </button>
+              <button className="p-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg">
+                <Download size={16} />
+              </button>
+              <button className="p-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg">
+                <Share2 size={16} />
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {recommendations.map((crop, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900">{crop.name}</h3>
-                  <div className="text-right">
-                    <span className={`px-3 py-1 rounded-md text-sm font-medium ${getSuitabilityColor(crop.suitability)}`}>
-                      {crop.suitability}
-                    </span>
-                    {crop.suitabilityScore && (
-                      <div className="text-xs text-gray-500 mt-1">
-                        Score: {crop.suitabilityScore}/100
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="space-y-3 mb-4">
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-gray-700 font-medium">Expected Yield:</span>
-                    <span className="font-semibold text-gray-900">{crop.expectedYield}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-gray-700 font-medium">Potential ROI:</span>
-                    <span className="font-semibold text-gray-900">{crop.roi}</span>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
-                    <CheckCircle className="mr-2 text-gray-600" size={16} />
-                    Requirements:
-                  </h4>
-                  <ul className="text-sm text-gray-700 space-y-2">
-                    {crop.requirements.map((req, i) => (
-                      <li key={i} className="flex items-start">
-                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                        <span>{req}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mb-4">
-                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
-                    <Bell className="mr-2 text-gray-600" size={16} />
-                    Expert Tips:
-                  </h4>
-                  <ul className="text-sm text-gray-700 space-y-2">
-                    {crop.tips.map((tip, i) => (
-                      <li key={i} className="flex items-start">
-                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                        <span>{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="pt-4 border-t border-gray-200">
+              <div
+                key={index}
+                className={`relative bg-white border-2 rounded-xl p-6 hover:shadow-lg transition-all duration-200 transform hover:scale-105 ${
+                  compareMode && selectedCrops.includes(crop.name)
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                {compareMode && (
                   <button
-                    onClick={() => generateCalendar(crop.name)}
-                    className="w-full minimal-button minimal-button-primary flex items-center justify-center"
+                    onClick={() => toggleCropSelection(crop.name)}
+                    className="absolute top-4 right-4 p-2 rounded-full bg-white border border-gray-300 hover:bg-gray-50"
+                  >
+                    {selectedCrops.includes(crop.name) ? (
+                      <CheckCircle className="text-blue-600" size={16} />
+                    ) : (
+                      <div className="w-4 h-4 border border-gray-400 rounded-full" />
+                    )}
+                  </button>
+                )}
+
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      {crop.name}
+                    </h3>
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium border ${getSuitabilityColor(crop.suitability)}`}
+                      >
+                        {crop.suitability} Suitability
+                      </span>
+                      {crop.sustainabilityScore && (
+                        <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700 border border-green-200">
+                          🌱 {crop.sustainabilityScore}%
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Market Data Integration */}
+                {crop.marketPrice && (
+                  <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700">
+                        Market Price
+                      </span>
+                      {marketData[crop.name] &&
+                        getTrendIcon(marketData[crop.name].trend)}
+                    </div>
+                    <div className="text-lg font-bold text-gray-900">
+                      {crop.marketPrice}
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      Demand:{" "}
+                      <span
+                        className={`font-medium ${
+                          crop.demandTrend === "High"
+                            ? "text-green-600"
+                            : crop.demandTrend === "Medium"
+                              ? "text-yellow-600"
+                              : "text-red-600"
+                        }`}
+                      >
+                        {crop.demandTrend}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3 mb-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <span className="text-xs font-medium text-blue-700">
+                        Expected Yield
+                      </span>
+                      <div className="font-bold text-blue-900 text-sm">
+                        {crop.expectedYield}
+                      </div>
+                    </div>
+                    <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                      <span className="text-xs font-medium text-green-700">
+                        Potential ROI
+                      </span>
+                      <div className="font-bold text-green-900 text-sm">
+                        {crop.roi}
+                      </div>
+                    </div>
+                  </div>
+
+                  {crop.riskLevel && (
+                    <div
+                      className={`p-3 rounded-lg ${getRiskColor(crop.riskLevel)}`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <Shield size={16} />
+                        <span className="text-sm font-medium">
+                          Risk Level: {crop.riskLevel}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center text-sm">
+                      <CheckCircle className="mr-2 text-green-600" size={16} />
+                      Key Requirements
+                    </h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      {crop.requirements.slice(0, 2).map((req, i) => (
+                        <li key={i} className="flex items-start">
+                          <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                          <span>{req}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center text-sm">
+                      <Lightbulb className="mr-2 text-yellow-600" size={16} />
+                      Smart Tips
+                    </h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      {crop.tips.slice(0, 2).map((tip, i) => (
+                        <li key={i} className="flex items-start">
+                          <span className="w-1.5 h-1.5 bg-yellow-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                          <span>{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => {
+                      const calendar = generateFasalCalendar(crop.name);
+                      setCalendarData(calendar);
+                      setShowCalendar(true);
+                      setActiveTab("calendar");
+                    }}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center"
                   >
                     <Calendar size={16} className="mr-2" />
-                    View Fasal Calendar
+                    View Calendar
+                  </button>
+                  <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                    <Star size={16} />
                   </button>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Crop Comparison */}
+          {compareMode && selectedCrops.length > 1 && (
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Crop Comparison
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-2">Criteria</th>
+                      {selectedCrops.map((cropName) => (
+                        <th key={cropName} className="text-left py-2 px-4">
+                          {cropName}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      "suitability",
+                      "expectedYield",
+                      "roi",
+                      "riskLevel",
+                      "sustainabilityScore",
+                    ].map((criteria) => (
+                      <tr key={criteria} className="border-b border-gray-100">
+                        <td className="py-3 font-medium capitalize">
+                          {criteria.replace(/([A-Z])/g, " $1")}
+                        </td>
+                        {selectedCrops.map((cropName) => {
+                          const crop = recommendations.find(
+                            (r) => r.name === cropName,
+                          );
+                          return (
+                            <td key={cropName} className="py-3 px-4">
+                              {crop ? (crop as any)[criteria] || "N/A" : "N/A"}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       )}
+    </div>
+  );
 
-      {/* Fasal Calendar */}
-      {showCalendar && calendarData && (
-        <div className="minimal-card p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-                <Calendar className="mr-2 text-gray-600" size={20} />
-                Fasal Calendar - {calendarData.cropName}
-              </h2>
-              <p className="text-sm text-gray-600 mt-1">
-                AI-powered seasonal activity plan for {calendarData.season}
-              </p>
-            </div>
-            <button
-              onClick={() => setShowCalendar(false)}
-              className="text-gray-500 hover:text-gray-700 text-xl"
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* Calendar Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <Clock className="text-gray-600 mr-2" size={16} />
-                <div>
-                  <p className="text-sm text-gray-600">Duration</p>
-                  <p className="font-medium text-gray-900">{calendarData.totalWeeks} weeks</p>
+  const FasalCalendarTab = () => (
+    <div className="space-y-6">
+      {calendarData ? (
+        <>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                  <Calendar className="mr-3 text-green-600" size={24} />
+                  Fasal Calendar - {calendarData.cropName}
+                </h2>
+                <p className="text-gray-600 mt-1">
+                  AI-powered seasonal activity plan for {calendarData.season}
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-green-600">
+                  {Math.round(calendarData.progressPercentage)}%
                 </div>
+                <div className="text-sm text-gray-600">Completed</div>
               </div>
             </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <DollarSign className="text-gray-600 mr-2" size={16} />
-                <div>
-                  <p className="text-sm text-gray-600">Total Budget</p>
-                  <p className="font-medium text-gray-900">{calendarData.budgetTotal}</p>
-                </div>
+
+            {/* Progress Bar */}
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700">
+                  Overall Progress
+                </span>
+                <span className="text-sm text-gray-600">
+                  {calendarData.activities.filter((a) => a.completed).length} of{" "}
+                  {calendarData.activities.length} tasks
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${calendarData.progressPercentage}%` }}
+                ></div>
               </div>
             </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <Bell className="text-gray-600 mr-2" size={16} />
-                <div>
-                  <p className="text-sm text-gray-600">Activities</p>
-                  <p className="font-medium text-gray-900">{calendarData.activities.length} planned</p>
+
+            {/* Calendar Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <Clock className="text-blue-600 mr-3" size={20} />
+                  <div>
+                    <p className="text-sm text-blue-600 font-medium">
+                      Duration
+                    </p>
+                    <p className="text-lg font-bold text-blue-900">
+                      {calendarData.totalWeeks} weeks
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <DollarSign className="text-green-600 mr-3" size={20} />
+                  <div>
+                    <p className="text-sm text-green-600 font-medium">
+                      Total Budget
+                    </p>
+                    <p className="text-lg font-bold text-green-900">
+                      {calendarData.budgetTotal}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <Bell className="text-purple-600 mr-3" size={20} />
+                  <div>
+                    <p className="text-sm text-purple-600 font-medium">
+                      Activities
+                    </p>
+                    <p className="text-lg font-bold text-purple-900">
+                      {calendarData.activities.length} planned
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <AlertCircle className="text-orange-600 mr-3" size={20} />
+                  <div>
+                    <p className="text-sm text-orange-600 font-medium">
+                      Alerts
+                    </p>
+                    <p className="text-lg font-bold text-orange-900">
+                      {calendarData.weatherAlerts.length} active
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -600,89 +1182,210 @@ const CropAdvisory: React.FC = () => {
 
           {/* Weather Alerts */}
           {calendarData.weatherAlerts.length > 0 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-6">
               <div className="flex items-start">
-                <AlertCircle className="text-yellow-600 mr-2 mt-0.5" size={16} />
+                <AlertCircle className="text-yellow-600 mr-3 mt-1" size={20} />
                 <div>
-                  <h4 className="font-medium text-yellow-800 mb-2">Weather Alerts</h4>
-                  <ul className="space-y-1">
+                  <h4 className="font-semibold text-yellow-800 mb-3">
+                    Weather Alerts & Recommendations
+                  </h4>
+                  <div className="space-y-2">
                     {calendarData.weatherAlerts.map((alert, index) => (
-                      <li key={index} className="text-sm text-yellow-700">{alert}</li>
+                      <div key={index} className="flex items-start space-x-2">
+                        <span className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></span>
+                        <p className="text-sm text-yellow-700">{alert}</p>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
           {/* Activity Timeline */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Step-by-Step Timeline</h3>
-            
-            <div className="space-y-3">
-              {calendarData.activities.map((activity) => (
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-6">
+              Step-by-Step Timeline
+            </h3>
+
+            <div className="space-y-4">
+              {calendarData.activities.map((activity, index) => (
                 <div
                   key={activity.id}
-                  className={`border rounded-lg p-4 ${
-                    activity.completed ? 'bg-green-50 border-green-200' : 'border-gray-200'
+                  className={`relative border-2 rounded-xl p-6 transition-all duration-200 ${
+                    activity.completed
+                      ? "bg-green-50 border-green-200 shadow-sm"
+                      : index === 0
+                        ? "bg-blue-50 border-blue-200 shadow-md"
+                        : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-3 flex-1">
+                  {/* Week Badge */}
+                  <div className="absolute -top-3 left-6">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        activity.completed
+                          ? "bg-green-500 text-white"
+                          : index === 0
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-200 text-gray-700"
+                      }`}
+                    >
+                      Week {activity.week}
+                    </span>
+                  </div>
+
+                  <div className="flex items-start justify-between pt-3">
+                    <div className="flex items-start space-x-4 flex-1">
                       <button
-                        onClick={() => toggleActivityComplete(activity.id)}
-                        className={`mt-1 w-5 h-5 rounded border flex items-center justify-center ${
+                        onClick={() => {
+                          const updatedActivities = calendarData.activities.map(
+                            (a) =>
+                              a.id === activity.id
+                                ? { ...a, completed: !a.completed }
+                                : a,
+                          );
+                          const completedCount = updatedActivities.filter(
+                            (a) => a.completed,
+                          ).length;
+                          const progressPercentage =
+                            (completedCount / updatedActivities.length) * 100;
+                          setCalendarData({
+                            ...calendarData,
+                            activities: updatedActivities,
+                            progressPercentage,
+                          });
+                        }}
+                        className={`mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                           activity.completed
-                            ? 'bg-green-500 border-green-500 text-white'
-                            : 'border-gray-300 hover:border-green-400'
+                            ? "bg-green-500 border-green-500 text-white"
+                            : "border-gray-300 hover:border-green-400 hover:bg-green-50"
                         }`}
                       >
-                        {activity.completed && <CheckCircle size={12} />}
+                        {activity.completed && <CheckCircle size={14} />}
                       </button>
-                      
+
                       <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className="text-lg">{activity.icon}</span>
-                          <h4 className={`font-medium ${activity.completed ? 'text-green-800' : 'text-gray-900'}`}>
-                            Week {activity.week}: {activity.activity}
-                          </h4>
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${getActivityTypeColor(activity.type)}`}>
-                            {activity.type}
-                          </span>
+                        <div className="flex items-center space-x-3 mb-3">
+                          <span className="text-2xl">{activity.icon}</span>
+                          <div>
+                            <h4
+                              className={`font-bold text-lg ${
+                                activity.completed
+                                  ? "text-green-800"
+                                  : "text-gray-900"
+                              }`}
+                            >
+                              {activity.activity}
+                            </h4>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  activity.type === "sowing"
+                                    ? "bg-green-100 text-green-800"
+                                    : activity.type === "irrigation"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : activity.type === "fertilizer"
+                                        ? "bg-purple-100 text-purple-800"
+                                        : activity.type === "pest"
+                                          ? "bg-red-100 text-red-800"
+                                          : activity.type === "harvest"
+                                            ? "bg-yellow-100 text-yellow-800"
+                                            : "bg-gray-100 text-gray-800"
+                                }`}
+                              >
+                                {activity.type}
+                              </span>
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  activity.priority === "High"
+                                    ? "bg-red-100 text-red-800"
+                                    : activity.priority === "Medium"
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-green-100 text-green-800"
+                                }`}
+                              >
+                                {activity.priority} Priority
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        
-                        <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
-                        
-                        <div className="flex flex-wrap items-center gap-4 text-sm">
+
+                        <p className="text-gray-700 mb-4 leading-relaxed">
+                          {activity.description}
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                           {activity.budget && (
-                            <div className="flex items-center text-gray-600">
-                              <DollarSign size={14} className="mr-1" />
-                              {activity.budget}
+                            <div className="flex items-center space-x-2 text-sm">
+                              <DollarSign
+                                className="text-green-600"
+                                size={16}
+                              />
+                              <span className="font-medium text-gray-700">
+                                Budget:
+                              </span>
+                              <span className="text-green-700 font-semibold">
+                                {activity.budget}
+                              </span>
                             </div>
                           )}
-                          
+
+                          {activity.estimatedHours && (
+                            <div className="flex items-center space-x-2 text-sm">
+                              <Clock className="text-blue-600" size={16} />
+                              <span className="font-medium text-gray-700">
+                                Time:
+                              </span>
+                              <span className="text-blue-700 font-semibold">
+                                {activity.estimatedHours}hrs
+                              </span>
+                            </div>
+                          )}
+
                           {activity.weatherDependent && (
-                            <div className="flex items-center text-gray-600">
-                              <Droplet size={14} className="mr-1" />
-                              Weather dependent
+                            <div className="flex items-center space-x-2 text-sm">
+                              <Droplet className="text-blue-600" size={16} />
+                              <span className="text-blue-700 font-medium">
+                                Weather dependent
+                              </span>
                             </div>
                           )}
                         </div>
 
-                        {activity.alternatives && activity.alternatives.length > 0 && (
-                          <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                            <p className="text-xs font-medium text-gray-800 mb-1">Budget-friendly alternatives:</p>
-                            <ul className="text-xs text-gray-700 space-y-1">
-                              {activity.alternatives.map((alt, index) => (
-                                <li key={index} className="flex items-start">
-                                  <span className="w-1 h-1 bg-gray-400 rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
-                                  {alt}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
+                        {activity.alternatives &&
+                          activity.alternatives.length > 0 && (
+                            <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                              <p className="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                                <Lightbulb
+                                  className="mr-2 text-yellow-600"
+                                  size={16}
+                                />
+                                Budget-friendly alternatives:
+                              </p>
+                              <ul className="space-y-2">
+                                {activity.alternatives.map((alt, altIndex) => (
+                                  <li
+                                    key={altIndex}
+                                    className="flex items-start text-sm"
+                                  >
+                                    <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                    <span className="text-gray-700">{alt}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                       </div>
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <button className="p-2 text-gray-600 hover:text-blue-600 border border-gray-300 rounded-lg hover:bg-blue-50">
+                        <Camera size={16} />
+                      </button>
+                      <button className="p-2 text-gray-600 hover:text-green-600 border border-gray-300 rounded-lg hover:bg-green-50">
+                        <Bell size={16} />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -691,20 +1394,145 @@ const CropAdvisory: React.FC = () => {
           </div>
 
           {/* Integration Notice */}
-          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-6">
             <div className="flex items-start">
-              <Leaf className="text-green-600 mr-2 mt-0.5" size={16} />
+              <Leaf className="text-green-600 mr-3 mt-1" size={20} />
               <div>
-                <h4 className="font-medium text-green-800 mb-1">Digital Farm Health Card Integration</h4>
-                <p className="text-sm text-green-700">
-                  Each completed task is automatically logged into your Farm Health Report. 
-                  Track your farming progress and maintain detailed records for better decision making.
+                <h4 className="font-semibold text-green-800 mb-2">
+                  Digital Farm Health Card Integration
+                </h4>
+                <p className="text-green-700 leading-relaxed">
+                  Each completed task is automatically logged into your Farm
+                  Health Report. Track your farming progress, maintain detailed
+                  records, and get insights for better decision making. Your
+                  data helps improve future AI recommendations.
                 </p>
+                <div className="mt-3 flex space-x-3">
+                  <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium">
+                    View Health Card
+                  </button>
+                  <button className="px-4 py-2 border border-green-600 text-green-700 rounded-lg hover:bg-green-50 text-sm font-medium">
+                    Export Report
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+        </>
+      ) : (
+        <div className="text-center py-12">
+          <Calendar className="mx-auto text-gray-400 mb-4" size={48} />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No Calendar Selected
+          </h3>
+          <p className="text-gray-600 mb-6">
+            Generate crop recommendations first to view the fasal calendar
+          </p>
+          <button
+            onClick={() => setActiveTab("quick")}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Get Recommendations
+          </button>
         </div>
       )}
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Leaf className="text-green-600" size={24} />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">
+                  Smart Crop Advisory
+                </h1>
+                <p className="text-sm text-gray-600">
+                  AI-powered farming recommendations
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <button className="p-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg">
+                <Users size={16} />
+              </button>
+              <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium">
+                Save Session
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex space-x-8 overflow-x-auto">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as TabType)}
+                  className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? "border-green-500 text-green-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  <Icon size={16} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === "quick" && <QuickAdvisoryTab />}
+        {activeTab === "calendar" && <FasalCalendarTab />}
+        {activeTab === "detailed" && (
+          <div className="text-center py-12">
+            <BarChart3 className="mx-auto text-gray-400 mb-4" size={48} />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Detailed Analysis
+            </h3>
+            <p className="text-gray-600">
+              Advanced crop analysis and recommendations coming soon
+            </p>
+          </div>
+        )}
+        {activeTab === "analytics" && (
+          <div className="text-center py-12">
+            <PieChart className="mx-auto text-gray-400 mb-4" size={48} />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Farm Analytics
+            </h3>
+            <p className="text-gray-600">
+              Performance insights and data visualization coming soon
+            </p>
+          </div>
+        )}
+        {activeTab === "history" && (
+          <div className="text-center py-12">
+            <BookOpen className="mx-auto text-gray-400 mb-4" size={48} />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Advisory History
+            </h3>
+            <p className="text-gray-600">
+              Past recommendations and progress tracking coming soon
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

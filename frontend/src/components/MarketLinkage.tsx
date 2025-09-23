@@ -605,39 +605,52 @@ const MarketLinkage: React.FC = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header with Live Indicator */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
-                <BarChart3 className="w-8 h-8 mr-3 text-green-600" />
-                Market Intelligence Hub
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+          <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center justify-between">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-green-600" />
+                <span className="break-words">Market Intelligence Hub</span>
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-sm sm:text-base">
                 Real-time prices, verified buyers, and market opportunities
               </p>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
               <div className="flex items-center space-x-2">
                 <div
                   className={`w-3 h-3 rounded-full ${isLiveMode ? "bg-green-500 animate-pulse" : "bg-gray-400"}`}
                 ></div>
-                <span className="text-sm text-gray-600">
+                <span className="text-xs sm:text-sm text-gray-600">
                   {isLiveMode ? "Live" : "Static"} • Last updated:{" "}
-                  {lastUpdate.toLocaleTimeString()}
+                  <span className="hidden sm:inline">
+                    {lastUpdate.toLocaleTimeString()}
+                  </span>
+                  <span className="sm:hidden">
+                    {lastUpdate.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
                 </span>
               </div>
 
               <button
                 onClick={() => setIsLiveMode(!isLiveMode)}
-                className={`px-4 py-2 rounded-lg border transition-colors ${
+                className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg border transition-colors text-sm ${
                   isLiveMode
                     ? "bg-green-100 border-green-300 text-green-700 hover:bg-green-200"
                     : "bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200"
                 }`}
               >
-                <Activity className="w-4 h-4 mr-2 inline" />
-                {isLiveMode ? "Live Mode" : "Static Mode"}
+                <Activity className="w-4 h-4 mr-1 sm:mr-2 inline" />
+                <span className="hidden sm:inline">
+                  {isLiveMode ? "Live Mode" : "Static Mode"}
+                </span>
+                <span className="sm:hidden">
+                  {isLiveMode ? "Live" : "Static"}
+                </span>
               </button>
             </div>
           </div>
@@ -645,30 +658,37 @@ const MarketLinkage: React.FC = () => {
 
         {/* Navigation Tabs */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6" aria-label="Tabs">
+          <div className="border-b border-gray-200 overflow-x-auto">
+            <nav
+              className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max"
+              aria-label="Tabs"
+            >
               {[
                 {
                   id: "prices",
                   label: "Live Prices",
+                  shortLabel: "Prices",
                   icon: TrendingUp,
                   count: filteredPrices.length,
                 },
                 {
                   id: "buyers",
                   label: "Verified Buyers",
+                  shortLabel: "Buyers",
                   icon: Users,
                   count: buyers.length,
                 },
                 {
                   id: "opportunities",
                   label: "Market Opportunities",
+                  shortLabel: "Opportunities",
                   icon: Target,
                   count: marketOpportunities.length,
                 },
                 {
                   id: "contracts",
                   label: "Contract Farming",
+                  shortLabel: "Contracts",
                   icon: FileText,
                   count: 3,
                 },
@@ -684,16 +704,17 @@ const MarketLinkage: React.FC = () => {
                         | "contracts",
                     )
                   }
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
+                  className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-1 sm:space-x-2 transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? "border-green-500 text-green-600"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
                 >
-                  <tab.icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
+                  <tab.icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.shortLabel}</span>
                   <span
-                    className={`px-2 py-1 text-xs rounded-full ${
+                    className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs rounded-full flex-shrink-0 ${
                       activeTab === tab.id
                         ? "bg-green-100 text-green-700"
                         : "bg-gray-100 text-gray-600"
@@ -711,182 +732,201 @@ const MarketLinkage: React.FC = () => {
             {activeTab === "prices" && (
               <div className="space-y-6">
                 {/* Search and Filter Controls */}
-                <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-                  <div className="flex items-center space-x-4 flex-1">
-                    <div className="relative flex-1 max-w-md">
+                <div className="space-y-4">
+                  {/* Top Row - Search */}
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                       <input
                         type="text"
                         placeholder="Search crops, varieties, or markets..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
                       />
                     </div>
-
-                    <select
-                      value={selectedCrop}
-                      onChange={(e) => setSelectedCrop(e.target.value)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    >
-                      <option value="all">All Crops</option>
-                      {getUniqueCrops().map((crop) => (
-                        <option key={crop} value={crop}>
-                          {crop}
-                        </option>
-                      ))}
-                    </select>
-
-                    <select
-                      value={sortBy}
-                      onChange={(e) =>
-                        setSortBy(
-                          e.target.value as "price" | "change" | "distance",
-                        )
-                      }
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    >
-                      <option value="change">Sort by Price Change</option>
-                      <option value="price">Sort by Price</option>
-                      <option value="distance">Sort by Distance</option>
-                    </select>
-
-                    <select
-                      value={filterByDistance}
-                      onChange={(e) => setFilterByDistance(e.target.value)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    >
-                      <option value="all">All Distances</option>
-                      <option value="near">Near (≤10 km)</option>
-                      <option value="medium">Medium (≤50 km)</option>
-                      <option value="far">Far (&gt;50 km)</option>
-                    </select>
-
-                    <select
-                      value={filterByTrend}
-                      onChange={(e) => setFilterByTrend(e.target.value)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    >
-                      <option value="all">All Trends</option>
-                      <option value="up">Rising</option>
-                      <option value="down">Falling</option>
-                      <option value="stable">Stable</option>
-                    </select>
                   </div>
 
-                  <div className="flex items-center space-x-2">
-                    <div className="relative">
-                      <button
-                        onClick={() => setShowNotifications(!showNotifications)}
-                        className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg border border-blue-300 hover:bg-blue-200 transition-colors flex items-center relative"
+                  {/* Bottom Row - Filters and Actions */}
+                  <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                    <div className="flex flex-wrap gap-3 flex-1">
+                      <select
+                        value={selectedCrop}
+                        onChange={(e) => setSelectedCrop(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[120px]"
                       >
-                        <Bell className="w-4 h-4 mr-2" />
-                        Notifications
-                        {notifications.length > 0 && (
-                          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                            {notifications.length}
-                          </span>
-                        )}
-                      </button>
+                        <option value="all">All Crops</option>
+                        {getUniqueCrops().map((crop) => (
+                          <option key={crop} value={crop}>
+                            {crop}
+                          </option>
+                        ))}
+                      </select>
 
-                      {showNotifications && (
-                        <div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
-                          <div className="p-4 border-b border-gray-200">
-                            <h3 className="font-semibold text-gray-900">
-                              Market Notifications
-                            </h3>
-                          </div>
-                          <div className="p-2">
-                            {notifications.length === 0 ? (
-                              <p className="text-gray-500 text-center py-4">
-                                No new notifications
-                              </p>
-                            ) : (
-                              notifications.map((notification) => (
-                                <div
-                                  key={notification.id}
-                                  className="p-3 hover:bg-gray-50 rounded"
-                                >
-                                  <div className="flex items-start space-x-3">
-                                    <div
-                                      className={`w-2 h-2 rounded-full mt-2 ${
-                                        notification.type === "price"
-                                          ? "bg-green-500"
-                                          : notification.type === "opportunity"
-                                            ? "bg-blue-500"
-                                            : "bg-yellow-500"
-                                      }`}
-                                    ></div>
-                                    <div className="flex-1">
-                                      <p className="text-sm text-gray-900">
-                                        {notification.message}
-                                      </p>
-                                      <p className="text-xs text-gray-500 mt-1">
-                                        {notification.timestamp.toLocaleTimeString()}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))
-                            )}
-                          </div>
-                        </div>
-                      )}
+                      <select
+                        value={sortBy}
+                        onChange={(e) =>
+                          setSortBy(
+                            e.target.value as "price" | "change" | "distance",
+                          )
+                        }
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[140px]"
+                      >
+                        <option value="change">Sort by Price Change</option>
+                        <option value="price">Sort by Price</option>
+                        <option value="distance">Sort by Distance</option>
+                      </select>
+
+                      <select
+                        value={filterByDistance}
+                        onChange={(e) => setFilterByDistance(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[120px]"
+                      >
+                        <option value="all">All Distances</option>
+                        <option value="near">Near (≤10 km)</option>
+                        <option value="medium">Medium (≤50 km)</option>
+                        <option value="far">Far (&gt;50 km)</option>
+                      </select>
+
+                      <select
+                        value={filterByTrend}
+                        onChange={(e) => setFilterByTrend(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[110px]"
+                      >
+                        <option value="all">All Trends</option>
+                        <option value="up">Rising</option>
+                        <option value="down">Falling</option>
+                        <option value="stable">Stable</option>
+                      </select>
                     </div>
 
-                    <button
-                      onClick={() => setShowAlertModal(true)}
-                      className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg border border-yellow-300 hover:bg-yellow-200 transition-colors flex items-center"
-                    >
-                      <Bell className="w-4 h-4 mr-2" />
-                      Price Alerts ({priceAlerts.length})
-                    </button>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="relative">
+                        <button
+                          onClick={() =>
+                            setShowNotifications(!showNotifications)
+                          }
+                          className="px-3 py-2 bg-blue-100 text-blue-800 rounded-lg border border-blue-300 hover:bg-blue-200 transition-colors flex items-center relative text-sm"
+                        >
+                          <Bell className="w-4 h-4 mr-1" />
+                          <span className="hidden sm:inline">
+                            Notifications
+                          </span>
+                          {notifications.length > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                              {notifications.length}
+                            </span>
+                          )}
+                        </button>
 
-                    <button
-                      onClick={() => setShowComparisonModal(true)}
-                      disabled={selectedPricesForComparison.length < 2}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center"
-                    >
-                      <BarChart3 className="w-4 h-4 mr-2" />
-                      Compare ({selectedPricesForComparison.length})
-                    </button>
+                        {showNotifications && (
+                          <div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                            <div className="p-4 border-b border-gray-200">
+                              <h3 className="font-semibold text-gray-900">
+                                Market Notifications
+                              </h3>
+                            </div>
+                            <div className="p-2">
+                              {notifications.length === 0 ? (
+                                <p className="text-gray-500 text-center py-4">
+                                  No new notifications
+                                </p>
+                              ) : (
+                                notifications.map((notification) => (
+                                  <div
+                                    key={notification.id}
+                                    className="p-3 hover:bg-gray-50 rounded"
+                                  >
+                                    <div className="flex items-start space-x-3">
+                                      <div
+                                        className={`w-2 h-2 rounded-full mt-2 ${
+                                          notification.type === "price"
+                                            ? "bg-green-500"
+                                            : notification.type ===
+                                                "opportunity"
+                                              ? "bg-blue-500"
+                                              : "bg-yellow-500"
+                                        }`}
+                                      ></div>
+                                      <div className="flex-1">
+                                        <p className="text-sm text-gray-900">
+                                          {notification.message}
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                          {notification.timestamp.toLocaleTimeString()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
 
-                    <button
-                      onClick={() => {
-                        const newNotification = {
-                          id: Date.now().toString(),
-                          type: "price" as const,
-                          message: `Price updated: ${filteredPrices[0]?.crop} now at ₹${filteredPrices[0]?.price}`,
-                          timestamp: new Date(),
-                        };
-                        setNotifications((prev) =>
-                          [newNotification, ...prev].slice(0, 10),
-                        );
-                        setLastUpdate(new Date());
-                      }}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
-                    >
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      Refresh
-                    </button>
+                      <button
+                        onClick={() => setShowAlertModal(true)}
+                        className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg border border-yellow-300 hover:bg-yellow-200 transition-colors flex items-center"
+                      >
+                        <Bell className="w-4 h-4 mr-2" />
+                        Price Alerts ({priceAlerts.length})
+                      </button>
+
+                      <button
+                        onClick={() => setShowComparisonModal(true)}
+                        className="px-3 py-2 bg-gray-100 text-gray-800 rounded-lg border border-gray-300 hover:bg-gray-200 transition-colors flex items-center text-sm"
+                        disabled={selectedPricesForComparison.length < 2}
+                      >
+                        <BarChart3 className="w-4 h-4 mr-1" />
+                        <span className="hidden sm:inline">
+                          Compare ({selectedPricesForComparison.length})
+                        </span>
+                        <span className="sm:hidden">
+                          ({selectedPricesForComparison.length})
+                        </span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          const newNotification = {
+                            id: Date.now().toString(),
+                            type: "price" as const,
+                            message: `Price updated: ${filteredPrices[0]?.crop} now at ₹${filteredPrices[0]?.price}`,
+                            timestamp: new Date(),
+                          };
+                          setNotifications((prev) =>
+                            [newNotification, ...prev].slice(0, 10),
+                          );
+                          setLastUpdate(new Date());
+                        }}
+                        className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center text-sm"
+                      >
+                        <RefreshCw className="w-4 h-4 mr-1" />
+                        <span className="hidden sm:inline">Refresh</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
                 {/* Market Insights Dashboard */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-                  <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-green-700 text-sm font-medium">
-                          Best Deal Today
-                        </p>
-                        <p className="text-2xl font-bold text-green-800">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center mb-2">
+                          <TrendingUp className="w-5 h-5 text-green-600 mr-2" />
+                          <p className="text-green-700 text-sm font-semibold">
+                            Best Deal Today
+                          </p>
+                        </div>
+                        <p className="text-2xl font-bold text-green-800 mb-1">
                           ₹
                           {Math.max(
                             ...filteredPrices.map((p) => p.price),
                           ).toLocaleString()}
                         </p>
-                        <p className="text-green-600 text-xs">
+                        <p className="text-green-600 text-xs font-medium">
                           {
                             filteredPrices.find(
                               (p) =>
@@ -896,37 +936,41 @@ const MarketLinkage: React.FC = () => {
                           }
                         </p>
                       </div>
-                      <TrendingUp className="w-8 h-8 text-green-600" />
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-blue-700 text-sm font-medium">
-                          Rising Markets
-                        </p>
-                        <p className="text-2xl font-bold text-blue-800">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center mb-2">
+                          <ArrowUpRight className="w-5 h-5 text-blue-600 mr-2" />
+                          <p className="text-blue-700 text-sm font-semibold">
+                            Rising Markets
+                          </p>
+                        </div>
+                        <p className="text-2xl font-bold text-blue-800 mb-1">
                           {
                             filteredPrices.filter((p) => p.trend === "up")
                               .length
                           }
                         </p>
-                        <p className="text-blue-600 text-xs">
+                        <p className="text-blue-600 text-xs font-medium">
                           Markets trending up
                         </p>
                       </div>
-                      <ArrowUpRight className="w-8 h-8 text-blue-600" />
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-purple-700 text-sm font-medium">
-                          Avg Price Change
-                        </p>
-                        <p className="text-2xl font-bold text-purple-800">
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 border border-purple-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center mb-2">
+                          <Activity className="w-5 h-5 text-purple-600 mr-2" />
+                          <p className="text-purple-700 text-sm font-semibold">
+                            Avg Price Change
+                          </p>
+                        </div>
+                        <p className="text-2xl font-bold text-purple-800 mb-1">
                           {(
                             filteredPrices.reduce(
                               (acc, p) => acc + p.change,
@@ -935,21 +979,23 @@ const MarketLinkage: React.FC = () => {
                           ).toFixed(1)}
                           %
                         </p>
-                        <p className="text-purple-600 text-xs">
+                        <p className="text-purple-600 text-xs font-medium">
                           Market sentiment
                         </p>
                       </div>
-                      <Activity className="w-8 h-8 text-purple-600" />
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-orange-700 text-sm font-medium">
-                          Total Volume
-                        </p>
-                        <p className="text-2xl font-bold text-orange-800">
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-5 border border-orange-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center mb-2">
+                          <BarChart3 className="w-5 h-5 text-orange-600 mr-2" />
+                          <p className="text-orange-700 text-sm font-semibold">
+                            Total Volume
+                          </p>
+                        </div>
+                        <p className="text-2xl font-bold text-orange-800 mb-1">
                           {(
                             filteredPrices.reduce(
                               (acc, p) => acc + p.volume,
@@ -958,24 +1004,24 @@ const MarketLinkage: React.FC = () => {
                           ).toFixed(1)}
                           K
                         </p>
-                        <p className="text-orange-600 text-xs">
+                        <p className="text-orange-600 text-xs font-medium">
                           Quintals traded
                         </p>
                       </div>
-                      <BarChart3 className="w-8 h-8 text-orange-600" />
                     </div>
                   </div>
                 </div>
 
                 {/* Price Range Filter */}
-                <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">
+                <div className="bg-gray-50 rounded-xl p-5 mb-6 border border-gray-200">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center">
+                    <DollarSign className="w-4 h-4 mr-2" />
                     Price Range Filter
                   </h4>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
-                      <label className="block text-xs text-gray-500 mb-1">
-                        Min Price
+                      <label className="block text-xs font-medium text-gray-600 mb-2">
+                        Min Price (₹)
                       </label>
                       <input
                         type="number"
@@ -986,13 +1032,13 @@ const MarketLinkage: React.FC = () => {
                             min: Number(e.target.value),
                           }))
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         placeholder="0"
                       />
                     </div>
                     <div className="flex-1">
-                      <label className="block text-xs text-gray-500 mb-1">
-                        Max Price
+                      <label className="block text-xs font-medium text-gray-600 mb-2">
+                        Max Price (₹)
                       </label>
                       <input
                         type="number"
@@ -1003,21 +1049,23 @@ const MarketLinkage: React.FC = () => {
                             max: Number(e.target.value),
                           }))
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         placeholder="10000"
                       />
                     </div>
-                    <button
-                      onClick={() => setPriceRange({ min: 0, max: 10000 })}
-                      className="px-3 py-2 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                    >
-                      Reset
-                    </button>
+                    <div className="flex items-end">
+                      <button
+                        onClick={() => setPriceRange({ min: 0, max: 10000 })}
+                        className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                      >
+                        Reset
+                      </button>
+                    </div>
                   </div>
                 </div>
 
                 {/* Price Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                   {filteredPrices.map((price) => (
                     <div
                       key={price.id}
