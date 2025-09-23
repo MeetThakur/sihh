@@ -391,7 +391,7 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                 <strong>Email:</strong> demo@khetsetu.com
               </p>
               <p>
-                <strong>Password:</strong> demo123
+                <strong>Password:</strong> Demo123
               </p>
             </div>
             <button
@@ -399,7 +399,7 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
               onClick={() => {
                 setFormData({
                   email: "demo@khetsetu.com",
-                  password: "demo123",
+                  password: "Demo123",
                 });
                 clearError();
               }}
