@@ -228,6 +228,16 @@ curl http://localhost:5000/health
 
 ## 🚀 Deployment
 
+> **⚠️ IMPORTANT**: If you're experiencing double slash issues in URLs (like `https://domain.com//auth/login`), see the [DEPLOYMENT.md](./DEPLOYMENT.md) guide for the complete fix.
+
+### Quick Fix for Vercel Double Slash Issue
+
+If your authentication URLs show double slashes, fix it by:
+
+1. **Go to Vercel Dashboard → Settings → Environment Variables**
+2. **Set:** `VITE_API_URL` = `https://khetsetu-backend.onrender.com/api` (NO trailing slash)
+3. **Redeploy your frontend**
+
 ### Production Environment
 ```bash
 # Build applications
@@ -243,6 +253,10 @@ cd backend && npm start
 # Build and run with Docker Compose
 docker-compose up --build
 ```
+
+### Detailed Deployment Guide
+
+For complete deployment instructions, troubleshooting, and environment setup, see **[DEPLOYMENT.md](./DEPLOYMENT.md)**
 
 ### Environment Variables
 
