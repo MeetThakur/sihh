@@ -1,15 +1,15 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "frontend/dist",
-  "installCommand": "npm install",
   "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
   "env": {
-    "VITE_API_URL": "https://khetsetu-backend.onrender.com/api"
+    "VITE_API_URL": "https://khetsetu.onrender.com/api"
   },
   "build": {
     "env": {
-      "VITE_API_URL": "https://khetsetu-backend.onrender.com/api"
+      "VITE_API_URL": "https://khetsetu.onrender.com/api"
     }
   },
   "rewrites": [
@@ -44,10 +44,5 @@
         }
       ]
     }
-  ],
-  "functions": {
-    "app/api/**/*.js": {
-      "runtime": "@vercel/node"
-    }
-  }
+  ]
 }
