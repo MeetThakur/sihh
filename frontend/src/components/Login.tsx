@@ -15,6 +15,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import { LoginCredentials } from "../types";
 import EnvDebug from "./EnvDebug";
+import ThemeToggle from "./ThemeToggle";
 
 interface LoginProps {
   onToggleMode: () => void;
@@ -165,12 +166,12 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
 
   if (showDebug) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-dark-900 p-4 transition-colors duration-200">
         <div className="max-w-6xl mx-auto">
           <div className="mb-4">
             <button
               onClick={() => setShowDebug(false)}
-              className="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-600 dark:bg-dark-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-dark-600 transition-colors"
             >
               <span>← Back to Login</span>
             </button>
@@ -182,29 +183,33 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 dark:from-dark-900 dark:to-dark-800 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="max-w-md w-full space-y-8">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle size="md" />
+        </div>
+
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-green-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
+          <div className="mx-auto h-16 w-16 bg-green-600 dark:bg-green-500 rounded-full flex items-center justify-center mb-4 shadow-lg transition-colors duration-200">
             <Leaf className="h-10 w-10 text-white" />
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
+          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-200">
             Welcome to KhetSetu
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 dark:text-dark-300 transition-colors duration-200">
             Smart Agricultural Platform for Modern Farmers
           </p>
 
           {/* Connection Status */}
           <div className="mt-4 flex items-center justify-center space-x-2">
             {isOnline ? (
-              <div className="flex items-center space-x-2 text-green-600">
+              <div className="flex items-center space-x-2 text-green-600 dark:text-green-400">
                 <Wifi size={16} />
                 <span className="text-sm">Connected</span>
               </div>
             ) : (
-              <div className="flex items-center space-x-2 text-red-600">
+              <div className="flex items-center space-x-2 text-red-600 dark:text-red-400">
                 <WifiOff size={16} />
                 <span className="text-sm">Offline</span>
               </div>
@@ -215,16 +220,16 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
         {/* Error Message */}
         {errorInfo && (
           <div
-            className={`rounded-lg p-4 border ${
+            className={`rounded-lg p-4 border transition-colors duration-200 ${
               errorInfo.type === "network"
-                ? "bg-red-50 border-red-200"
+                ? "bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700"
                 : errorInfo.type === "timeout"
-                  ? "bg-yellow-50 border-yellow-200"
+                  ? "bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-700"
                   : errorInfo.type === "auth"
-                    ? "bg-orange-50 border-orange-200"
+                    ? "bg-orange-50 dark:bg-orange-900/30 border-orange-200 dark:border-orange-700"
                     : errorInfo.type === "routing"
-                      ? "bg-purple-50 border-purple-200"
-                      : "bg-red-50 border-red-200"
+                      ? "bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-700"
+                      : "bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700"
             }`}
           >
             <div className="flex items-start">
@@ -245,14 +250,14 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                 <h3
                   className={`text-sm font-medium ${
                     errorInfo.type === "network"
-                      ? "text-red-800"
+                      ? "text-red-800 dark:text-red-200"
                       : errorInfo.type === "timeout"
-                        ? "text-yellow-800"
+                        ? "text-yellow-800 dark:text-yellow-200"
                         : errorInfo.type === "auth"
-                          ? "text-orange-800"
+                          ? "text-orange-800 dark:text-orange-200"
                           : errorInfo.type === "routing"
-                            ? "text-purple-800"
-                            : "text-red-800"
+                            ? "text-purple-800 dark:text-purple-200"
+                            : "text-red-800 dark:text-red-200"
                   }`}
                 >
                   {errorInfo.message}
@@ -260,14 +265,14 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                 <p
                   className={`mt-1 text-xs ${
                     errorInfo.type === "network"
-                      ? "text-red-700"
+                      ? "text-red-700 dark:text-red-300"
                       : errorInfo.type === "timeout"
-                        ? "text-yellow-700"
+                        ? "text-yellow-700 dark:text-yellow-300"
                         : errorInfo.type === "auth"
-                          ? "text-orange-700"
+                          ? "text-orange-700 dark:text-orange-300"
                           : errorInfo.type === "routing"
-                            ? "text-purple-700"
-                            : "text-red-700"
+                            ? "text-purple-700 dark:text-purple-300"
+                            : "text-red-700 dark:text-red-300"
                   }`}
                 >
                   {errorInfo.suggestion}
@@ -275,7 +280,7 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                 {errorInfo.type === "routing" && (
                   <button
                     onClick={() => setShowDebug(true)}
-                    className="mt-2 flex items-center space-x-1 text-xs text-purple-600 hover:text-purple-700 underline"
+                    className="mt-2 flex items-center space-x-1 text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 underline transition-colors duration-200"
                   >
                     <Settings className="h-3 w-3" />
                     <span>Debug API Configuration</span>
@@ -288,18 +293,18 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
 
         {/* Login Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="bg-white py-8 px-6 shadow-lg rounded-lg space-y-6">
+          <div className="bg-white dark:bg-dark-800 py-8 px-6 shadow-lg rounded-lg space-y-6 transition-colors duration-200">
             {/* Email Field */}
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2 transition-colors duration-200"
               >
                 Email Address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-gray-400 dark:text-dark-400" />
                 </div>
                 <input
                   id="email"
@@ -309,21 +314,21 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors ${
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 focus:border-transparent transition-colors duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-400 ${
                     validationErrors.email
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300 bg-white hover:border-gray-400"
+                      ? "border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/30"
+                      : "border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 hover:border-gray-400 dark:hover:border-dark-500"
                   }`}
                   placeholder="Enter your email"
                 />
                 {formData.email && !validationErrors.email && (
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-green-500 dark:text-green-400" />
                   </div>
                 )}
               </div>
               {validationErrors.email && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center transition-colors duration-200">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {validationErrors.email}
                 </p>
@@ -334,13 +339,13 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2 transition-colors duration-200"
               >
                 Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-gray-400 dark:text-dark-400" />
                 </div>
                 <input
                   id="password"

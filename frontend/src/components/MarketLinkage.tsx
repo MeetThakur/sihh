@@ -421,30 +421,30 @@ const MarketLinkage: React.FC = () => {
   const getBuyerTypeColor = (type: string) => {
     switch (type) {
       case "FPO":
-        return "bg-emerald-100 text-emerald-800 border-emerald-200";
+        return "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700";
       case "Processor":
-        return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-700";
       case "Trader":
-        return "bg-purple-100 text-purple-800 border-purple-200";
+        return "bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-700";
       case "Exporter":
-        return "bg-orange-100 text-orange-800 border-orange-200";
+        return "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border-orange-200 dark:border-orange-700";
       case "Retailer":
-        return "bg-indigo-100 text-indigo-800 border-indigo-200";
+        return "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-700";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700";
     }
   };
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
       case "low":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
       case "medium":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300";
       case "high":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300";
     }
   };
 
@@ -496,15 +496,15 @@ const MarketLinkage: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 Price Comparison
               </h2>
               <button
                 onClick={() => setShowComparisonModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -514,35 +514,37 @@ const MarketLinkage: React.FC = () => {
           <div className="p-6">
             {comparisonPrices.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-500">Select prices to compare</p>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Select prices to compare
+                </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-200">
+                <table className="w-full border-collapse border border-gray-200 dark:border-gray-700">
                   <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left">
+                    <tr className="bg-gray-50 dark:bg-gray-700">
+                      <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-left text-gray-900 dark:text-gray-100">
                         Crop
                       </th>
-                      <th className="border border-gray-200 px-4 py-3 text-left">
+                      <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-left text-gray-900 dark:text-gray-100">
                         Variety
                       </th>
-                      <th className="border border-gray-200 px-4 py-3 text-left">
+                      <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-left text-gray-900 dark:text-gray-100">
                         Market
                       </th>
-                      <th className="border border-gray-200 px-4 py-3 text-left">
+                      <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-left text-gray-900 dark:text-gray-100">
                         Price
                       </th>
-                      <th className="border border-gray-200 px-4 py-3 text-left">
+                      <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-left text-gray-900 dark:text-gray-100">
                         Change
                       </th>
-                      <th className="border border-gray-200 px-4 py-3 text-left">
+                      <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-left text-gray-900 dark:text-gray-100">
                         Distance
                       </th>
-                      <th className="border border-gray-200 px-4 py-3 text-left">
+                      <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-left text-gray-900 dark:text-gray-100">
                         Volume
                       </th>
-                      <th className="border border-gray-200 px-4 py-3 text-left">
+                      <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-left text-gray-900 dark:text-gray-100">
                         Trend
                       </th>
                     </tr>
@@ -551,39 +553,43 @@ const MarketLinkage: React.FC = () => {
                     {comparisonPrices.map((price, index) => (
                       <tr
                         key={price.id}
-                        className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                        className={
+                          index % 2 === 0
+                            ? "bg-white dark:bg-gray-800"
+                            : "bg-gray-50 dark:bg-gray-700"
+                        }
                       >
-                        <td className="border border-gray-200 px-4 py-3 font-medium">
+                        <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
                           {price.crop}
                         </td>
-                        <td className="border border-gray-200 px-4 py-3">
+                        <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-gray-900 dark:text-gray-100">
                           {price.variety}
                         </td>
-                        <td className="border border-gray-200 px-4 py-3">
+                        <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-gray-900 dark:text-gray-100">
                           {price.market}
                         </td>
-                        <td className="border border-gray-200 px-4 py-3 font-bold text-lg">
+                        <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 font-bold text-lg text-gray-900 dark:text-gray-100">
                           ₹{price.price.toLocaleString()}
                         </td>
-                        <td className="border border-gray-200 px-4 py-3">
+                        <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
                           <span
                             className={`inline-flex items-center px-2 py-1 rounded-full text-sm ${
                               price.change >= 0
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
+                                ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
+                                : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300"
                             }`}
                           >
                             {getTrendIcon(price.trend, price.change)}
                             {Math.abs(price.change)}%
                           </span>
                         </td>
-                        <td className="border border-gray-200 px-4 py-3">
+                        <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-gray-900 dark:text-gray-100">
                           {price.distance}
                         </td>
-                        <td className="border border-gray-200 px-4 py-3">
+                        <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-gray-900 dark:text-gray-100">
                           {price.volume} qtl
                         </td>
-                        <td className="border border-gray-200 px-4 py-3">
+                        <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
                           <MiniChart
                             data={price.historical}
                             trend={price.trend}
@@ -602,17 +608,17 @@ const MarketLinkage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header with Live Indicator */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
           <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center justify-between">
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 flex items-center">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center">
                 <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-green-600" />
                 <span className="break-words">Market Intelligence Hub</span>
               </h1>
-              <p className="text-gray-600 text-sm sm:text-base">
+              <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                 Real-time prices, verified buyers, and market opportunities
               </p>
             </div>
@@ -622,7 +628,7 @@ const MarketLinkage: React.FC = () => {
                 <div
                   className={`w-3 h-3 rounded-full ${isLiveMode ? "bg-green-500 animate-pulse" : "bg-gray-400"}`}
                 ></div>
-                <span className="text-xs sm:text-sm text-gray-600">
+                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                   {isLiveMode ? "Live" : "Static"} • Last updated:{" "}
                   <span className="hidden sm:inline">
                     {lastUpdate.toLocaleTimeString()}
@@ -640,8 +646,8 @@ const MarketLinkage: React.FC = () => {
                 onClick={() => setIsLiveMode(!isLiveMode)}
                 className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg border transition-colors text-sm ${
                   isLiveMode
-                    ? "bg-green-100 border-green-300 text-green-700 hover:bg-green-200"
-                    : "bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200"
+                    ? "bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50"
+                    : "bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
                 <Activity className="w-4 h-4 mr-1 sm:mr-2 inline" />
@@ -657,8 +663,8 @@ const MarketLinkage: React.FC = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="border-b border-gray-200 overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
             <nav
               className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max"
               aria-label="Tabs"
@@ -706,8 +712,8 @@ const MarketLinkage: React.FC = () => {
                   }
                   className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-1 sm:space-x-2 transition-colors whitespace-nowrap ${
                     activeTab === tab.id
-                      ? "border-green-500 text-green-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      ? "border-green-500 text-green-600 dark:text-green-400"
+                      : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600"
                   }`}
                 >
                   <tab.icon className="w-4 h-4 flex-shrink-0" />
@@ -716,8 +722,8 @@ const MarketLinkage: React.FC = () => {
                   <span
                     className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs rounded-full flex-shrink-0 ${
                       activeTab === tab.id
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-600"
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
                     }`}
                   >
                     {tab.count}
@@ -736,13 +742,13 @@ const MarketLinkage: React.FC = () => {
                   {/* Top Row - Search */}
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                       <input
                         type="text"
                         placeholder="Search crops, varieties, or markets..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                        className="pl-10 pr-4 py-3 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                       />
                     </div>
                   </div>
@@ -753,7 +759,7 @@ const MarketLinkage: React.FC = () => {
                       <select
                         value={selectedCrop}
                         onChange={(e) => setSelectedCrop(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[120px]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[120px] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         <option value="all">All Crops</option>
                         {getUniqueCrops().map((crop) => (
@@ -770,7 +776,7 @@ const MarketLinkage: React.FC = () => {
                             e.target.value as "price" | "change" | "distance",
                           )
                         }
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[140px]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[140px] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         <option value="change">Sort by Price Change</option>
                         <option value="price">Sort by Price</option>
@@ -780,7 +786,7 @@ const MarketLinkage: React.FC = () => {
                       <select
                         value={filterByDistance}
                         onChange={(e) => setFilterByDistance(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[120px]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[120px] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         <option value="all">All Distances</option>
                         <option value="near">Near (≤10 km)</option>
@@ -791,7 +797,7 @@ const MarketLinkage: React.FC = () => {
                       <select
                         value={filterByTrend}
                         onChange={(e) => setFilterByTrend(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[110px]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm min-w-[110px] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         <option value="all">All Trends</option>
                         <option value="up">Rising</option>
@@ -806,7 +812,7 @@ const MarketLinkage: React.FC = () => {
                           onClick={() =>
                             setShowNotifications(!showNotifications)
                           }
-                          className="px-3 py-2 bg-blue-100 text-blue-800 rounded-lg border border-blue-300 hover:bg-blue-200 transition-colors flex items-center relative text-sm"
+                          className="px-3 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-lg border border-blue-300 dark:border-blue-700 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors flex items-center relative text-sm"
                         >
                           <Bell className="w-4 h-4 mr-1" />
                           <span className="hidden sm:inline">
@@ -820,22 +826,22 @@ const MarketLinkage: React.FC = () => {
                         </button>
 
                         {showNotifications && (
-                          <div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
-                            <div className="p-4 border-b border-gray-200">
-                              <h3 className="font-semibold text-gray-900">
+                          <div className="absolute right-0 top-12 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                              <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                                 Market Notifications
                               </h3>
                             </div>
                             <div className="p-2">
                               {notifications.length === 0 ? (
-                                <p className="text-gray-500 text-center py-4">
+                                <p className="text-gray-500 dark:text-gray-400 text-center py-4">
                                   No new notifications
                                 </p>
                               ) : (
                                 notifications.map((notification) => (
                                   <div
                                     key={notification.id}
-                                    className="p-3 hover:bg-gray-50 rounded"
+                                    className="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded"
                                   >
                                     <div className="flex items-start space-x-3">
                                       <div
@@ -849,10 +855,10 @@ const MarketLinkage: React.FC = () => {
                                         }`}
                                       ></div>
                                       <div className="flex-1">
-                                        <p className="text-sm text-gray-900">
+                                        <p className="text-sm text-gray-900 dark:text-gray-100">
                                           {notification.message}
                                         </p>
-                                        <p className="text-xs text-gray-500 mt-1">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                           {notification.timestamp.toLocaleTimeString()}
                                         </p>
                                       </div>
@@ -867,7 +873,7 @@ const MarketLinkage: React.FC = () => {
 
                       <button
                         onClick={() => setShowAlertModal(true)}
-                        className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg border border-yellow-300 hover:bg-yellow-200 transition-colors flex items-center"
+                        className="px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-lg border border-yellow-300 dark:border-yellow-700 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors flex items-center"
                       >
                         <Bell className="w-4 h-4 mr-2" />
                         Price Alerts ({priceAlerts.length})
@@ -875,7 +881,7 @@ const MarketLinkage: React.FC = () => {
 
                       <button
                         onClick={() => setShowComparisonModal(true)}
-                        className="px-3 py-2 bg-gray-100 text-gray-800 rounded-lg border border-gray-300 hover:bg-gray-200 transition-colors flex items-center text-sm"
+                        className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center text-sm"
                         disabled={selectedPricesForComparison.length < 2}
                       >
                         <BarChart3 className="w-4 h-4 mr-1" />
@@ -900,7 +906,7 @@ const MarketLinkage: React.FC = () => {
                           );
                           setLastUpdate(new Date());
                         }}
-                        className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center text-sm"
+                        className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center text-sm"
                       >
                         <RefreshCw className="w-4 h-4 mr-1" />
                         <span className="hidden sm:inline">Refresh</span>
@@ -911,22 +917,22 @@ const MarketLinkage: React.FC = () => {
 
                 {/* Market Insights Dashboard */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200 hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-5 border border-green-200 dark:border-green-700 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center mb-2">
-                          <TrendingUp className="w-5 h-5 text-green-600 mr-2" />
-                          <p className="text-green-700 text-sm font-semibold">
+                          <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" />
+                          <p className="text-green-700 dark:text-green-300 text-sm font-semibold">
                             Best Deal Today
                           </p>
                         </div>
-                        <p className="text-2xl font-bold text-green-800 mb-1">
+                        <p className="text-2xl font-bold text-green-800 dark:text-green-200 mb-1">
                           ₹
                           {Math.max(
                             ...filteredPrices.map((p) => p.price),
                           ).toLocaleString()}
                         </p>
-                        <p className="text-green-600 text-xs font-medium">
+                        <p className="text-green-600 dark:text-green-400 text-xs font-medium">
                           {
                             filteredPrices.find(
                               (p) =>
@@ -939,38 +945,38 @@ const MarketLinkage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200 hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-5 border border-blue-200 dark:border-blue-700 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center mb-2">
-                          <ArrowUpRight className="w-5 h-5 text-blue-600 mr-2" />
-                          <p className="text-blue-700 text-sm font-semibold">
+                          <ArrowUpRight className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" />
+                          <p className="text-blue-700 dark:text-blue-300 text-sm font-semibold">
                             Rising Markets
                           </p>
                         </div>
-                        <p className="text-2xl font-bold text-blue-800 mb-1">
+                        <p className="text-2xl font-bold text-blue-800 dark:text-blue-200 mb-1">
                           {
                             filteredPrices.filter((p) => p.trend === "up")
                               .length
                           }
                         </p>
-                        <p className="text-blue-600 text-xs font-medium">
+                        <p className="text-blue-600 dark:text-blue-400 text-xs font-medium">
                           Markets trending up
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 border border-purple-200 hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-5 border border-purple-200 dark:border-purple-700 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center mb-2">
-                          <Activity className="w-5 h-5 text-purple-600 mr-2" />
-                          <p className="text-purple-700 text-sm font-semibold">
+                          <Activity className="w-5 h-5 text-purple-600 dark:text-purple-400 mr-2" />
+                          <p className="text-purple-700 dark:text-purple-300 text-sm font-semibold">
                             Avg Price Change
                           </p>
                         </div>
-                        <p className="text-2xl font-bold text-purple-800 mb-1">
+                        <p className="text-2xl font-bold text-purple-800 dark:text-purple-200 mb-1">
                           {(
                             filteredPrices.reduce(
                               (acc, p) => acc + p.change,
@@ -979,23 +985,23 @@ const MarketLinkage: React.FC = () => {
                           ).toFixed(1)}
                           %
                         </p>
-                        <p className="text-purple-600 text-xs font-medium">
+                        <p className="text-purple-600 dark:text-purple-400 text-xs font-medium">
                           Market sentiment
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-5 border border-orange-200 hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl p-5 border border-orange-200 dark:border-orange-700 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center mb-2">
-                          <BarChart3 className="w-5 h-5 text-orange-600 mr-2" />
-                          <p className="text-orange-700 text-sm font-semibold">
+                          <BarChart3 className="w-5 h-5 text-orange-600 dark:text-orange-400 mr-2" />
+                          <p className="text-orange-700 dark:text-orange-300 text-sm font-semibold">
                             Total Volume
                           </p>
                         </div>
-                        <p className="text-2xl font-bold text-orange-800 mb-1">
+                        <p className="text-2xl font-bold text-orange-800 dark:text-orange-200 mb-1">
                           {(
                             filteredPrices.reduce(
                               (acc, p) => acc + p.volume,
@@ -1004,7 +1010,7 @@ const MarketLinkage: React.FC = () => {
                           ).toFixed(1)}
                           K
                         </p>
-                        <p className="text-orange-600 text-xs font-medium">
+                        <p className="text-orange-600 dark:text-orange-400 text-xs font-medium">
                           Quintals traded
                         </p>
                       </div>
@@ -1013,14 +1019,14 @@ const MarketLinkage: React.FC = () => {
                 </div>
 
                 {/* Price Range Filter */}
-                <div className="bg-gray-50 rounded-xl p-5 mb-6 border border-gray-200">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center">
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 mb-6 border border-gray-200 dark:border-gray-700">
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center">
                     <DollarSign className="w-4 h-4 mr-2" />
                     Price Range Filter
                   </h4>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
-                      <label className="block text-xs font-medium text-gray-600 mb-2">
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
                         Min Price (₹)
                       </label>
                       <input
@@ -1032,12 +1038,12 @@ const MarketLinkage: React.FC = () => {
                             min: Number(e.target.value),
                           }))
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         placeholder="0"
                       />
                     </div>
                     <div className="flex-1">
-                      <label className="block text-xs font-medium text-gray-600 mb-2">
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
                         Max Price (₹)
                       </label>
                       <input
@@ -1049,14 +1055,14 @@ const MarketLinkage: React.FC = () => {
                             max: Number(e.target.value),
                           }))
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         placeholder="10000"
                       />
                     </div>
                     <div className="flex items-end">
                       <button
                         onClick={() => setPriceRange({ min: 0, max: 10000 })}
-                        className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                        className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
                       >
                         Reset
                       </button>
@@ -1069,22 +1075,24 @@ const MarketLinkage: React.FC = () => {
                   {filteredPrices.map((price) => (
                     <div
                       key={price.id}
-                      className={`bg-white border-2 rounded-xl p-6 hover:shadow-lg transition-all duration-200 cursor-pointer ${
+                      className={`bg-white dark:bg-gray-800 border-2 rounded-xl p-6 hover:shadow-lg transition-all duration-200 cursor-pointer ${
                         selectedPricesForComparison.includes(price.id)
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-200 hover:border-green-300"
+                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                          : "border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600"
                       }`}
                       onClick={() => togglePriceComparison(price.id)}
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <h3 className="font-bold text-lg text-gray-900">
+                          <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
                             {price.crop}
                           </h3>
-                          <p className="text-gray-600 text-sm">
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">
                             {price.variety}
                           </p>
-                          <p className="text-gray-500 text-xs">{price.grade}</p>
+                          <p className="text-gray-500 dark:text-gray-500 text-xs">
+                            {price.grade}
+                          </p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <input
@@ -1099,8 +1107,8 @@ const MarketLinkage: React.FC = () => {
                           <div
                             className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
                               price.change >= 0
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
+                                ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
+                                : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300"
                             }`}
                           >
                             {getTrendIcon(price.trend, price.change)}
@@ -1113,36 +1121,46 @@ const MarketLinkage: React.FC = () => {
 
                       <div className="space-y-3 mb-4">
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Market:</span>
-                          <span className="font-semibold text-gray-900">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Market:
+                          </span>
+                          <span className="font-semibold text-gray-900 dark:text-gray-100">
                             {price.market}
                           </span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Price:</span>
-                          <span className="text-2xl font-bold text-gray-900">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Price:
+                          </span>
+                          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                             ₹{price.price.toLocaleString()}
                           </span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Volume:</span>
-                          <span className="text-gray-900">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Volume:
+                          </span>
+                          <span className="text-gray-900 dark:text-gray-100">
                             {price.volume} qtl
                           </span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Distance:</span>
-                          <span className="text-gray-900 flex items-center">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Distance:
+                          </span>
+                          <span className="text-gray-900 dark:text-gray-100 flex items-center">
                             <MapPin className="w-3 h-3 mr-1" />
                             {price.distance}
                           </span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Trend:</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Trend:
+                          </span>
                           <MiniChart
                             data={price.historical}
                             trend={price.trend}
@@ -1150,7 +1168,7 @@ const MarketLinkage: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4">
                         <span className="flex items-center">
                           <Clock className="w-3 h-3 mr-1" />
                           {price.lastUpdated}
@@ -1158,10 +1176,10 @@ const MarketLinkage: React.FC = () => {
                         <span
                           className={`px-2 py-1 rounded ${
                             price.trend === "up"
-                              ? "bg-green-50 text-green-700"
+                              ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300"
                               : price.trend === "down"
-                                ? "bg-red-50 text-red-700"
-                                : "bg-gray-50 text-gray-700"
+                                ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                                : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                           }`}
                         >
                           {price.trend === "up"
@@ -1174,14 +1192,14 @@ const MarketLinkage: React.FC = () => {
 
                       <div className="flex gap-2">
                         <button
-                          className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+                          className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center justify-center"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <ExternalLink className="w-4 h-4 mr-2" />
                           Get Directions
                         </button>
                         <button
-                          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <Bell className="w-4 h-4" />
@@ -1196,7 +1214,7 @@ const MarketLinkage: React.FC = () => {
             {activeTab === "buyers" && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold text-gray-900">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     Verified Buyers & Suppliers
                   </h3>
                   <div className="flex items-center space-x-4">
@@ -1205,10 +1223,10 @@ const MarketLinkage: React.FC = () => {
                       <input
                         type="text"
                         placeholder="Search buyers..."
-                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                       />
                     </div>
-                    <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                    <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center">
                       <Plus className="w-4 h-4 mr-2" />
                       Connect
                     </button>
@@ -1219,12 +1237,12 @@ const MarketLinkage: React.FC = () => {
                   {buyers.map((buyer) => (
                     <div
                       key={buyer.id}
-                      className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
+                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-2">
-                            <h4 className="text-lg font-bold text-gray-900">
+                            <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                               {buyer.name}
                             </h4>
                             {buyer.verified && (
@@ -1240,14 +1258,14 @@ const MarketLinkage: React.FC = () => {
                             </span>
                             <div className="flex items-center text-yellow-400">
                               <Star className="w-4 h-4 fill-current" />
-                              <span className="ml-1 text-sm text-gray-600">
+                              <span className="ml-1 text-sm text-gray-600 dark:text-gray-400">
                                 {buyer.rating}
                               </span>
                             </div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm text-gray-500 mb-1">
+                          <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                             Active Deals
                           </div>
                           <div className="text-2xl font-bold text-green-600">
@@ -1257,36 +1275,36 @@ const MarketLinkage: React.FC = () => {
                       </div>
 
                       <div className="space-y-3 mb-4">
-                        <div className="flex items-center text-sm text-gray-600">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                           <MapPin className="w-4 h-4 mr-2" />
                           <span>{buyer.location}</span>
                         </div>
 
-                        <div className="flex items-center text-sm text-gray-600">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                           <DollarSign className="w-4 h-4 mr-2" />
                           <span>Payment: {buyer.paymentTerms}</span>
                         </div>
 
-                        <div className="flex items-center text-sm text-gray-600">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                           <Truck className="w-4 h-4 mr-2" />
                           <span>Quantity: {buyer.preferredQuantity}</span>
                         </div>
 
-                        <div className="flex items-center text-sm text-gray-600">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                           <Activity className="w-4 h-4 mr-2" />
                           <span>Last active: {buyer.lastActive}</span>
                         </div>
                       </div>
 
                       <div className="mb-4">
-                        <p className="text-sm font-medium text-gray-700 mb-2">
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Currently Buying:
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {buyer.crops.map((crop, index) => (
                             <span
                               key={index}
-                              className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm border border-green-200"
+                              className="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-sm border border-green-200 dark:border-green-700"
                             >
                               {crop}
                             </span>
@@ -1295,15 +1313,15 @@ const MarketLinkage: React.FC = () => {
                       </div>
 
                       <div className="flex gap-3">
-                        <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
+                        <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center justify-center">
                           <Phone className="w-4 h-4 mr-2" />
                           Contact
                         </button>
-                        <button className="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
+                        <button className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center">
                           <Eye className="w-4 h-4 mr-2" />
                           View Profile
                         </button>
-                        <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                           <MessageCircle className="w-4 h-4" />
                         </button>
                       </div>
@@ -1316,10 +1334,10 @@ const MarketLinkage: React.FC = () => {
             {activeTab === "opportunities" && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold text-gray-900">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     Market Opportunities
                   </h3>
-                  <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                  <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center">
                     <Zap className="w-4 h-4 mr-2" />
                     Get Recommendations
                   </button>
@@ -1329,14 +1347,14 @@ const MarketLinkage: React.FC = () => {
                   {marketOpportunities.map((opportunity) => (
                     <div
                       key={opportunity.id}
-                      className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
+                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <h4 className="text-lg font-bold text-gray-900 mb-1">
+                          <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
                             {opportunity.title}
                           </h4>
-                          <p className="text-gray-600 text-sm">
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">
                             {opportunity.company}
                           </p>
                         </div>
@@ -1349,36 +1367,46 @@ const MarketLinkage: React.FC = () => {
 
                       <div className="space-y-3 mb-4">
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Crop:</span>
-                          <span className="font-semibold text-gray-900">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Crop:
+                          </span>
+                          <span className="font-semibold text-gray-900 dark:text-gray-100">
                             {opportunity.crop}
                           </span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Price:</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Price:
+                          </span>
                           <span className="text-xl font-bold text-green-600">
                             ₹{opportunity.price.toLocaleString()}
                           </span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Quantity:</span>
-                          <span className="text-gray-900">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Quantity:
+                          </span>
+                          <span className="text-gray-900 dark:text-gray-100">
                             {opportunity.quantity}
                           </span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">ROI:</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            ROI:
+                          </span>
                           <span className="text-lg font-bold text-green-600">
                             {opportunity.roi}
                           </span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Deadline:</span>
-                          <span className="text-gray-900 flex items-center">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Deadline:
+                          </span>
+                          <span className="text-gray-900 dark:text-gray-100 flex items-center">
                             <Calendar className="w-4 h-4 mr-1" />
                             {new Date(
                               opportunity.deadline,
@@ -1387,22 +1415,24 @@ const MarketLinkage: React.FC = () => {
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Location:</span>
-                          <span className="text-gray-900">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Location:
+                          </span>
+                          <span className="text-gray-900 dark:text-gray-100">
                             {opportunity.location}
                           </span>
                         </div>
                       </div>
 
                       <div className="mb-4">
-                        <p className="text-sm font-medium text-gray-700 mb-2">
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Requirements:
                         </p>
                         <ul className="space-y-1">
                           {opportunity.requirements.map((req, index) => (
                             <li
                               key={index}
-                              className="text-sm text-gray-600 flex items-center"
+                              className="text-sm text-gray-600 dark:text-gray-400 flex items-center"
                             >
                               <CheckCircle className="w-3 h-3 mr-2 text-green-600" />
                               {req}
@@ -1412,11 +1442,11 @@ const MarketLinkage: React.FC = () => {
                       </div>
 
                       <div className="flex gap-3">
-                        <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
+                        <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center justify-center">
                           <Target className="w-4 h-4 mr-2" />
                           Apply Now
                         </button>
-                        <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                           <Eye className="w-4 h-4" />
                         </button>
                       </div>
@@ -1429,14 +1459,14 @@ const MarketLinkage: React.FC = () => {
             {activeTab === "contracts" && (
               <div className="space-y-6">
                 <div className="text-center py-12">
-                  <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <FileText className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                     Contract Farming
                   </h3>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
                     Secure contracts with guaranteed prices and support
                   </p>
-                  <button className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                  <button className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors">
                     Explore Contracts
                   </button>
                 </div>
@@ -1447,51 +1477,67 @@ const MarketLinkage: React.FC = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Today's Best Price</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Today's Best Price
+                </p>
                 <p className="text-2xl font-bold text-green-600">₹2,650</p>
-                <p className="text-gray-500 text-xs">Basmati Rice</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs">
+                  Basmati Rice
+                </p>
               </div>
               <TrendingUp className="w-8 h-8 text-green-600" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Active Buyers</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Active Buyers
+                </p>
                 <p className="text-2xl font-bold text-blue-600">
                   {buyers.length}
                 </p>
-                <p className="text-gray-500 text-xs">Verified profiles</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs">
+                  Verified profiles
+                </p>
               </div>
               <Users className="w-8 h-8 text-blue-600" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Opportunities</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Opportunities
+                </p>
                 <p className="text-2xl font-bold text-purple-600">
                   {marketOpportunities.length}
                 </p>
-                <p className="text-gray-500 text-xs">High ROI available</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs">
+                  High ROI available
+                </p>
               </div>
               <Target className="w-8 h-8 text-purple-600" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Price Alerts</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Price Alerts
+                </p>
                 <p className="text-2xl font-bold text-orange-600">
                   {priceAlerts.length}
                 </p>
-                <p className="text-gray-500 text-xs">Active notifications</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs">
+                  Active notifications
+                </p>
               </div>
               <Bell className="w-8 h-8 text-orange-600" />
             </div>
@@ -1501,15 +1547,15 @@ const MarketLinkage: React.FC = () => {
         {/* Price Alert Modal */}
         {showAlertModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl max-w-md w-full">
-              <div className="p-6 border-b border-gray-200">
+            <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full">
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                     Create Price Alert
                   </h2>
                   <button
                     onClick={() => setShowAlertModal(false)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                   >
                     <X className="w-6 h-6" />
                   </button>
@@ -1518,10 +1564,10 @@ const MarketLinkage: React.FC = () => {
               <div className="p-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Crop
                     </label>
-                    <select className="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                       <option>Select Crop</option>
                       {getUniqueCrops().map((crop) => (
                         <option key={crop} value={crop}>
@@ -1531,20 +1577,20 @@ const MarketLinkage: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Target Price (₹)
                     </label>
                     <input
                       type="number"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                       placeholder="Enter target price"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Alert When Price
                     </label>
-                    <select className="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                       <option value="above">Goes Above Target</option>
                       <option value="below">Goes Below Target</option>
                     </select>
@@ -1553,11 +1599,11 @@ const MarketLinkage: React.FC = () => {
                 <div className="flex gap-3 mt-6">
                   <button
                     onClick={() => setShowAlertModal(false)}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                   >
                     Cancel
                   </button>
-                  <button className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                  <button className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800">
                     Create Alert
                   </button>
                 </div>
@@ -1567,15 +1613,17 @@ const MarketLinkage: React.FC = () => {
         )}
 
         {/* Real-time Market Feed */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
               <Activity className="w-5 h-5 mr-2 text-green-600" />
               Live Market Feed
             </h3>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-gray-600">Live</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Live
+              </span>
             </div>
           </div>
 
@@ -1583,7 +1631,7 @@ const MarketLinkage: React.FC = () => {
             {filteredPrices.slice(0, 5).map((price) => (
               <div
                 key={price.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
               >
                 <div className="flex items-center space-x-3">
                   <div
@@ -1596,18 +1644,22 @@ const MarketLinkage: React.FC = () => {
                     }`}
                   ></div>
                   <div>
-                    <p className="font-medium text-gray-900">
-                      {price.crop} ({price.variety})
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                      {price.crop} - {price.variety}
                     </p>
-                    <p className="text-sm text-gray-600">{price.market}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {price.market}
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-lg">
+                  <p className="font-bold text-gray-900 dark:text-gray-100">
                     ₹{price.price.toLocaleString()}
                   </p>
                   <p
-                    className={`text-sm ${price.change >= 0 ? "text-green-600" : "text-red-600"}`}
+                    className={`text-sm ${
+                      price.change >= 0 ? "text-green-600" : "text-red-600"
+                    }`}
                   >
                     {price.change >= 0 ? "+" : ""}
                     {price.change}%

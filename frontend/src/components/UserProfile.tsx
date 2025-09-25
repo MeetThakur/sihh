@@ -43,6 +43,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
         district: state.user?.profile?.location?.district || "",
         village: state.user?.profile?.location?.village || "",
       },
+      preferredLanguage: state.user?.profile?.preferredLanguage || "en",
     },
   });
 
@@ -91,13 +92,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
       setProfileData((prev) => ({
         ...prev,
         profile: {
-          farmSize: prev.profile?.farmSize,
-          location: prev.profile?.location,
-          soilType: prev.profile?.soilType,
-          farmingExperience: prev.profile?.farmingExperience,
-          primaryCrops: prev.profile?.primaryCrops,
-          preferredLanguage: prev.profile?.preferredLanguage || "en",
-          avatar: prev.profile?.avatar,
           ...prev.profile,
           [profileField]:
             profileField === "farmSize" || profileField === "farmingExperience"
@@ -184,7 +178,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
       {/* Avatar Section */}
       <div className="flex items-center space-x-4">
         <div className="relative">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
             {state.user?.profile?.avatar ? (
               <img
                 src={state.user.profile.avatar}
@@ -192,20 +186,22 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                 className="w-20 h-20 rounded-full object-cover"
               />
             ) : (
-              <User className="w-10 h-10 text-green-600" />
+              <User className="w-10 h-10 text-green-600 dark:text-green-400" />
             )}
           </div>
           {isEditing && (
-            <button className="absolute -bottom-1 -right-1 bg-green-600 text-white rounded-full p-1 hover:bg-green-700">
+            <button className="absolute -bottom-1 -right-1 bg-green-600 text-white rounded-full p-1 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800">
               <Camera className="w-4 h-4" />
             </button>
           )}
         </div>
         <div>
-          <h3 className="text-lg font-medium text-gray-900">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
             {state.user?.name}
           </h3>
-          <p className="text-sm text-gray-500">{state.user?.email}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {state.user?.email}
+          </p>
           <p className="text-xs text-green-600 capitalize">
             {state.user?.role}
           </p>
@@ -216,12 +212,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
       <div className="grid grid-cols-1 gap-6">
         {/* Basic Information */}
         <div>
-          <h4 className="text-sm font-medium text-gray-900 mb-3">
+          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
             Basic Information
           </h4>
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Full Name
               </label>
               <input
@@ -229,11 +225,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                 value={profileData.name || ""}
                 onChange={(e) => handleProfileChange("name", e.target.value)}
                 disabled={!isEditing}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Phone Number
               </label>
               <input
@@ -241,7 +237,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                 value={profileData.phone || ""}
                 onChange={(e) => handleProfileChange("phone", e.target.value)}
                 disabled={!isEditing}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
@@ -249,10 +245,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
 
         {/* Location Information */}
         <div>
-          <h4 className="text-sm font-medium text-gray-900 mb-3">Location</h4>
+          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+            Location
+          </h4>
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 State
               </label>
               <input
@@ -262,11 +260,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   handleProfileChange("profile.location.state", e.target.value)
                 }
                 disabled={!isEditing}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 District
               </label>
               <input
@@ -279,11 +277,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   )
                 }
                 disabled={!isEditing}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Village
               </label>
               <input
@@ -296,7 +294,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   )
                 }
                 disabled={!isEditing}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
@@ -304,12 +302,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
 
         {/* Farm Information */}
         <div>
-          <h4 className="text-sm font-medium text-gray-900 mb-3">
+          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
             Farm Details
           </h4>
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Farm Size (acres)
               </label>
               <input
@@ -321,11 +319,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   handleProfileChange("profile.farmSize", e.target.value)
                 }
                 disabled={!isEditing}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Soil Type
               </label>
               <select
@@ -334,7 +332,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   handleProfileChange("profile.soilType", e.target.value)
                 }
                 disabled={!isEditing}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
                 <option value="">Select soil type</option>
                 {soilTypes.map((soil) => (
@@ -345,7 +343,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Farming Experience (years)
               </label>
               <input
@@ -359,7 +357,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   )
                 }
                 disabled={!isEditing}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
@@ -372,14 +370,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
           <>
             <button
               onClick={() => setIsEditing(false)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
             >
               Cancel
             </button>
             <button
               onClick={handleSaveProfile}
               disabled={isSaving}
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSaving ? (
                 <>
@@ -397,7 +395,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
         ) : (
           <button
             onClick={() => setIsEditing(true)}
-            className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
+            className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
           >
             Edit Profile
           </button>
@@ -409,17 +407,17 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
   const renderPasswordTab = () => (
     <div className="space-y-6">
       <div>
-        <h4 className="text-sm font-medium text-gray-900 mb-3">
+        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
           Change Password
         </h4>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Choose a strong password to keep your account secure.
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Current Password
           </label>
           <div className="relative">
@@ -432,7 +430,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   currentPassword: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Enter current password"
             />
             <button
@@ -446,16 +444,16 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showPasswords.current ? (
-                <EyeOff className="h-4 w-4 text-gray-400" />
+                <EyeOff className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               ) : (
-                <Eye className="h-4 w-4 text-gray-400" />
+                <Eye className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               )}
             </button>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             New Password
           </label>
           <div className="relative">
@@ -468,7 +466,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   newPassword: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Enter new password"
             />
             <button
@@ -479,16 +477,16 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showPasswords.new ? (
-                <EyeOff className="h-4 w-4 text-gray-400" />
+                <EyeOff className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               ) : (
-                <Eye className="h-4 w-4 text-gray-400" />
+                <Eye className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               )}
             </button>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Confirm New Password
           </label>
           <div className="relative">
@@ -501,7 +499,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   confirmPassword: e.target.value,
                 }))
               }
-              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Confirm new password"
             />
             <button
@@ -515,9 +513,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showPasswords.confirm ? (
-                <EyeOff className="h-4 w-4 text-gray-400" />
+                <EyeOff className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               ) : (
-                <Eye className="h-4 w-4 text-gray-400" />
+                <Eye className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               )}
             </button>
           </div>
@@ -532,7 +530,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
           !passwordData.newPassword ||
           !passwordData.confirmPassword
         }
-        className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSaving ? (
           <>
@@ -552,25 +550,25 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
   const renderPreferencesTab = () => (
     <div className="space-y-6">
       <div>
-        <h4 className="text-sm font-medium text-gray-900 mb-3">
+        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
           Account Preferences
         </h4>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Manage your account settings and preferences.
         </p>
       </div>
 
       {/* Language Preference */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Preferred Language
         </label>
         <select
-          value={state.user?.profile?.preferredLanguage || "en"}
+          value={profileData.profile?.preferredLanguage || "en"}
           onChange={(e) =>
             handleProfileChange("profile.preferredLanguage", e.target.value)
           }
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
         >
           <option value="en">English</option>
           <option value="hi">हिंदी (Hindi)</option>
@@ -578,13 +576,15 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
       </div>
 
       {/* Account Status */}
-      <div className="bg-gray-50 rounded-lg p-4">
-        <h5 className="text-sm font-medium text-gray-900 mb-2">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+        <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
           Account Status
         </h5>
         <div className="space-y-2 text-sm">
           <div className="flex items-center justify-between">
-            <span className="text-gray-600">Email Verification</span>
+            <span className="text-gray-600 dark:text-gray-400">
+              Email Verification
+            </span>
             <span
               className={`flex items-center ${state.user?.isEmailVerified ? "text-green-600" : "text-red-600"}`}
             >
@@ -602,14 +602,18 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-600">Account Status</span>
+            <span className="text-gray-600 dark:text-gray-400">
+              Account Status
+            </span>
             <span className="text-green-600 flex items-center">
               <CheckCircle className="w-4 h-4 mr-1" />
               Active
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-600">Subscription Plan</span>
+            <span className="text-gray-600 dark:text-gray-400">
+              Subscription Plan
+            </span>
             <span className="text-blue-600 capitalize">
               {state.user?.subscription?.plan || "Free"}
             </span>
@@ -618,10 +622,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
       </div>
 
       {/* Logout Button */}
-      <div className="pt-4 border-t border-gray-200">
+      <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={handleLogout}
-          className="w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 hover:border-red-300"
+          className="w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md hover:bg-red-100 dark:hover:bg-red-900/30 hover:border-red-300 dark:hover:border-red-700"
         >
           <LogOut className="w-4 h-4 mr-2 inline" />
           Sign Out
@@ -635,21 +639,21 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div className="fixed inset-0 transition-opacity" aria-hidden="true">
           <div
-            className="absolute inset-0 bg-gray-500 opacity-75"
+            className="absolute inset-0 bg-gray-500 dark:bg-gray-900 opacity-75"
             onClick={onClose}
           ></div>
         </div>
 
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
           {/* Header */}
-          <div className="bg-white px-6 py-4 border-b border-gray-200">
+          <div className="bg-white dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                 User Profile
               </h3>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -661,8 +665,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                 onClick={() => setActiveTab("profile")}
                 className={`px-3 py-2 text-sm font-medium rounded-md ${
                   activeTab === "profile"
-                    ? "bg-green-100 text-green-700"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 }`}
               >
                 <User className="w-4 h-4 mr-2 inline" />
@@ -672,8 +676,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                 onClick={() => setActiveTab("password")}
                 className={`px-3 py-2 text-sm font-medium rounded-md ${
                   activeTab === "password"
-                    ? "bg-green-100 text-green-700"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 }`}
               >
                 <Lock className="w-4 h-4 mr-2 inline" />
@@ -683,8 +687,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                 onClick={() => setActiveTab("preferences")}
                 className={`px-3 py-2 text-sm font-medium rounded-md ${
                   activeTab === "preferences"
-                    ? "bg-green-100 text-green-700"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 }`}
               >
                 <Settings className="w-4 h-4 mr-2 inline" />
@@ -694,14 +698,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Content */}
-          <div className="bg-white px-6 py-6">
+          <div className="bg-white dark:bg-gray-800 px-6 py-6">
             {/* Message Display */}
             {message && (
               <div
                 className={`mb-4 p-4 rounded-md ${
                   message.type === "success"
-                    ? "bg-green-50 border border-green-200"
-                    : "bg-red-50 border border-red-200"
+                    ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700"
+                    : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700"
                 }`}
               >
                 <div className="flex">
@@ -712,7 +716,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   )}
                   <div className="ml-3">
                     <p
-                      className={`text-sm ${message.type === "success" ? "text-green-800" : "text-red-800"}`}
+                      className={`text-sm ${message.type === "success" ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300"}`}
                     >
                       {message.text}
                     </p>

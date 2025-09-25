@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   MapPin,
   AlertTriangle,
   Users,
   Camera,
   TrendingUp,
-  Calendar,
   Clock,
   Shield,
   Bug,
@@ -15,13 +14,11 @@ import {
   Search,
   Bell,
   Share2,
-  Download,
   ChevronDown,
   ChevronUp,
   Activity,
   BarChart3,
   MapIcon,
-  Zap,
   Star,
   MessageCircle,
   Target,
@@ -80,7 +77,6 @@ const PestWatch: React.FC = () => {
   const [selectedCrop, setSelectedCrop] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [expandedReport, setExpandedReport] = useState<string | null>(null);
 
   // Enhanced mock data
   const [pestReports, setPestReports] = useState<PestReport[]>([
@@ -215,43 +211,43 @@ const PestWatch: React.FC = () => {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "Critical":
-        return "bg-red-500 text-white";
+        return "bg-red-500 dark:bg-red-600 text-white";
       case "High":
-        return "bg-red-400 text-white";
+        return "bg-red-400 dark:bg-red-500 text-white";
       case "Medium":
-        return "bg-yellow-500 text-white";
+        return "bg-yellow-500 dark:bg-yellow-600 text-white dark:text-gray-100";
       case "Low":
-        return "bg-green-500 text-white";
+        return "bg-green-500 dark:bg-green-600 text-white";
       default:
-        return "bg-gray-500 text-white";
+        return "bg-gray-500 dark:bg-gray-600 text-white";
     }
   };
 
   const getSeverityBg = (severity: string) => {
     switch (severity) {
       case "Critical":
-        return "bg-red-50 border-red-200";
+        return "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700";
       case "High":
-        return "bg-red-50 border-red-200";
+        return "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700";
       case "Medium":
-        return "bg-yellow-50 border-yellow-200";
+        return "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700";
       case "Low":
-        return "bg-green-50 border-green-200";
+        return "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700";
       default:
-        return "bg-gray-50 border-gray-200";
+        return "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700";
     }
   };
 
   const getAlertColor = (severity: string) => {
     switch (severity) {
       case "danger":
-        return "bg-red-100 border-red-300 text-red-800";
+        return "bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700 text-red-800 dark:text-red-300";
       case "warning":
-        return "bg-yellow-100 border-yellow-300 text-yellow-800";
+        return "bg-yellow-100 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-300";
       case "info":
-        return "bg-blue-100 border-blue-300 text-blue-800";
+        return "bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-800 dark:text-blue-300";
       default:
-        return "bg-gray-100 border-gray-300 text-gray-800";
+        return "bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200";
     }
   };
 
@@ -274,20 +270,20 @@ const PestWatch: React.FC = () => {
   const uniqueCrops = [...new Set(pestReports.map((report) => report.crop))];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Enhanced Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 flex items-center">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center">
                 <Bug className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-red-600" />
                 <span>Pest Watch</span>
-                <span className="ml-3 px-3 py-1 bg-red-100 text-red-700 text-sm font-medium rounded-full">
+                <span className="ml-3 px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-sm font-medium rounded-full">
                   {statistics.riskLevel} Risk
                 </span>
               </h1>
-              <p className="text-gray-600 text-sm sm:text-base">
+              <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                 AI-powered pest detection, community reporting, and smart
                 monitoring
               </p>
@@ -295,24 +291,28 @@ const PestWatch: React.FC = () => {
 
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-red-600">
                   {statistics.activeOutbreaks}
                 </div>
-                <div className="text-xs text-gray-500">Active Outbreaks</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Active Outbreaks
+                </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {statistics.totalReports}
                 </div>
-                <div className="text-xs text-gray-500">Total Reports</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Total Reports
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="border-b border-gray-200 overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
             <nav
               className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max"
               aria-label="Tabs"
@@ -345,11 +345,11 @@ const PestWatch: React.FC = () => {
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => setActiveTab(tab.id as typeof activeTab)}
                   className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? "border-red-500 text-red-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
                   }`}
                 >
                   <tab.icon className="w-4 h-4" />
@@ -358,8 +358,8 @@ const PestWatch: React.FC = () => {
                     <span
                       className={`px-2 py-1 text-xs rounded-full ${
                         activeTab === tab.id
-                          ? "bg-red-100 text-red-700"
-                          : "bg-gray-100 text-gray-600"
+                          ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                       }`}
                     >
                       {tab.count}
@@ -378,45 +378,45 @@ const PestWatch: React.FC = () => {
 
                 {/* Quick Stats for Detection */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/30 rounded-xl p-4 border border-blue-200 dark:border-blue-700">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-2xl font-bold text-blue-800">
+                        <div className="text-2xl font-bold text-blue-800 dark:text-blue-300">
                           95%
                         </div>
-                        <div className="text-blue-600 text-sm font-medium">
+                        <div className="text-blue-600 dark:text-blue-400 text-sm font-medium">
                           AI Accuracy
                         </div>
                       </div>
-                      <Target className="w-8 h-8 text-blue-600" />
+                      <Target className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/30 rounded-xl p-4 border border-green-200 dark:border-green-700">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-2xl font-bold text-green-800">
+                        <div className="text-2xl font-bold text-green-800 dark:text-green-300">
                           150+
                         </div>
-                        <div className="text-green-600 text-sm font-medium">
+                        <div className="text-green-600 dark:text-green-400 text-sm font-medium">
                           Pests Identified
                         </div>
                       </div>
-                      <Bug className="w-8 h-8 text-green-600" />
+                      <Bug className="w-8 h-8 text-green-600 dark:text-green-400" />
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/30 rounded-xl p-4 border border-purple-200 dark:border-purple-700">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-2xl font-bold text-purple-800">
+                        <div className="text-2xl font-bold text-purple-800 dark:text-purple-300">
                           24/7
                         </div>
-                        <div className="text-purple-600 text-sm font-medium">
+                        <div className="text-purple-600 dark:text-purple-400 text-sm font-medium">
                           Monitoring
                         </div>
                       </div>
-                      <Eye className="w-8 h-8 text-purple-600" />
+                      <Eye className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                     </div>
                   </div>
                 </div>
@@ -467,7 +467,7 @@ const PestWatch: React.FC = () => {
 
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center text-sm"
+                    className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center text-sm"
                   >
                     <Filter className="w-4 h-4 mr-2" />
                     Filters
@@ -484,12 +484,12 @@ const PestWatch: React.FC = () => {
                   {filteredReports.map((report) => (
                     <div
                       key={report.id}
-                      className={`bg-white border rounded-xl p-6 hover:shadow-lg transition-all duration-200 ${getSeverityBg(report.severity)}`}
+                      className={`bg-white dark:bg-gray-800 border rounded-xl p-6 hover:shadow-lg transition-all duration-200 ${getSeverityBg(report.severity)}`}
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                               {report.pestType}
                             </h3>
                             <span
@@ -498,14 +498,14 @@ const PestWatch: React.FC = () => {
                               {report.severity}
                             </span>
                             {report.verified && (
-                              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium flex items-center">
+                              <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium flex items-center">
                                 <Shield className="w-3 h-3 mr-1" />
                                 Verified
                               </span>
                             )}
                           </div>
 
-                          <div className="space-y-2 text-sm text-gray-600">
+                          <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                             <div className="flex items-center">
                               <MapPin className="w-4 h-4 mr-2" />
                               {report.location}
@@ -525,17 +525,17 @@ const PestWatch: React.FC = () => {
                           </div>
 
                           {report.description && (
-                            <p className="text-sm text-gray-700 mt-3 p-3 bg-white rounded-lg border">
+                            <p className="text-sm text-gray-700 dark:text-gray-300 mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                               {report.description}
                             </p>
                           )}
 
                           {report.weatherConditions && (
-                            <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                              <div className="text-xs font-medium text-blue-700 mb-2">
+                            <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                              <div className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-2">
                                 Weather Conditions
                               </div>
-                              <div className="grid grid-cols-3 gap-2 text-xs">
+                              <div className="grid grid-cols-3 gap-2 text-xs text-gray-700 dark:text-gray-300">
                                 <div className="flex items-center">
                                   <Thermometer className="w-3 h-3 mr-1 text-red-500" />
                                   {report.weatherConditions.temperature}°C
@@ -545,7 +545,7 @@ const PestWatch: React.FC = () => {
                                   {report.weatherConditions.humidity}%
                                 </div>
                                 <div className="flex items-center">
-                                  <Wind className="w-3 h-3 mr-1 text-gray-500" />
+                                  <Wind className="w-3 h-3 mr-1 text-gray-500 dark:text-gray-400" />
                                   {report.weatherConditions.rainfall}mm
                                 </div>
                               </div>
@@ -554,8 +554,8 @@ const PestWatch: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                           <button className="flex items-center hover:text-red-600 transition-colors">
                             <Star className="w-4 h-4 mr-1" />
                             {report.likes}
@@ -592,65 +592,65 @@ const PestWatch: React.FC = () => {
               <div className="space-y-6">
                 {/* Alert Statistics */}
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border border-red-200">
+                  <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/30 rounded-xl p-4 border border-red-200 dark:border-red-700">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-2xl font-bold text-red-800">
+                        <div className="text-2xl font-bold text-red-800 dark:text-red-300">
                           {
                             pestAlerts.filter((a) => a.severity === "danger")
                               .length
                           }
                         </div>
-                        <div className="text-red-600 text-sm font-medium">
+                        <div className="text-red-600 dark:text-red-400 text-sm font-medium">
                           Critical Alerts
                         </div>
                       </div>
-                      <AlertTriangle className="w-8 h-8 text-red-600" />
+                      <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-4 border border-yellow-200">
+                  <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/30 rounded-xl p-4 border border-yellow-200 dark:border-yellow-700">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-2xl font-bold text-yellow-800">
+                        <div className="text-2xl font-bold text-yellow-800 dark:text-yellow-300">
                           {
                             pestAlerts.filter((a) => a.severity === "warning")
                               .length
                           }
                         </div>
-                        <div className="text-yellow-600 text-sm font-medium">
+                        <div className="text-yellow-600 dark:text-yellow-400 text-sm font-medium">
                           Warnings
                         </div>
                       </div>
-                      <Bell className="w-8 h-8 text-yellow-600" />
+                      <Bell className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/30 rounded-xl p-4 border border-blue-200 dark:border-blue-700">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-2xl font-bold text-blue-800">
+                        <div className="text-2xl font-bold text-blue-800 dark:text-blue-300">
                           {statistics.weatherRisk}%
                         </div>
-                        <div className="text-blue-600 text-sm font-medium">
+                        <div className="text-blue-600 dark:text-blue-400 text-sm font-medium">
                           Weather Risk
                         </div>
                       </div>
-                      <Cloud className="w-8 h-8 text-blue-600" />
+                      <Cloud className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/30 rounded-xl p-4 border border-green-200 dark:border-green-700">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-2xl font-bold text-green-800">
+                        <div className="text-2xl font-bold text-green-800 dark:text-green-300">
                           {statistics.resolvedCases}
                         </div>
-                        <div className="text-green-600 text-sm font-medium">
+                        <div className="text-green-600 dark:text-green-400 text-sm font-medium">
                           Resolved
                         </div>
                       </div>
-                      <Shield className="w-8 h-8 text-green-600" />
+                      <Shield className="w-8 h-8 text-green-600 dark:text-green-400" />
                     </div>
                   </div>
                 </div>
@@ -666,10 +666,10 @@ const PestWatch: React.FC = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <AlertTriangle className="w-5 h-5" />
-                            <h3 className="text-lg font-semibold">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                               {alert.title}
                             </h3>
-                            <span className="px-2 py-1 bg-white bg-opacity-50 rounded-full text-xs font-medium">
+                            <span className="px-2 py-1 bg-white dark:bg-gray-800 bg-opacity-50 dark:bg-opacity-70 text-gray-800 dark:text-gray-200 rounded-full text-xs font-medium">
                               {alert.type.charAt(0).toUpperCase() +
                                 alert.type.slice(1)}
                             </span>
@@ -689,7 +689,7 @@ const PestWatch: React.FC = () => {
                           </div>
                         </div>
 
-                        <button className="px-4 py-2 bg-white bg-opacity-70 hover:bg-opacity-90 rounded-lg text-sm font-medium transition-colors">
+                        <button className="px-4 py-2 bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-80 hover:bg-opacity-90 dark:hover:bg-opacity-100 text-gray-800 dark:text-gray-200 rounded-lg text-sm font-medium transition-colors">
                           View Details
                         </button>
                       </div>
@@ -704,8 +704,8 @@ const PestWatch: React.FC = () => {
                 {/* Analytics Dashboard */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Trending Pests */}
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                       <TrendingUp className="w-5 h-5 mr-2 text-red-600" />
                       Trending Pests
                     </h3>
@@ -713,27 +713,27 @@ const PestWatch: React.FC = () => {
                       {statistics.trendingPests.map((pest, index) => (
                         <div
                           key={pest}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                         >
                           <div className="flex items-center">
-                            <span className="w-6 h-6 bg-red-100 text-red-700 rounded-full flex items-center justify-center text-xs font-medium mr-3">
+                            <span className="w-6 h-6 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full flex items-center justify-center text-xs font-medium mr-3">
                               {index + 1}
                             </span>
-                            <span className="font-medium text-gray-900">
+                            <span className="font-medium text-gray-900 dark:text-gray-100">
                               {pest}
                             </span>
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             {Math.floor(Math.random() * 20) + 5} reports
-                          </div>
+                          </span>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {/* Regional Risk Map */}
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                       <MapIcon className="w-5 h-5 mr-2 text-blue-600" />
                       Risk Distribution
                     </h3>
@@ -746,7 +746,7 @@ const PestWatch: React.FC = () => {
                       ].map((area) => (
                         <div
                           key={area.sector}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                         >
                           <div className="flex items-center">
                             <div
@@ -760,17 +760,17 @@ const PestWatch: React.FC = () => {
                                       : "bg-green-500"
                               }`}
                             ></div>
-                            <span className="font-medium text-gray-900">
+                            <span className="font-medium text-gray-900 dark:text-gray-100">
                               {area.sector}
                             </span>
                           </div>
-                          <div className="text-right">
-                            <div className="text-sm font-medium text-gray-900">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                               {area.reports} reports
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
                               {area.risk} risk
-                            </div>
+                            </span>
                           </div>
                         </div>
                       ))}
@@ -779,41 +779,41 @@ const PestWatch: React.FC = () => {
                 </div>
 
                 {/* Performance Metrics */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
                     <Activity className="w-5 h-5 mr-2 text-green-600" />
                     System Performance
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <div className="text-2xl font-bold text-blue-800">
+                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                      <div className="text-2xl font-bold text-blue-800 dark:text-blue-300">
                         2.5s
                       </div>
-                      <div className="text-blue-600 text-sm">
+                      <div className="text-blue-600 dark:text-blue-400 text-sm">
                         Avg Detection Time
                       </div>
                     </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
-                      <div className="text-2xl font-bold text-green-800">
+                    <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                      <div className="text-2xl font-bold text-green-800 dark:text-green-300">
                         94%
                       </div>
-                      <div className="text-green-600 text-sm">
+                      <div className="text-green-600 dark:text-green-400 text-sm">
                         Resolution Rate
                       </div>
                     </div>
-                    <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
-                      <div className="text-2xl font-bold text-purple-800">
+                    <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                      <div className="text-2xl font-bold text-purple-800 dark:text-purple-300">
                         156
                       </div>
-                      <div className="text-purple-600 text-sm">
+                      <div className="text-purple-600 dark:text-purple-400 text-sm">
                         Active Users
                       </div>
                     </div>
-                    <div className="text-center p-4 bg-orange-50 rounded-lg border border-orange-200">
-                      <div className="text-2xl font-bold text-orange-800">
+                    <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
+                      <div className="text-2xl font-bold text-orange-800 dark:text-orange-300">
                         48h
                       </div>
-                      <div className="text-orange-600 text-sm">
+                      <div className="text-orange-600 dark:text-orange-400 text-sm">
                         Avg Response Time
                       </div>
                     </div>

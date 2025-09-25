@@ -147,7 +147,7 @@ Please provide a helpful, practical response focused on agricultural guidance. K
     return (
       <button
         onClick={handleToggle}
-        className="fixed bottom-6 right-6 bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 group"
+        className="fixed bottom-6 right-6 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 group"
         aria-label="Open chat assistant"
       >
         <MessageCircle size={24} />
@@ -159,28 +159,30 @@ Please provide a helpful, practical response focused on agricultural guidance. K
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-80 h-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 flex flex-col overflow-hidden">
+    <div className="fixed bottom-6 right-6 w-80 h-96 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-700 z-50 flex flex-col overflow-hidden transition-colors duration-200">
       {/* Header */}
-      <div className="bg-green-600 text-white p-4 flex items-center justify-between">
+      <div className="bg-green-600 dark:bg-green-700 text-white p-4 flex items-center justify-between transition-colors duration-200">
         <div className="flex items-center space-x-2">
-          <div className="p-1 bg-white/20 rounded-full">
+          <div className="p-1 bg-white/20 dark:bg-white/30 rounded-full">
             <Bot size={20} />
           </div>
           <div>
             <h3 className="font-semibold text-sm">{t("chatbot.title")}</h3>
-            <p className="text-xs text-green-100">{t("chatbot.status")}</p>
+            <p className="text-xs text-green-100 dark:text-green-200">
+              {t("chatbot.status")}
+            </p>
           </div>
         </div>
         <button
           onClick={handleToggle}
-          className="p-1 hover:bg-white/20 rounded-full transition-colors"
+          className="p-1 hover:bg-white/20 dark:hover:bg-white/30 rounded-full transition-colors"
         >
           <X size={18} />
         </button>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-dark-900 transition-colors duration-200">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -194,17 +196,17 @@ Please provide a helpful, practical response focused on agricultural guidance. K
               <div
                 className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs ${
                   message.isUser
-                    ? "bg-emerald-600 text-white"
-                    : "bg-gray-300 text-gray-600"
+                    ? "bg-emerald-600 dark:bg-emerald-500 text-white"
+                    : "bg-gray-300 dark:bg-dark-600 text-gray-600 dark:text-dark-300"
                 }`}
               >
                 {message.isUser ? <User size={12} /> : <Bot size={12} />}
               </div>
               <div
-                className={`px-3 py-2 rounded-lg text-sm ${
+                className={`px-3 py-2 rounded-lg text-sm transition-colors duration-200 ${
                   message.isUser
-                    ? "bg-emerald-600 text-white rounded-br-none"
-                    : "bg-white text-gray-800 border border-gray-200 rounded-bl-none"
+                    ? "bg-emerald-600 dark:bg-emerald-500 text-white rounded-br-sm"
+                    : "bg-white dark:bg-dark-700 text-gray-800 dark:text-dark-100 border border-gray-200 dark:border-dark-600 rounded-bl-sm"
                 }`}
               >
                 <p className="whitespace-pre-wrap">{message.text}</p>
@@ -259,7 +261,7 @@ Please provide a helpful, practical response focused on agricultural guidance. K
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200 bg-white">
+      <div className="p-4 border-t border-gray-200 dark:border-dark-700 bg-white dark:bg-dark-800 transition-colors duration-200">
         <div className="flex space-x-2">
           <input
             ref={inputRef}
@@ -268,13 +270,13 @@ Please provide a helpful, practical response focused on agricultural guidance. K
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={t("chatbot.placeholder")}
-            className="flex-1 px-3 py-2 border border-gray-300 bg-white text-gray-900 placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+            className="flex-1 px-3 py-2 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-transparent text-sm bg-white dark:bg-dark-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-400 transition-colors duration-200"
             disabled={isLoading}
           />
           <button
             onClick={handleSendMessage}
             disabled={!inputText.trim() || isLoading}
-            className="p-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-emerald-600 dark:bg-emerald-500 text-white rounded-lg hover:bg-emerald-700 dark:hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
             {isLoading ? (
               <Loader size={18} className="animate-spin" />

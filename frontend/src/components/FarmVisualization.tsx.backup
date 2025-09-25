@@ -18,7 +18,8 @@ import {
   Square,
   Users,
   Trash2,
-  BarChart3,
+
+  Target,
   Sprout,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
@@ -1108,187 +1109,91 @@ const FarmVisualization: React.FC = () => {
         </div>
       </div>
 
-      {/* Crop Distribution Statistics */}
-      <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg border border-gray-200 dark:border-gray-700">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-          <BarChart3 className="w-4 h-4 mr-2" />
-          Crop Distribution
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {(() => {
-            const cropCounts =
-              selectedFarm?.plots.reduce(
-                (acc, plot) => {
-                  const cropName = plot.crop?.name || "Empty";
-                  acc[cropName] = (acc[cropName] || 0) + 1;
-                  return acc;
-                },
-                {} as Record<string, number>,
-              ) || {};
+      {/* Compact Legend */}
+      {viewMode === "crops" && (
+        <div className="mb-6 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Legend:</span>
+            {(() => {
+              const activeCrops = selectedFarm?.plots
+                ?.filter((plot) => plot.crop && plot.crop.name !== "Empty")
+                ?.map((plot) => plot.crop!.name)
+                ?.filter((crop, index, arr) => arr.indexOf(crop) === index)
+                ?.sort() || [];
 
-            const totalPlots = selectedFarm?.plots.length || 0;
-
-            return Object.entries(cropCounts)
-              .sort(([, a], [, b]) => b - a)
-              .map(([cropName, count]) => (
-                <div key={cropName} className="text-center">
-                  <div className="flex items-center justify-center mb-1">
-                    <div
-                      className={`w-3 h-3 rounded border-2 ${
-                        cropName === "Empty"
-                          ? "bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500"
-                          : getCropColor(cropName)
-                              .split(" ")
-                              .slice(0, 2)
-                              .join(" ")
-                      }`}
-                    ></div>
-                  </div>
-                  <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {count}
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-300 truncate">
-                    {cropName}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {((count / totalPlots) * 100).toFixed(0)}%
-                  </div>
+              return activeCrops.slice(0, 6).map((cropName) => (
+                <div key={cropName} className="flex items-center space-x-1.5">
+                  <div className={`w-3 h-3 rounded border ${getCropColor(cropName).split(" ").slice(0, 2).join(" ")}`}></div>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">{cropName}</span>
                 </div>
               ));
-          })()}
+            })()}
+            {selectedFarm?.plots.some((plot) => !plot.crop || plot.crop.name === "Empty") && (
+              <div className="flex items-center space-x-1.5">
+                <div className="w-3 h-3 rounded border bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500"></div>
+                <span className="text-xs text-gray-600 dark:text-gray-400">Empty</span>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Legends - Show different legends based on view mode */}
-      <div className="mb-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-        {viewMode === "crops" && (
-          <>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-              <Leaf className="w-4 h-4 mr-2" />
-              Crop Color Legend
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2">
-              {(() => {
-                const activeCrops =
-                  selectedFarm?.plots
-                    ?.filter((plot) => plot.crop && plot.crop.name !== "Empty")
-                    ?.map((plot) => plot.crop!.name)
-                    ?.filter((crop, index, arr) => arr.indexOf(crop) === index)
-                    ?.sort() || [];
-
-                return activeCrops.map((cropName) => (
-                  <div
-                    key={cropName}
-                    className="flex items-center space-x-2 min-w-0"
-                  >
-                    <div
-                      className={`w-4 h-4 rounded border-2 flex-shrink-0 ${getCropColor(cropName).split(" ").slice(0, 2).join(" ")}`}
-                    ></div>
-                    <span className="text-xs text-gray-600 dark:text-gray-300 truncate font-medium">
-                      {cropName}
-                    </span>
-                  </div>
-                ));
-              })()}
-              {selectedFarm?.plots.some(
-                (plot) => !plot.crop || plot.crop.name === "Empty",
-              ) && (
-                <div className="flex items-center space-x-2 min-w-0">
-                  <div className="w-4 h-4 rounded border-2 bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500 flex-shrink-0"></div>
-                  <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                    Empty
-                  </span>
-                </div>
-              )}
+      {viewMode === "health" && (
+        <div className="mb-6 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Health:</span>
+            <div className="flex items-center space-x-1.5">
+              <div className="w-3 h-3 rounded bg-green-200 dark:bg-green-800/40 border border-green-400 dark:border-green-600"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Excellent</span>
             </div>
-          </>
-        )}
-
-        {viewMode === "health" && (
-          <>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Plant Health Legend
-            </h3>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded border-2 bg-green-200 dark:bg-green-800/40 border-green-400 dark:border-green-600"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Excellent
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded border-2 bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Good
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded border-2 bg-yellow-100 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-600"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Fair
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded border-2 bg-orange-100 dark:bg-orange-900/30 border-orange-300 dark:border-orange-600"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Poor
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded border-2 bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-600"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Critical
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded border-2 bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Empty
-                </span>
-              </div>
+            <div className="flex items-center space-x-1.5">
+              <div className="w-3 h-3 rounded bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-600"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Good</span>
             </div>
-          </>
-        )}
-
-        {viewMode === "moisture" && (
-          <>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-              <Droplets className="w-4 h-4 mr-2" />
-              Soil Moisture Legend
-            </h3>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded border-2 bg-blue-200 dark:bg-blue-800/40 border-blue-400 dark:border-blue-600"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  High (70%+)
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded border-2 bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Medium (40-70%)
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded border-2 bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-600"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Low (&lt;40%)
-                </span>
-              </div>
+            <div className="flex items-center space-x-1.5">
+              <div className="w-3 h-3 rounded bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-600"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Fair</span>
             </div>
-          </>
-        )}
-      </div>
+            <div className="flex items-center space-x-1.5">
+              <div className="w-3 h-3 rounded bg-orange-100 dark:bg-orange-900/30 border border-orange-300 dark:border-orange-600"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Poor</span>
+            </div>
+            <div className="flex items-center space-x-1.5">
+              <div className="w-3 h-3 rounded bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-600"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Critical</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewMode === "moisture" && (
+        <div className="mb-6 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Moisture:</span>
+            <div className="flex items-center space-x-1.5">
+              <div className="w-3 h-3 rounded bg-blue-200 dark:bg-blue-800/40 border border-blue-400 dark:border-blue-600"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">High (70%+)</span>
+            </div>
+            <div className="flex items-center space-x-1.5">
+              <div className="w-3 h-3 rounded bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-600"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Medium (40-70%)</span>
+            </div>
+            <div className="flex items-center space-x-1.5">
+              <div className="w-3 h-3 rounded bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-600"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Low (&lt;40%)</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Farm View with Responsive Layout */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Farm Grid - Takes 2 columns on desktop */}
         <div className="xl:col-span-2">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-6 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {selectedFarm?.name || "Farm Layout"}
+                Farm Layout
               </h3>
               <div className="flex items-center space-x-2">
                 <button
@@ -1301,12 +1206,12 @@ const FarmVisualization: React.FC = () => {
                 >
                   {bulkSelectMode ? (
                     <>
-                      <X className="w-4 h-4 mr-1 inline" />
-                      Cancel Selection
+                      <CheckSquare className="w-4 h-4 mr-1" />
+                      Exit Selection
                     </>
                   ) : (
                     <>
-                      <Users className="w-4 h-4 mr-1 inline" />
+                      <Users className="w-4 h-4 mr-1" />
                       Bulk Operations
                     </>
                   )}
@@ -1322,17 +1227,18 @@ const FarmVisualization: React.FC = () => {
                 >
                   {isEditing ? (
                     <>
-                      <X className="w-4 h-4 mr-1 inline" />
-                      Cancel
+                      <X className="w-4 h-4 mr-1" />
+                      Stop Editing
                     </>
                   ) : (
                     <>
-                      <Edit3 className="w-4 h-4 mr-1 inline" />
-                      Edit
+                      <Edit3 className="w-4 h-4 mr-1" />
+                      Edit Plots
                     </>
                   )}
                 </button>
               </div>
+            </div>
 
               {/* Simple Bulk Mode Indicator */}
               {bulkSelectMode && (
@@ -1360,7 +1266,7 @@ const FarmVisualization: React.FC = () => {
 
             {/* Grid Layout */}
             <div
-              className="grid gap-2 max-w-3xl mx-auto"
+              className="grid gap-4 max-w-5xl mx-auto p-4"
               style={{
                 gridTemplateColumns: `repeat(${farmConfig.cols}, minmax(0, 1fr))`,
               }}
@@ -1379,12 +1285,12 @@ const FarmVisualization: React.FC = () => {
                     }
                   }}
                   className={`
-                    aspect-square border-2 rounded-lg cursor-pointer transition-all duration-200
-                    flex flex-col items-center justify-center p-2 text-center relative
+                    aspect-square border-2 rounded-xl cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
+                    flex flex-col items-center justify-center p-3 text-center relative min-h-[80px]
                     ${getPlotColor(plot)}
-                    ${selectedPlot === Math.floor(Number(plot.plotNumber)) && !bulkSelectMode ? "ring-2 ring-green-500 ring-offset-2" : ""}
-                    ${selectedPlots.has(Math.floor(Number(plot.plotNumber))) ? "ring-2 ring-blue-500 ring-offset-2 bg-blue-50 dark:bg-blue-900/40" : ""}
-                    ${isEditing || bulkSelectMode ? "hover:scale-105" : ""}
+                    ${selectedPlot === Math.floor(Number(plot.plotNumber)) && !bulkSelectMode ? "ring-2 ring-green-500 ring-offset-2 dark:ring-offset-gray-800" : ""}
+                    ${selectedPlots.has(Math.floor(Number(plot.plotNumber))) ? "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-800 bg-blue-50 dark:bg-blue-900/40" : ""}
+                    ${isEditing || bulkSelectMode ? "hover:scale-105" : "hover:scale-102"}
                   `}
                 >
                   {bulkSelectMode && (
@@ -1398,20 +1304,20 @@ const FarmVisualization: React.FC = () => {
                       )}
                     </div>
                   )}
-                  <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                  <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1.5">
                     Plot {plot.plotNumber}
                   </div>
                   <div
-                    className={`text-xs font-medium truncate w-full px-1 py-0.5 rounded ${
+                    className={`text-xs font-medium truncate w-full px-2 py-1 rounded-md ${
                       plot.crop?.name && plot.crop.name !== "Empty"
-                        ? "text-gray-800 dark:text-gray-200 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm"
+                        ? "text-gray-800 dark:text-gray-200 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm border border-white/50 dark:border-gray-700/50"
                         : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     {plot.crop?.name || "Empty"}
                   </div>
                   {plot.crop?.stage && plot.crop.name !== "Empty" && (
-                    <div className="text-xs text-gray-700 dark:text-gray-300 mt-0.5 capitalize px-1 py-0.5 bg-white/70 dark:bg-gray-900/70 rounded text-center border border-white/50 dark:border-gray-700/50">
+                    <div className="text-xs text-gray-700 dark:text-gray-300 mt-1 capitalize px-1.5 py-0.5 bg-white/70 dark:bg-gray-900/70 rounded-md text-center border border-white/50 dark:border-gray-700/50">
                       {plot.crop.stage.replace("_", " ")}
                     </div>
                   )}
@@ -1544,29 +1450,25 @@ const FarmVisualization: React.FC = () => {
 
                     {selectedPlotData.crop?.name !== "Empty" && (
                       <div className="space-y-2">
-                        <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Growth Stage
-                          </p>
-                          <p className="font-medium text-gray-900 dark:text-gray-100 capitalize">
+                        <div className="bg-gray-50 p-3 rounded-md">
+                          <p className="text-sm text-gray-600">Growth Stage</p>
+                          <p className="font-medium text-gray-900 capitalize">
                             {selectedPlotData.crop?.stage.replace("_", " ")}
                           </p>
                         </div>
-                        <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Health Status
-                          </p>
+                        <div className="bg-gray-50 p-3 rounded-md">
+                          <p className="text-sm text-gray-600">Health Status</p>
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-medium rounded-full capitalize ${
                               selectedPlotData.crop?.health === "excellent"
-                                ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300"
+                                ? "bg-green-100 text-green-800"
                                 : selectedPlotData.crop?.health === "good"
-                                  ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300"
+                                  ? "bg-green-100 text-green-700"
                                   : selectedPlotData.crop?.health === "fair"
-                                    ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300"
+                                    ? "bg-yellow-100 text-yellow-800"
                                     : selectedPlotData.crop?.health === "poor"
-                                      ? "bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300"
-                                      : "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300"
+                                      ? "bg-orange-100 text-orange-800"
+                                      : "bg-red-100 text-red-800"
                             }`}
                           >
                             {selectedPlotData.crop?.health}
@@ -2010,7 +1912,7 @@ const FarmVisualization: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
               <Lightbulb className="w-5 h-5 mr-2 text-yellow-500" />
-              Crop Suggestions for Plot {selectedPlotData.plotNumber}
+              Crop Suggestions for Plot {selectedPlotData?.plotNumber}
             </h3>
             <button
               onClick={() => setShowSuggestions(false)}
@@ -2028,7 +1930,7 @@ const FarmVisualization: React.FC = () => {
                 onClick={() => {
                   if (isEditing) {
                     updatePlotCrop(
-                      selectedPlotData.plotNumber,
+                      selectedPlotData?.plotNumber || 0,
                       suggestion.name,
                     );
                     setShowSuggestions(false);
@@ -2241,95 +2143,6 @@ const FarmVisualization: React.FC = () => {
         </div>
       )}
 
-      {/* Legend */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-        <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
-          Legend
-        </h4>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-          {viewMode === "crops" && (
-            <>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Empty Plot
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-600 rounded"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Planted
-                </span>
-              </div>
-            </>
-          )}
-
-          {viewMode === "health" && (
-            <>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-green-200 dark:bg-green-800/40 border border-green-400 dark:border-green-600 rounded"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Excellent
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-600 rounded"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Good
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-600 rounded"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Fair
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-orange-100 dark:bg-orange-900/30 border border-orange-300 dark:border-orange-600 rounded"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Poor
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-600 rounded"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Critical
-                </span>
-              </div>
-            </>
-          )}
-
-          {viewMode === "moisture" && (
-            <>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-blue-200 dark:bg-blue-800/40 border border-blue-400 dark:border-blue-600 rounded"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  High (70%+)
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-600 rounded"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Medium (40-70%)
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-600 rounded"></div>
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                  Low (&lt;40%)
-                </span>
-              </div>
-            </>
-          )}
-
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-              Pest Alert
-            </span>
-          </div>
-        </div>
-      </div>
 
       {/* Floating Bulk Actions Panel */}
       {bulkSelectMode && selectedPlots.size > 0 && (

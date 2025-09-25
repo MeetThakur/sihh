@@ -513,42 +513,65 @@ const CropAdvisory: React.FC = () => {
     <div className="space-y-6">
       {/* Weather Integration */}
       {weatherData && (
-        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6">
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-6 transition-colors duration-200">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-              <Cloud className="mr-2 text-blue-600" size={20} />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
+              <Cloud
+                className="mr-2 text-blue-600 dark:text-blue-400"
+                size={20}
+              />
               Current Weather Conditions
             </h3>
-            <button className="text-blue-600 hover:text-blue-700">
+            <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200">
               <RefreshCw size={16} />
             </button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <Thermometer className="text-orange-500 mx-auto mb-2" size={20} />
-              <p className="text-sm text-gray-600">Temperature</p>
-              <p className="font-semibold text-gray-900">
+              <Thermometer
+                className="text-orange-500 dark:text-orange-400 mx-auto mb-2"
+                size={20}
+              />
+              <p className="text-sm text-gray-600 dark:text-dark-300">
+                Temperature
+              </p>
+              <p className="font-semibold text-gray-900 dark:text-white">
                 {weatherData.temperature}°C
               </p>
             </div>
             <div className="text-center">
-              <Droplet className="text-blue-500 mx-auto mb-2" size={20} />
-              <p className="text-sm text-gray-600">Humidity</p>
-              <p className="font-semibold text-gray-900">
+              <Droplet
+                className="text-blue-500 dark:text-blue-400 mx-auto mb-2"
+                size={20}
+              />
+              <p className="text-sm text-gray-600 dark:text-dark-300">
+                Humidity
+              </p>
+              <p className="font-semibold text-gray-900 dark:text-white">
                 {weatherData.humidity}%
               </p>
             </div>
             <div className="text-center">
-              <Cloud className="text-gray-500 mx-auto mb-2" size={20} />
-              <p className="text-sm text-gray-600">Rainfall</p>
-              <p className="font-semibold text-gray-900">
+              <Cloud
+                className="text-gray-500 dark:text-dark-400 mx-auto mb-2"
+                size={20}
+              />
+              <p className="text-sm text-gray-600 dark:text-dark-300">
+                Rainfall
+              </p>
+              <p className="font-semibold text-gray-900 dark:text-white">
                 {weatherData.rainfall}mm
               </p>
             </div>
             <div className="text-center">
-              <Sun className="text-yellow-500 mx-auto mb-2" size={20} />
-              <p className="text-sm text-gray-600">Forecast</p>
-              <p className="font-semibold text-gray-900 text-xs">
+              <Sun
+                className="text-yellow-500 dark:text-yellow-400 mx-auto mb-2"
+                size={20}
+              />
+              <p className="text-sm text-gray-600 dark:text-dark-300">
+                Forecast
+              </p>
+              <p className="font-semibold text-gray-900 dark:text-white text-xs">
                 Partly Cloudy
               </p>
             </div>
@@ -557,19 +580,22 @@ const CropAdvisory: React.FC = () => {
       )}
 
       {/* Enhanced Input Form */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-sm transition-colors duration-200">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-            <Leaf className="text-green-600 mr-3" size={24} />
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
+            <Leaf
+              className="text-green-600 dark:text-green-400 mr-3"
+              size={24}
+            />
             Farm Information
           </h2>
           <div className="flex space-x-2">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 ${
+              className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-colors duration-200 ${
                 showFilters
-                  ? "bg-blue-100 text-blue-700 border border-blue-200"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700"
+                  : "bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-dark-200 hover:bg-gray-200 dark:hover:bg-dark-600"
               }`}
             >
               <Filter size={16} />
@@ -580,13 +606,13 @@ const CropAdvisory: React.FC = () => {
 
         {/* Advanced Filters */}
         {showFilters && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h3 className="text-sm font-medium text-gray-900 mb-3">
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-dark-900 rounded-lg border border-gray-200 dark:border-dark-700 transition-colors duration-200">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3 transition-colors duration-200">
               Filter Recommendations
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-dark-200 mb-2">
                   Suitability
                 </label>
                 <select
@@ -597,7 +623,7 @@ const CropAdvisory: React.FC = () => {
                       suitability: e.target.value,
                     }))
                   }
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
                 >
                   <option value="">All Levels</option>
                   <option value="High">High Suitability</option>
@@ -606,7 +632,7 @@ const CropAdvisory: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-dark-200 mb-2">
                   Risk Level
                 </label>
                 <select
@@ -617,7 +643,7 @@ const CropAdvisory: React.FC = () => {
                       riskLevel: e.target.value,
                     }))
                   }
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
                 >
                   <option value="">All Risk Levels</option>
                   <option value="Low">Low Risk</option>
@@ -626,7 +652,7 @@ const CropAdvisory: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-dark-200 mb-2">
                   Min Sustainability Score
                 </label>
                 <input
@@ -642,7 +668,7 @@ const CropAdvisory: React.FC = () => {
                   }
                   className="w-full"
                 />
-                <div className="text-xs text-gray-600 mt-1">
+                <div className="text-xs text-gray-600 dark:text-dark-300 mt-1">
                   {filters.sustainabilityMin}/100
                 </div>
               </div>
@@ -652,36 +678,38 @@ const CropAdvisory: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
               {t("cropAdvisory.budget")} (Min: ₹10,000)
             </label>
             <div className="relative">
               <DollarSign
-                className="absolute left-3 top-3 text-gray-400"
+                className="absolute left-3 top-3 text-gray-400 dark:text-dark-400"
                 size={18}
               />
               <input
                 type="number"
                 value={farmInput.budget}
                 onChange={(e) => handleInputChange("budget", e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-400 transition-colors duration-200"
                 placeholder="50000"
                 min="10000"
               />
             </div>
             {farmInput.budget && Number(farmInput.budget) < 10000 && (
-              <p className="text-xs text-red-600">Minimum budget is ₹10,000</p>
+              <p className="text-xs text-red-600 dark:text-red-400">
+                Minimum budget is ₹10,000
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
               {t("cropAdvisory.season")}
             </label>
             <select
               value={farmInput.season}
               onChange={(e) => handleInputChange("season", e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
             >
               <option value="">Select Season</option>
               <option value="kharif">Kharif (June-October)</option>
@@ -691,19 +719,19 @@ const CropAdvisory: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
               Farm Size (acres)
             </label>
             <div className="relative">
               <MapPin
-                className="absolute left-3 top-3 text-gray-400"
+                className="absolute left-3 top-3 text-gray-400 dark:text-dark-400"
                 size={18}
               />
               <input
                 type="number"
                 value={farmInput.farmSize}
                 onChange={(e) => handleInputChange("farmSize", e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-400 transition-colors duration-200"
                 placeholder="2.5"
                 step="0.1"
               />
@@ -711,13 +739,13 @@ const CropAdvisory: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
               Soil Type
             </label>
             <select
               value={farmInput.soilType}
               onChange={(e) => handleInputChange("soilType", e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
             >
               <option value="">Select Soil Type</option>
               <option value="clay">Clay Soil</option>
@@ -730,13 +758,13 @@ const CropAdvisory: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
               Weather Conditions
             </label>
             <select
               value={farmInput.weather}
               onChange={(e) => handleInputChange("weather", e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
             >
               <option value="">Select Weather</option>
               <option value="hot_humid">Hot & Humid</option>
@@ -747,7 +775,7 @@ const CropAdvisory: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
               Irrigation Type
             </label>
             <select
@@ -755,7 +783,7 @@ const CropAdvisory: React.FC = () => {
               onChange={(e) =>
                 handleInputChange("irrigationType", e.target.value)
               }
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
             >
               <option value="">Select Irrigation</option>
               <option value="flood">Flood Irrigation</option>
@@ -767,7 +795,7 @@ const CropAdvisory: React.FC = () => {
         </div>
 
         {/* Soil Detection Integration */}
-        <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+        <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 rounded-lg border border-green-200 dark:border-green-700 transition-colors duration-200">
           <SoilDetection
             onSoilTypeDetected={(detectedSoilType) =>
               handleInputChange("soilType", detectedSoilType)
@@ -777,14 +805,14 @@ const CropAdvisory: React.FC = () => {
         </div>
 
         {/* Organic Preference Toggle */}
-        <div className="mt-6 flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+        <div className="mt-6 flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-700 transition-colors duration-200">
           <div className="flex items-center space-x-3">
-            <Leaf className="text-green-600" size={20} />
+            <Leaf className="text-green-600 dark:text-green-400" size={20} />
             <div>
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-gray-900 dark:text-white transition-colors duration-200">
                 Organic Farming Preference
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-dark-300 transition-colors duration-200">
                 Get recommendations for sustainable farming practices
               </p>
             </div>
@@ -796,8 +824,10 @@ const CropAdvisory: React.FC = () => {
                 !farmInput.organicPreference,
               )
             }
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              farmInput.organicPreference ? "bg-green-600" : "bg-gray-200"
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
+              farmInput.organicPreference
+                ? "bg-green-600 dark:bg-green-500"
+                : "bg-gray-200 dark:bg-dark-600"
             }`}
           >
             <span
@@ -818,7 +848,7 @@ const CropAdvisory: React.FC = () => {
               !farmInput.season ||
               !farmInput.soilType
             }
-            className="px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white font-semibold rounded-xl hover:from-green-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 shadow-lg"
+            className="px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 dark:from-green-500 dark:to-blue-500 text-white font-semibold rounded-xl hover:from-green-700 hover:to-blue-700 dark:hover:from-green-600 dark:hover:to-blue-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 shadow-lg"
           >
             <div className="flex items-center space-x-3">
               {loading ? (
@@ -841,25 +871,28 @@ const CropAdvisory: React.FC = () => {
       {recommendations.length > 0 && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-              <Target className="text-green-600 mr-3" size={24} />
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
+              <Target
+                className="text-green-600 dark:text-green-400 mr-3"
+                size={24}
+              />
               AI Crop Recommendations
             </h2>
             <div className="flex space-x-2">
               <button
                 onClick={() => setCompareMode(!compareMode)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
                   compareMode
-                    ? "bg-blue-100 text-blue-700 border border-blue-200"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700"
+                    : "bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-dark-200 hover:bg-gray-200 dark:hover:bg-dark-600"
                 }`}
               >
                 {compareMode ? "Exit Compare" : "Compare Crops"}
               </button>
-              <button className="p-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg">
+              <button className="p-2 text-gray-600 dark:text-dark-300 hover:text-gray-800 dark:hover:text-white border border-gray-300 dark:border-dark-600 rounded-lg transition-colors duration-200">
                 <Download size={16} />
               </button>
-              <button className="p-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg">
+              <button className="p-2 text-gray-600 dark:text-dark-300 hover:text-gray-800 dark:hover:text-white border border-gray-300 dark:border-dark-600 rounded-lg transition-colors duration-200">
                 <Share2 size={16} />
               </button>
             </div>
@@ -869,28 +902,31 @@ const CropAdvisory: React.FC = () => {
             {recommendations.map((crop, index) => (
               <div
                 key={index}
-                className={`relative bg-white border-2 rounded-xl p-6 hover:shadow-lg transition-all duration-200 transform hover:scale-105 ${
+                className={`relative bg-white dark:bg-dark-800 border-2 rounded-xl p-6 hover:shadow-lg transition-all duration-200 transform hover:scale-105 ${
                   compareMode && selectedCrops.includes(crop.name)
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
+                    : "border-gray-200 dark:border-dark-700 hover:border-gray-300 dark:hover:border-dark-600"
                 }`}
               >
                 {compareMode && (
                   <button
                     onClick={() => toggleCropSelection(crop.name)}
-                    className="absolute top-4 right-4 p-2 rounded-full bg-white border border-gray-300 hover:bg-gray-50"
+                    className="absolute top-4 right-4 p-2 rounded-full bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 hover:bg-gray-50 dark:hover:bg-dark-600 transition-colors duration-200"
                   >
                     {selectedCrops.includes(crop.name) ? (
-                      <CheckCircle className="text-blue-600" size={16} />
+                      <CheckCircle
+                        className="text-blue-600 dark:text-blue-400"
+                        size={16}
+                      />
                     ) : (
-                      <div className="w-4 h-4 border border-gray-400 rounded-full" />
+                      <div className="w-4 h-4 border border-gray-400 dark:border-dark-500 rounded-full" />
                     )}
                   </button>
                 )}
 
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-200">
                       {crop.name}
                     </h3>
                     <div className="flex items-center space-x-2">
@@ -910,9 +946,9 @@ const CropAdvisory: React.FC = () => {
 
                 {/* Market Data Integration */}
                 {crop.marketPrice && (
-                  <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="mb-4 p-3 bg-gray-50 dark:bg-dark-900 rounded-lg transition-colors duration-200">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">
+                      <span className="text-sm font-medium text-gray-700 dark:text-dark-200">
                         Market Price
                       </span>
                       {marketData[crop.name] &&
@@ -1011,12 +1047,12 @@ const CropAdvisory: React.FC = () => {
                       setCalendarData(calendar);
                       setActiveTab("calendar");
                     }}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center"
+                    className="flex-1 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200 text-sm font-medium flex items-center justify-center"
                   >
                     <Calendar size={16} className="mr-2" />
                     View Calendar
                   </button>
-                  <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                  <button className="px-4 py-2 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-dark-300 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors duration-200 text-sm font-medium">
                     <Star size={16} />
                   </button>
                 </div>
@@ -1026,17 +1062,22 @@ const CropAdvisory: React.FC = () => {
 
           {/* Crop Comparison */}
           {compareMode && selectedCrops.length > 1 && (
-            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-sm transition-colors duration-200">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">
                 Crop Comparison
               </h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-2">Criteria</th>
+                    <tr className="border-b border-gray-200 dark:border-dark-700">
+                      <th className="text-left py-2 text-gray-900 dark:text-white">
+                        Criteria
+                      </th>
                       {selectedCrops.map((cropName) => (
-                        <th key={cropName} className="text-left py-2 px-4">
+                        <th
+                          key={cropName}
+                          className="text-left py-2 px-4 text-gray-900 dark:text-white"
+                        >
                           {cropName}
                         </th>
                       ))}
@@ -1050,8 +1091,11 @@ const CropAdvisory: React.FC = () => {
                       "riskLevel",
                       "sustainabilityScore",
                     ].map((criteria) => (
-                      <tr key={criteria} className="border-b border-gray-100">
-                        <td className="py-3 font-medium capitalize">
+                      <tr
+                        key={criteria}
+                        className="border-b border-gray-100 dark:border-dark-700"
+                      >
+                        <td className="py-3 font-medium capitalize text-gray-900 dark:text-white">
                           {criteria.replace(/([A-Z])/g, " $1")}
                         </td>
                         {selectedCrops.map((cropName) => {
@@ -1059,7 +1103,10 @@ const CropAdvisory: React.FC = () => {
                             (r) => r.name === cropName,
                           );
                           return (
-                            <td key={cropName} className="py-3 px-4">
+                            <td
+                              key={cropName}
+                              className="py-3 px-4 text-gray-700 dark:text-dark-200"
+                            >
                               {crop
                                 ? String(
                                     (
@@ -1086,39 +1133,44 @@ const CropAdvisory: React.FC = () => {
     <div className="space-y-6">
       {calendarData ? (
         <>
-          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-sm transition-colors duration-200">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-                  <Calendar className="mr-3 text-green-600" size={24} />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
+                  <Calendar
+                    className="mr-3 text-green-600 dark:text-green-400"
+                    size={24}
+                  />
                   Fasal Calendar - {calendarData.cropName}
                 </h2>
-                <p className="text-gray-600 mt-1">
+                <p className="text-gray-600 dark:text-dark-300 mt-1 transition-colors duration-200">
                   AI-powered seasonal activity plan for {calendarData.season}
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {Math.round(calendarData.progressPercentage)}%
                 </div>
-                <div className="text-sm text-gray-600">Completed</div>
+                <div className="text-sm text-gray-600 dark:text-dark-300">
+                  Completed
+                </div>
               </div>
             </div>
 
             {/* Progress Bar */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
                   Overall Progress
                 </span>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 dark:text-dark-300 transition-colors duration-200">
                   {calendarData.activities.filter((a) => a.completed).length} of{" "}
                   {calendarData.activities.length} tasks
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 dark:bg-dark-700 rounded-full h-3 transition-colors duration-200">
                 <div
-                  className="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-green-500 to-blue-500 dark:from-green-400 dark:to-blue-400 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${calendarData.progressPercentage}%` }}
                 ></div>
               </div>
@@ -1126,27 +1178,33 @@ const CropAdvisory: React.FC = () => {
 
             {/* Calendar Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 transition-colors duration-200">
                 <div className="flex items-center">
-                  <Clock className="text-blue-600 mr-3" size={20} />
+                  <Clock
+                    className="text-blue-600 dark:text-blue-400 mr-3"
+                    size={20}
+                  />
                   <div>
-                    <p className="text-sm text-blue-600 font-medium">
+                    <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
                       Duration
                     </p>
-                    <p className="text-lg font-bold text-blue-900">
+                    <p className="text-lg font-bold text-blue-900 dark:text-blue-200">
                       {calendarData.totalWeeks} weeks
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg p-4 transition-colors duration-200">
                 <div className="flex items-center">
-                  <DollarSign className="text-green-600 mr-3" size={20} />
+                  <DollarSign
+                    className="text-green-600 dark:text-green-400 mr-3"
+                    size={20}
+                  />
                   <div>
-                    <p className="text-sm text-green-600 font-medium">
+                    <p className="text-sm text-green-600 dark:text-green-400 font-medium">
                       Total Budget
                     </p>
-                    <p className="text-lg font-bold text-green-900">
+                    <p className="text-lg font-bold text-green-900 dark:text-green-200">
                       {calendarData.budgetTotal}
                     </p>
                   </div>
@@ -1441,29 +1499,32 @@ const CropAdvisory: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-900 transition-colors duration-200">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="bg-white dark:bg-dark-800 border-b border-gray-200 dark:border-dark-700 sticky top-0 z-10 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Leaf className="text-green-600" size={24} />
+              <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg transition-colors duration-200">
+                <Leaf
+                  className="text-green-600 dark:text-green-400"
+                  size={24}
+                />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-200">
                   Smart Crop Advisory
                 </h1>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-dark-300 transition-colors duration-200">
                   AI-powered farming recommendations
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <button className="p-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg">
+              <button className="p-2 text-gray-600 dark:text-dark-300 hover:text-gray-800 dark:hover:text-white border border-gray-300 dark:border-dark-600 rounded-lg transition-colors duration-200">
                 <Users size={16} />
               </button>
-              <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium">
+              <button className="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 text-sm font-medium transition-colors duration-200">
                 Save Session
               </button>
             </div>
@@ -1472,7 +1533,7 @@ const CropAdvisory: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white dark:bg-dark-800 border-b border-gray-200 dark:border-dark-700 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8 overflow-x-auto">
             {tabs.map((tab) => {
@@ -1481,10 +1542,10 @@ const CropAdvisory: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap transition-colors duration-200 ${
                     activeTab === tab.id
-                      ? "border-green-500 text-green-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      ? "border-green-500 text-green-600 dark:text-green-400"
+                      : "border-transparent text-gray-500 dark:text-dark-400 hover:text-gray-700 dark:hover:text-dark-200 hover:border-gray-300 dark:hover:border-dark-600"
                   }`}
                 >
                   <Icon size={16} />
@@ -1503,10 +1564,10 @@ const CropAdvisory: React.FC = () => {
         {activeTab === "detailed" && (
           <div className="text-center py-12">
             <BarChart3 className="mx-auto text-gray-400 mb-4" size={48} />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors duration-200">
               Detailed Analysis
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-dark-300 transition-colors duration-200">
               Advanced crop analysis and recommendations coming soon
             </p>
           </div>
@@ -1514,10 +1575,10 @@ const CropAdvisory: React.FC = () => {
         {activeTab === "analytics" && (
           <div className="text-center py-12">
             <PieChart className="mx-auto text-gray-400 mb-4" size={48} />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors duration-200">
               Farm Analytics
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-dark-300 transition-colors duration-200">
               Performance insights and data visualization coming soon
             </p>
           </div>
@@ -1525,10 +1586,10 @@ const CropAdvisory: React.FC = () => {
         {activeTab === "history" && (
           <div className="text-center py-12">
             <BookOpen className="mx-auto text-gray-400 mb-4" size={48} />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors duration-200">
               Advisory History
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-dark-300 transition-colors duration-200">
               Past recommendations and progress tracking coming soon
             </p>
           </div>

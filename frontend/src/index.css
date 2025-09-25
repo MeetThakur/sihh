@@ -1,34 +1,275 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+    body {
+        font-family:
+            "Inter",
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        transition:
+            background-color 0.2s ease-in-out,
+            color 0.2s ease-in-out;
+    }
+
+    /* Smooth scrollbar for dark mode */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-gray-100 dark:bg-dark-800;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-gray-300 dark:bg-dark-600 rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-400 dark:bg-dark-500;
+    }
+
+    /* Selection styling for dark mode */
+    ::selection {
+        @apply bg-green-200 dark:bg-green-800 text-gray-900 dark:text-white;
+    }
 }
 
 @layer components {
-  .minimal-card {
-    @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
-  }
-  
-  .minimal-button {
-    @apply px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-md;
-  }
-  
-  .minimal-button-primary {
-    @apply bg-slate-900 text-white hover:bg-slate-800;
-  }
-  
-  .minimal-button-secondary {
-    @apply bg-slate-100 text-slate-900 hover:bg-slate-200;
-  }
-  
-  .minimal-input {
-    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500;
-  }
+    .minimal-card {
+        @apply bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-lg shadow-sm hover:shadow-md dark:hover:shadow-lg transition-all duration-200;
+    }
+
+    .minimal-button {
+        @apply px-4 py-2 text-sm font-medium transition-all duration-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-dark-800;
+    }
+
+    .minimal-button-primary {
+        @apply bg-slate-900 dark:bg-green-600 text-white hover:bg-slate-800 dark:hover:bg-green-700 active:scale-95;
+    }
+
+    .minimal-button-secondary {
+        @apply bg-slate-100 dark:bg-dark-700 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-dark-600 border border-transparent dark:border-dark-600;
+    }
+
+    .minimal-button-ghost {
+        @apply text-gray-600 dark:text-dark-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-700;
+    }
+
+    .minimal-button-danger {
+        @apply bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800;
+    }
+
+    .minimal-input {
+        @apply block w-full px-3 py-2 border border-gray-300 dark:border-dark-600 rounded-md shadow-sm bg-white dark:bg-dark-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-400 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 dark:focus:ring-green-400 dark:focus:border-green-400 transition-colors duration-200;
+    }
+
+    .minimal-input:disabled {
+        @apply bg-gray-50 dark:bg-dark-900 text-gray-500 dark:text-dark-500 cursor-not-allowed;
+    }
+
+    .minimal-textarea {
+        @apply minimal-input resize-none;
+    }
+
+    .minimal-select {
+        @apply minimal-input pr-10 appearance-none bg-no-repeat bg-right;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-size: 1.5em 1.5em;
+    }
+
+    .dark .minimal-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%9ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    }
+
+    .minimal-label {
+        @apply block text-sm font-medium text-gray-700 dark:text-dark-200 mb-1;
+    }
+
+    .minimal-error {
+        @apply text-sm text-red-600 dark:text-red-400 mt-1;
+    }
+
+    .minimal-success {
+        @apply text-sm text-green-600 dark:text-green-400 mt-1;
+    }
+
+    .minimal-modal-overlay {
+        @apply fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 transition-opacity;
+    }
+
+    .minimal-modal {
+        @apply bg-white dark:bg-dark-800 rounded-lg shadow-xl transform transition-all;
+    }
+
+    .minimal-tooltip {
+        @apply absolute z-10 px-2 py-1 text-xs font-medium text-white bg-gray-900 dark:bg-dark-700 rounded shadow-lg;
+    }
+
+    .minimal-badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    }
+
+    .minimal-badge-green {
+        @apply bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200;
+    }
+
+    .minimal-badge-yellow {
+        @apply bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200;
+    }
+
+    .minimal-badge-red {
+        @apply bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200;
+    }
+
+    .minimal-badge-blue {
+        @apply bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200;
+    }
+
+    .minimal-badge-gray {
+        @apply bg-gray-100 dark:bg-dark-700 text-gray-800 dark:text-dark-200;
+    }
+
+    /* Loading spinner */
+    .minimal-spinner {
+        @apply animate-spin h-5 w-5 text-green-600 dark:text-green-400;
+    }
+
+    /* Custom checkbox */
+    .minimal-checkbox {
+        @apply w-4 h-4 text-green-600 bg-gray-100 dark:bg-dark-700 border-gray-300 dark:border-dark-600 rounded focus:ring-green-500 dark:focus:ring-green-400 focus:ring-2;
+    }
+
+    /* Custom radio */
+    .minimal-radio {
+        @apply w-4 h-4 text-green-600 bg-gray-100 dark:bg-dark-700 border-gray-300 dark:border-dark-600 focus:ring-green-500 dark:focus:ring-green-400 focus:ring-2;
+    }
+
+    /* Divider */
+    .minimal-divider {
+        @apply border-gray-200 dark:border-dark-700;
+    }
+
+    /* Link styles */
+    .minimal-link {
+        @apply text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors duration-200 underline;
+    }
+
+    /* Code block */
+    .minimal-code {
+        @apply bg-gray-100 dark:bg-dark-800 text-gray-900 dark:text-dark-100 px-2 py-1 rounded text-sm font-mono;
+    }
+
+    /* Pre block */
+    .minimal-pre {
+        @apply bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-lg p-4 overflow-x-auto;
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Glass effect utilities */
+    .glass {
+        backdrop-filter: blur(16px) saturate(180%);
+        background-color: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(209, 213, 219, 0.3);
+    }
+
+    .dark .glass {
+        background-color: rgba(30, 41, 59, 0.75);
+        border: 1px solid rgba(71, 85, 105, 0.3);
+    }
+
+    /* Animation utilities */
+    .animate-fade-in {
+        animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .animate-slide-up {
+        animation: slideUp 0.2s ease-in-out;
+    }
+
+    .animate-scale-in {
+        animation: scaleIn 0.2s ease-in-out;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Dark mode specific improvements */
+@media (prefers-color-scheme: dark) {
+    html {
+        color-scheme: dark;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .minimal-card {
+        @apply border-2;
+    }
+
+    .minimal-button {
+        @apply border-2 border-current;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

@@ -32,6 +32,7 @@
 
 ### 📱 **User Experience**
 - **Responsive Design** - Works seamlessly on mobile and desktop
+- **Dark Mode Support** - Toggle between light and dark themes with system preference detection
 - **Multi-language Support** - Hindi and English support
 - **Offline Capability** - Core features work without internet
 - **Real-time Updates** - Live data synchronization
