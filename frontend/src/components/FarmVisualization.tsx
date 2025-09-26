@@ -20,6 +20,7 @@ import {
   Trash2,
   BarChart3,
   Sprout,
+  Target,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import farmService, {
@@ -1333,34 +1334,68 @@ const FarmVisualization: React.FC = () => {
                   )}
                 </button>
               </div>
-
-              {/* Simple Bulk Mode Indicator */}
-              {bulkSelectMode && (
-                <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-blue-800 dark:text-blue-300">
-                        Bulk Selection Mode
-                      </span>
-                      <span className="text-xs px-2 py-1 bg-blue-200 dark:bg-blue-800/50 text-blue-800 dark:text-blue-200 rounded-full">
-                        {selectedPlots.size} selected
-                      </span>
-                    </div>
-                    <button
-                      onClick={toggleBulkSelectMode}
-                      className="text-xs px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 transition-colors"
-                    >
-                      Exit
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Grid Layout */}
+            {/* Mobile Grid - 2 columns */}
+            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto px-4 sm:hidden">
+              {farmData.map((plot) => (
+                <div
+                  key={`mobile-${plot.plotNumber}`}
+                  onClick={() => {
+                    const intPlotNumber = Math.floor(Number(plot.plotNumber));
+                    if (bulkSelectMode) {
+                      return togglePlotSelection(intPlotNumber);
+                    } else {
+                      setSelectedPlot(intPlotNumber);
+                      return;
+                    }
+                  }}
+                  className={`
+                    aspect-square border-2 rounded-xl cursor-pointer transition-all duration-200
+                    flex flex-col items-center justify-center p-3 text-center relative
+                    min-h-[120px] touch-manipulation
+                    ${getPlotColor(plot)}
+                    ${selectedPlot === Math.floor(Number(plot.plotNumber)) && !bulkSelectMode ? "ring-4 ring-green-500 ring-offset-2" : ""}
+                    ${selectedPlots.has(Math.floor(Number(plot.plotNumber))) ? "ring-4 ring-blue-500 ring-offset-2 bg-blue-50 dark:bg-blue-900/40" : ""}
+                    ${isEditing || bulkSelectMode ? "hover:scale-105 active:scale-95" : ""}
+                  `}
+                >
+                  {bulkSelectMode && (
+                    <div className="absolute top-2 right-2 p-1">
+                      {selectedPlots.has(
+                        Math.floor(Number(plot.plotNumber)),
+                      ) ? (
+                        <CheckSquare className="w-6 h-6 text-blue-600" />
+                      ) : (
+                        <Square className="w-6 h-6 text-gray-400" />
+                      )}
+                    </div>
+                  )}
+                  <div className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">
+                    {plot.plotNumber}
+                  </div>
+                  <div
+                    className={`text-sm font-semibold w-full px-2 py-1 rounded-md ${
+                      plot.crop?.name && plot.crop.name !== "Empty"
+                        ? "text-gray-800 dark:text-gray-200 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm"
+                        : "text-gray-500 dark:text-gray-400"
+                    }`}
+                    title={plot.crop?.name || "Empty"}
+                  >
+                    {plot.crop?.name || "Empty"}
+                  </div>
+                  {plot.crop?.stage && plot.crop.name !== "Empty" && (
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 capitalize px-2 py-0.5 bg-white/60 dark:bg-gray-900/60 rounded">
+                      {plot.crop.stage.replace("_", " ")}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Grid - Original layout */}
             <div
-              className="grid gap-2 max-w-3xl mx-auto"
+              className="hidden sm:grid gap-3 max-w-4xl mx-auto"
               style={{
                 gridTemplateColumns: `repeat(${farmConfig.cols}, minmax(0, 1fr))`,
               }}
@@ -1379,39 +1414,41 @@ const FarmVisualization: React.FC = () => {
                     }
                   }}
                   className={`
-                    aspect-square border-2 rounded-lg cursor-pointer transition-all duration-200
-                    flex flex-col items-center justify-center p-2 text-center relative
+                    aspect-square border-2 rounded-xl cursor-pointer transition-all duration-200
+                    flex flex-col items-center justify-center p-3 sm:p-4 text-center relative
+                    min-h-[120px] sm:min-h-[140px] touch-manipulation
                     ${getPlotColor(plot)}
-                    ${selectedPlot === Math.floor(Number(plot.plotNumber)) && !bulkSelectMode ? "ring-2 ring-green-500 ring-offset-2" : ""}
-                    ${selectedPlots.has(Math.floor(Number(plot.plotNumber))) ? "ring-2 ring-blue-500 ring-offset-2 bg-blue-50 dark:bg-blue-900/40" : ""}
-                    ${isEditing || bulkSelectMode ? "hover:scale-105" : ""}
+                    ${selectedPlot === Math.floor(Number(plot.plotNumber)) && !bulkSelectMode ? "ring-4 ring-green-500 ring-offset-2" : ""}
+                    ${selectedPlots.has(Math.floor(Number(plot.plotNumber))) ? "ring-4 ring-blue-500 ring-offset-2 bg-blue-50 dark:bg-blue-900/40" : ""}
+                    ${isEditing || bulkSelectMode ? "hover:scale-105 active:scale-95" : ""}
                   `}
                 >
                   {bulkSelectMode && (
-                    <div className="absolute top-1 right-1">
+                    <div className="absolute top-2 right-2 p-1">
                       {selectedPlots.has(
                         Math.floor(Number(plot.plotNumber)),
                       ) ? (
-                        <CheckSquare className="w-4 h-4 text-blue-600" />
+                        <CheckSquare className="w-6 h-6 text-blue-600" />
                       ) : (
-                        <Square className="w-4 h-4 text-gray-400" />
+                        <Square className="w-6 h-6 text-gray-400" />
                       )}
                     </div>
                   )}
-                  <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                    Plot {plot.plotNumber}
+                  <div className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">
+                    {plot.plotNumber}
                   </div>
                   <div
-                    className={`text-xs font-medium truncate w-full px-1 py-0.5 rounded ${
+                    className={`text-sm font-semibold w-full px-2 py-1 rounded-md ${
                       plot.crop?.name && plot.crop.name !== "Empty"
-                        ? "text-gray-800 dark:text-gray-200 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm"
+                        ? "text-gray-800 dark:text-gray-200 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm"
                         : "text-gray-500 dark:text-gray-400"
                     }`}
+                    title={plot.crop?.name || "Empty"}
                   >
                     {plot.crop?.name || "Empty"}
                   </div>
                   {plot.crop?.stage && plot.crop.name !== "Empty" && (
-                    <div className="text-xs text-gray-700 dark:text-gray-300 mt-0.5 capitalize px-1 py-0.5 bg-white/70 dark:bg-gray-900/70 rounded text-center border border-white/50 dark:border-gray-700/50">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 capitalize px-2 py-0.5 bg-white/60 dark:bg-gray-900/60 rounded">
                       {plot.crop.stage.replace("_", " ")}
                     </div>
                   )}
@@ -1452,24 +1489,24 @@ const FarmVisualization: React.FC = () => {
         <div className="xl:col-span-1 space-y-4">
           {/* Simplified Bulk Actions */}
           {bulkSelectMode && selectedPlots.size === 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 text-center">
-              <Target className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                No Plots Selected
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+              <Target className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                Select Plots
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Click on plots to select them for bulk operations
+              <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">
+                Tap plots to select them
               </p>
-              <div className="flex justify-center space-x-2">
+              <div className="space-y-3">
                 <button
                   onClick={selectAllPlots}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors"
+                  className="w-full px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors touch-manipulation text-lg font-medium"
                 >
-                  Select All
+                  Select All Plots
                 </button>
                 <button
                   onClick={toggleBulkSelectMode}
-                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors touch-manipulation text-lg"
                 >
                   Cancel
                 </button>
@@ -2333,53 +2370,47 @@ const FarmVisualization: React.FC = () => {
 
       {/* Floating Bulk Actions Panel */}
       {bulkSelectMode && selectedPlots.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 min-w-96">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+        <div className="fixed bottom-4 left-4 right-4 sm:bottom-6 sm:left-1/2 sm:right-auto sm:transform sm:-translate-x-1/2 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 w-full sm:min-w-96 sm:w-auto max-w-md sm:max-w-none mx-auto">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center space-x-3 mb-2">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                  <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                     {selectedPlots.size}
                   </span>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                    Bulk Actions
-                  </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {selectedPlots.size} plot
-                    {selectedPlots.size !== 1 ? "s" : ""} selected
-                  </p>
-                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  Selected
+                </h3>
               </div>
               <button
                 onClick={() => {
                   setSelectedPlots(new Set());
                   setBulkSelectMode(false);
                 }}
-                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">
+              <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-xl text-center">
                 <p className="text-sm text-red-700 dark:text-red-400">
                   {error}
                 </p>
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-4">
               {/* Plant Crop */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <select
                   value={bulkCropSelection}
                   onChange={(e) => setBulkCropSelection(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-green-500 touch-manipulation"
                 >
-                  <option value="">Select crop...</option>
+                  <option value="">Choose a crop to plant...</option>
                   {availableCrops
                     .filter((crop) => crop !== "Empty")
                     .map((crop) => (
@@ -2391,51 +2422,32 @@ const FarmVisualization: React.FC = () => {
                 <button
                   onClick={bulkPlantCrop}
                   disabled={!bulkCropSelection || bulkOperationLoading}
-                  className="w-full px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                  className="w-full px-6 py-4 bg-green-600 text-white text-lg font-semibold rounded-xl hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors touch-manipulation"
                 >
                   {bulkOperationLoading ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-5 h-5 mr-3 animate-spin" />
                   ) : (
-                    <Sprout className="w-4 h-4 mr-2" />
+                    <Sprout className="w-5 h-5 mr-3" />
                   )}
-                  Plant Crop
+                  Plant Crops
                 </button>
               </div>
 
               {/* Clear Plots */}
-              <div className="space-y-2">
-                <div className="h-10 flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
-                  Remove all crops
-                </div>
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
                 <button
                   onClick={bulkClearPlots}
                   disabled={bulkOperationLoading}
-                  className="w-full px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                  className="w-full px-6 py-4 bg-red-600 text-white text-lg font-semibold rounded-xl hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors touch-manipulation"
                 >
                   {bulkOperationLoading ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-5 h-5 mr-3 animate-spin" />
                   ) : (
-                    <Trash2 className="w-4 h-4 mr-2" />
+                    <Trash2 className="w-5 h-5 mr-3" />
                   )}
-                  Clear Plots
+                  Clear All Plots
                 </button>
               </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="flex justify-center space-x-2 mt-4 pt-4 border-t border-gray-200">
-              <button
-                onClick={selectAllPlots}
-                className="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Select All
-              </button>
-              <button
-                onClick={clearPlotSelection}
-                className="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Clear Selection
-              </button>
             </div>
           </div>
         </div>

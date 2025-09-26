@@ -355,17 +355,17 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors ${
+                  className={`block w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 focus:border-transparent transition-colors duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-400 ${
                     validationErrors.password
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300 bg-white hover:border-gray-400"
+                      ? "border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/30"
+                      : "border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 hover:border-gray-400 dark:hover:border-dark-500"
                   }`}
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300"
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -375,7 +375,7 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                 </button>
               </div>
               {validationErrors.password && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center transition-colors duration-200">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {validationErrors.password}
                 </p>
@@ -389,11 +389,11 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 dark:border-dark-600 rounded bg-white dark:bg-dark-700"
                 />
                 <label
                   htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-700"
+                  className="ml-2 block text-sm text-gray-700 dark:text-dark-200"
                 >
                   Remember me
                 </label>
@@ -402,7 +402,7 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
               <button
                 type="button"
                 onClick={onForgotPassword}
-                className="text-sm text-green-600 hover:text-green-700 font-medium"
+                className="text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium"
               >
                 Forgot password?
               </button>
@@ -427,12 +427,12 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
 
           {/* Sign Up Link */}
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-dark-400">
               Don't have an account?{" "}
               <button
                 type="button"
                 onClick={onToggleMode}
-                className="font-medium text-green-600 hover:text-green-700 transition-colors"
+                className="font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors"
               >
                 Sign up here
               </button>
@@ -440,11 +440,11 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
           </div>
 
           {/* Demo Credentials */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="text-sm font-medium text-blue-800 mb-2">
+          <div className="bg-blue-50 dark:bg-dark-800 border border-blue-200 dark:border-dark-600 rounded-lg p-4">
+            <h4 className="text-sm font-medium text-blue-800 dark:text-dark-200 mb-2">
               Demo Account
             </h4>
-            <div className="text-xs text-blue-700 space-y-1">
+            <div className="text-xs text-blue-700 dark:text-dark-400 space-y-1">
               <p>
                 <strong>Email:</strong> demo@khetsetu.com
               </p>
@@ -461,7 +461,7 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
                 });
                 clearError();
               }}
-              className="mt-2 text-xs text-blue-600 hover:text-blue-700 underline"
+              className="mt-2 text-xs text-blue-600 dark:text-dark-300 hover:text-blue-700 dark:hover:text-dark-400 underline"
             >
               Use demo credentials
             </button>
@@ -469,7 +469,7 @@ const Login: React.FC<LoginProps> = ({ onToggleMode, onForgotPassword }) => {
         </form>
 
         {/* Footer */}
-        <div className="text-center text-xs text-gray-500">
+        <div className="text-center text-xs text-gray-500 dark:text-dark-400">
           <p>
             By signing in, you agree to our Terms of Service and Privacy Policy
           </p>

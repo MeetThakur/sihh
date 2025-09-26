@@ -70,40 +70,48 @@ const AppContent: React.FC = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-dark-900 transition-colors duration-200">
       {/* Minimal Header */}
       <header className="bg-white dark:bg-dark-800 border-b border-gray-200 dark:border-dark-700 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-slate-900 dark:bg-green-600 rounded-md flex items-center justify-center transition-colors duration-200">
-                <Leaf className="w-5 h-5 text-white" />
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-slate-900 dark:bg-green-600 rounded-md flex items-center justify-center transition-colors duration-200 flex-shrink-0">
+                <Leaf className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <div>
-                <h1 className="text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-200">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-200 truncate">
                   {t("header.title")}
                 </h1>
-                <p className="text-xs text-gray-500 dark:text-dark-400 transition-colors duration-200">
+                <p className="text-xs text-gray-500 dark:text-dark-400 transition-colors duration-200 hidden xs:block truncate">
                   {t("header.subtitle")}
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
               <button
                 onClick={() => setLanguage(language === "en" ? "hi" : "en")}
-                className="flex items-center px-3 py-1.5 text-sm text-gray-600 dark:text-dark-300 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-dark-600 rounded-md hover:border-gray-400 dark:hover:border-dark-500 transition-colors duration-200"
+                className="flex items-center px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-gray-600 dark:text-dark-300 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-dark-600 rounded-md hover:border-gray-400 dark:hover:border-dark-500 transition-colors duration-200"
               >
-                <Globe className="w-4 h-4 mr-2" />
-                {language === "en" ? "हिंदी" : "English"}
+                <Globe className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                <span className="hidden sm:inline">
+                  {language === "en" ? "हिंदी" : "English"}
+                </span>
+                <span className="sm:hidden">
+                  {language === "en" ? "हि" : "En"}
+                </span>
               </button>
 
               {/* Theme Toggle */}
-              <ThemeToggle size="md" />
+              <ThemeToggle size="sm" />
 
               {/* User Profile Button */}
               <button
                 onClick={() => setIsProfileOpen(true)}
-                className="flex items-center px-3 py-1.5 text-sm text-gray-600 dark:text-dark-300 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-dark-600 rounded-md hover:border-gray-400 dark:hover:border-dark-500 transition-colors duration-200"
+                className="flex items-center px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-gray-600 dark:text-dark-300 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-dark-600 rounded-md hover:border-gray-400 dark:hover:border-dark-500 transition-colors duration-200"
               >
-                <User className="w-4 h-4 mr-2" />
-                {state.user?.name || "Profile"}
+                <User className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                <span className="hidden sm:inline truncate max-w-20">
+                  {state.user?.name || "Profile"}
+                </span>
+                <span className="sm:hidden">Demo</span>
               </button>
             </div>
           </div>
@@ -116,7 +124,7 @@ const AppContent: React.FC = () => {
         onTabChange={(tab) => setActiveTab(tab as ActiveTab)}
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
         {renderActiveComponent()}
       </main>
 

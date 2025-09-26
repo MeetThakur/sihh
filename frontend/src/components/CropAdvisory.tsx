@@ -129,11 +129,38 @@ const CropAdvisory: React.FC = () => {
   const [compareMode, setCompareMode] = useState(false);
   const [selectedCrops, setSelectedCrops] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [showTabDropdown, setShowTabDropdown] = useState(false);
   const [filters, setFilters] = useState({
     suitability: "",
     riskLevel: "",
     sustainabilityMin: 0,
   });
+
+  // Close dropdown on click outside or ESC key
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showTabDropdown && !target.closest("[data-dropdown]")) {
+        setShowTabDropdown(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && showTabDropdown) {
+        setShowTabDropdown(false);
+      }
+    };
+
+    if (showTabDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showTabDropdown]);
 
   // Mock weather data
   useEffect(() => {
@@ -510,68 +537,71 @@ const CropAdvisory: React.FC = () => {
   };
 
   const QuickAdvisoryTab = () => (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Weather Integration */}
       {weatherData && (
-        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-6 transition-colors duration-200">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 border border-blue-200 dark:border-blue-700 rounded-lg sm:rounded-xl p-4 sm:p-6 transition-colors duration-200">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
               <Cloud
                 className="mr-2 text-blue-600 dark:text-blue-400"
-                size={20}
+                size={18}
               />
-              Current Weather Conditions
+              <span className="hidden sm:inline">
+                Current Weather Conditions
+              </span>
+              <span className="sm:hidden">Weather</span>
             </h3>
             <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200">
-              <RefreshCw size={16} />
+              <RefreshCw size={14} />
             </button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
             <div className="text-center">
               <Thermometer
-                className="text-orange-500 dark:text-orange-400 mx-auto mb-2"
-                size={20}
+                className="text-orange-500 dark:text-orange-400 mx-auto mb-1 sm:mb-2"
+                size={16}
               />
-              <p className="text-sm text-gray-600 dark:text-dark-300">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-dark-300">
                 Temperature
               </p>
-              <p className="font-semibold text-gray-900 dark:text-white">
+              <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
                 {weatherData.temperature}°C
               </p>
             </div>
             <div className="text-center">
               <Droplet
-                className="text-blue-500 dark:text-blue-400 mx-auto mb-2"
-                size={20}
+                className="text-blue-500 dark:text-blue-400 mx-auto mb-1 sm:mb-2"
+                size={16}
               />
-              <p className="text-sm text-gray-600 dark:text-dark-300">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-dark-300">
                 Humidity
               </p>
-              <p className="font-semibold text-gray-900 dark:text-white">
+              <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
                 {weatherData.humidity}%
               </p>
             </div>
             <div className="text-center">
               <Cloud
-                className="text-gray-500 dark:text-dark-400 mx-auto mb-2"
-                size={20}
+                className="text-gray-500 dark:text-dark-400 mx-auto mb-1 sm:mb-2"
+                size={16}
               />
-              <p className="text-sm text-gray-600 dark:text-dark-300">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-dark-300">
                 Rainfall
               </p>
-              <p className="font-semibold text-gray-900 dark:text-white">
+              <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
                 {weatherData.rainfall}mm
               </p>
             </div>
             <div className="text-center">
               <Sun
-                className="text-yellow-500 dark:text-yellow-400 mx-auto mb-2"
-                size={20}
+                className="text-yellow-500 dark:text-yellow-400 mx-auto mb-1 sm:mb-2"
+                size={16}
               />
-              <p className="text-sm text-gray-600 dark:text-dark-300">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-dark-300">
                 Forecast
               </p>
-              <p className="font-semibold text-gray-900 dark:text-white text-xs">
+              <p className="font-semibold text-gray-900 dark:text-white text-xs sm:text-sm">
                 Partly Cloudy
               </p>
             </div>
@@ -580,39 +610,40 @@ const CropAdvisory: React.FC = () => {
       )}
 
       {/* Enhanced Input Form */}
-      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl p-6 shadow-sm transition-colors duration-200">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
+      <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-sm transition-colors duration-200">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
             <Leaf
-              className="text-green-600 dark:text-green-400 mr-3"
-              size={24}
+              className="text-green-600 dark:text-green-400 mr-2 sm:mr-3"
+              size={20}
             />
-            Farm Information
+            <span className="hidden sm:inline">Farm Information</span>
+            <span className="sm:hidden">Farm Info</span>
           </h2>
-          <div className="flex space-x-2">
+          <div className="flex space-x-1 sm:space-x-2">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-colors duration-200 ${
+              className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium flex items-center space-x-1 sm:space-x-2 transition-colors duration-200 ${
                 showFilters
                   ? "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700"
                   : "bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-dark-200 hover:bg-gray-200 dark:hover:bg-dark-600"
               }`}
             >
-              <Filter size={16} />
-              <span>Filters</span>
+              <Filter size={14} />
+              <span className="hidden sm:inline">Filters</span>
             </button>
           </div>
         </div>
 
         {/* Advanced Filters */}
         {showFilters && (
-          <div className="mb-6 p-4 bg-gray-50 dark:bg-dark-900 rounded-lg border border-gray-200 dark:border-dark-700 transition-colors duration-200">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3 transition-colors duration-200">
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 dark:bg-dark-900 rounded-lg border border-gray-200 dark:border-dark-700 transition-colors duration-200">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white mb-3 transition-colors duration-200">
               Filter Recommendations
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-dark-200 mb-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-dark-200 mb-1 sm:mb-2">
                   Suitability
                 </label>
                 <select
@@ -623,7 +654,7 @@ const CropAdvisory: React.FC = () => {
                       suitability: e.target.value,
                     }))
                   }
-                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
+                  className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
                 >
                   <option value="">All Levels</option>
                   <option value="High">High Suitability</option>
@@ -632,7 +663,7 @@ const CropAdvisory: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-dark-200 mb-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-dark-200 mb-1 sm:mb-2">
                   Risk Level
                 </label>
                 <select
@@ -643,7 +674,7 @@ const CropAdvisory: React.FC = () => {
                       riskLevel: e.target.value,
                     }))
                   }
-                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
+                  className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
                 >
                   <option value="">All Risk Levels</option>
                   <option value="Low">Low Risk</option>
@@ -652,7 +683,7 @@ const CropAdvisory: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-dark-200 mb-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-dark-200 mb-1 sm:mb-2">
                   Min Sustainability Score
                 </label>
                 <input
@@ -676,21 +707,24 @@ const CropAdvisory: React.FC = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
-              {t("cropAdvisory.budget")} (Min: ₹10,000)
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="space-y-1 sm:space-y-2">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
+              <span className="hidden sm:inline">
+                {t("cropAdvisory.budget")} (Min: ₹10,000)
+              </span>
+              <span className="sm:hidden">Budget (Min: ₹10k)</span>
             </label>
             <div className="relative">
               <DollarSign
-                className="absolute left-3 top-3 text-gray-400 dark:text-dark-400"
-                size={18}
+                className="absolute left-2 sm:left-3 top-2.5 sm:top-3 text-gray-400 dark:text-dark-400"
+                size={16}
               />
               <input
                 type="number"
                 value={farmInput.budget}
                 onChange={(e) => handleInputChange("budget", e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-400 transition-colors duration-200"
+                className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-400 transition-colors duration-200"
                 placeholder="50000"
                 min="10000"
               />
@@ -702,14 +736,14 @@ const CropAdvisory: React.FC = () => {
             )}
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
+          <div className="space-y-1 sm:space-y-2">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
               {t("cropAdvisory.season")}
             </label>
             <select
               value={farmInput.season}
               onChange={(e) => handleInputChange("season", e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white transition-colors duration-200"
             >
               <option value="">Select Season</option>
               <option value="kharif">Kharif (June-October)</option>
@@ -718,28 +752,29 @@ const CropAdvisory: React.FC = () => {
             </select>
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
-              Farm Size (acres)
+          <div className="space-y-1 sm:space-y-2">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
+              <span className="hidden sm:inline">Farm Size (acres)</span>
+              <span className="sm:hidden">Size (acres)</span>
             </label>
             <div className="relative">
               <MapPin
-                className="absolute left-3 top-3 text-gray-400 dark:text-dark-400"
-                size={18}
+                className="absolute left-2 sm:left-3 top-2.5 sm:top-3 text-gray-400 dark:text-dark-400"
+                size={16}
               />
               <input
                 type="number"
                 value={farmInput.farmSize}
                 onChange={(e) => handleInputChange("farmSize", e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-400 transition-colors duration-200"
+                className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm border border-gray-300 dark:border-dark-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-dark-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-400 transition-colors duration-200"
                 placeholder="2.5"
                 step="0.1"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
+          <div className="space-y-1 sm:space-y-2">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-200 transition-colors duration-200">
               Soil Type
             </label>
             <select
@@ -848,18 +883,28 @@ const CropAdvisory: React.FC = () => {
               !farmInput.season ||
               !farmInput.soilType
             }
-            className="px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 dark:from-green-500 dark:to-blue-500 text-white font-semibold rounded-xl hover:from-green-700 hover:to-blue-700 dark:hover:from-green-600 dark:hover:to-blue-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 shadow-lg"
+            className="w-full sm:w-auto px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-green-600 to-blue-600 dark:from-green-500 dark:to-blue-500 text-white font-semibold rounded-lg sm:rounded-xl hover:from-green-700 hover:to-blue-700 dark:hover:from-green-600 dark:hover:to-blue-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 shadow-lg"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-center space-x-2 sm:space-x-3">
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                  <span>Generating AI Recommendations...</span>
+                  <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-white"></div>
+                  <span className="text-sm sm:text-base">
+                    <span className="hidden sm:inline">
+                      Generating AI Recommendations...
+                    </span>
+                    <span className="sm:hidden">Generating...</span>
+                  </span>
                 </>
               ) : (
                 <>
-                  <Lightbulb className="animate-pulse" size={24} />
-                  <span>Get Smart Crop Advisory</span>
+                  <Lightbulb className="animate-pulse" size={20} />
+                  <span className="text-sm sm:text-base">
+                    <span className="hidden sm:inline">
+                      Get Smart Crop Advisory
+                    </span>
+                    <span className="sm:hidden">Get Advisory</span>
+                  </span>
                 </>
               )}
             </div>
@@ -869,14 +914,15 @@ const CropAdvisory: React.FC = () => {
 
       {/* Enhanced Recommendations */}
       {recommendations.length > 0 && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
               <Target
-                className="text-green-600 dark:text-green-400 mr-3"
-                size={24}
+                className="text-green-600 dark:text-green-400 mr-2 sm:mr-3"
+                size={20}
               />
-              AI Crop Recommendations
+              <span className="hidden sm:inline">AI Crop Recommendations</span>
+              <span className="sm:hidden">Recommendations</span>
             </h2>
             <div className="flex space-x-2">
               <button
@@ -1502,54 +1548,156 @@ const CropAdvisory: React.FC = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-dark-900 transition-colors duration-200">
       {/* Header */}
       <div className="bg-white dark:bg-dark-800 border-b border-gray-200 dark:border-dark-700 sticky top-0 z-10 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg transition-colors duration-200">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
+              <div className="p-1.5 sm:p-2 bg-green-100 dark:bg-green-900/50 rounded-lg transition-colors duration-200 flex-shrink-0">
                 <Leaf
                   className="text-green-600 dark:text-green-400"
-                  size={24}
+                  size={20}
                 />
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-200">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white transition-colors duration-200 truncate">
                   Smart Crop Advisory
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-dark-300 transition-colors duration-200">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-dark-300 transition-colors duration-200 hidden xs:block truncate">
                   AI-powered farming recommendations
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <button className="p-2 text-gray-600 dark:text-dark-300 hover:text-gray-800 dark:hover:text-white border border-gray-300 dark:border-dark-600 rounded-lg transition-colors duration-200">
+            <div className="flex items-center space-x-1 sm:space-x-3 flex-shrink-0">
+              <button className="p-1.5 sm:p-2 text-gray-600 dark:text-dark-300 hover:text-gray-800 dark:hover:text-white border border-gray-300 dark:border-dark-600 rounded-lg transition-colors duration-200 hidden sm:block">
                 <Users size={16} />
               </button>
-              <button className="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 text-sm font-medium transition-colors duration-200">
-                Save Session
+              <button className="px-2 sm:px-4 py-1.5 sm:py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 text-xs sm:text-sm font-medium transition-colors duration-200">
+                <span className="hidden sm:inline">Save Session</span>
+                <span className="sm:hidden">Save</span>
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
+      {/* Navigation - Tabs on Desktop, Dropdown on Mobile */}
       <div className="bg-white dark:bg-dark-800 border-b border-gray-200 dark:border-dark-700 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8 overflow-x-auto">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          {/* Mobile Dropdown (hidden on lg and up) */}
+          <div className="lg:hidden py-3">
+            <div className="relative" data-dropdown>
+              <button
+                onClick={() => setShowTabDropdown(!showTabDropdown)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setShowTabDropdown(!showTabDropdown);
+                  }
+                }}
+                aria-expanded={showTabDropdown}
+                aria-haspopup="true"
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-dark-700 border border-gray-200 dark:border-dark-600 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+              >
+                <div className="flex items-center space-x-3">
+                  {(() => {
+                    const currentTab = tabs.find((tab) => tab.id === activeTab);
+                    const Icon = currentTab?.icon || tabs[0].icon;
+                    return (
+                      <>
+                        <Icon
+                          size={20}
+                          className="text-green-600 dark:text-green-400"
+                        />
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {currentTab?.label || tabs[0].label}
+                        </span>
+                      </>
+                    );
+                  })()}
+                </div>
+                <svg
+                  className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${
+                    showTabDropdown ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              {showTabDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-lg shadow-lg z-20">
+                  <div className="py-2">
+                    {tabs.map((tab) => {
+                      const Icon = tab.icon;
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => {
+                            setActiveTab(tab.id as TabType);
+                            setShowTabDropdown(false);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setActiveTab(tab.id as TabType);
+                              setShowTabDropdown(false);
+                            }
+                          }}
+                          className={`w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors duration-200 focus:outline-none focus:bg-gray-100 dark:focus:bg-dark-600 ${
+                            isActive
+                              ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                              : "text-gray-700 dark:text-gray-300"
+                          }`}
+                        >
+                          <Icon
+                            size={18}
+                            className={
+                              isActive
+                                ? "text-green-600 dark:text-green-400"
+                                : "text-gray-500 dark:text-gray-400"
+                            }
+                          />
+                          <span className="font-medium">{tab.label}</span>
+                          {isActive && (
+                            <CheckCircle
+                              size={16}
+                              className="ml-auto text-green-600 dark:text-green-400"
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Desktop Tabs (hidden on mobile) */}
+          <div className="hidden lg:flex space-x-6 py-4">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap transition-colors duration-200 ${
+                  className={`flex items-center space-x-2 py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap transition-colors duration-200 ${
                     activeTab === tab.id
-                      ? "border-green-500 text-green-600 dark:text-green-400"
-                      : "border-transparent text-gray-500 dark:text-dark-400 hover:text-gray-700 dark:hover:text-dark-200 hover:border-gray-300 dark:hover:border-dark-600"
+                      ? "border-green-500 text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/20"
+                      : "border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800/50"
                   }`}
                 >
-                  <Icon size={16} />
-                  <span>{tab.label}</span>
+                  <Icon size={18} className="flex-shrink-0" />
+                  <span className="font-medium">{tab.label}</span>
                 </button>
               );
             })}
@@ -1558,7 +1706,7 @@ const CropAdvisory: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
         {activeTab === "quick" && <QuickAdvisoryTab />}
         {activeTab === "calendar" && <FasalCalendarTab />}
         {activeTab === "detailed" && (

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Upload,
   AlertCircle,
@@ -11,6 +11,10 @@ import {
   TrendingUp,
   Zap,
   Target,
+  ChevronDown,
+  Settings,
+  Eye,
+  Cpu,
 } from "lucide-react";
 import {
   analyzePestImage,
@@ -30,7 +34,56 @@ export const PestImageDetection: React.FC<PestImageDetectionProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [detectionMode, setDetectionMode] = useState("advanced");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const detectionOptions = [
+    {
+      id: "advanced",
+      label: "Advanced Detection",
+      icon: Cpu,
+      description: "High accuracy AI analysis",
+    },
+    {
+      id: "quick",
+      label: "Quick Scan",
+      icon: Zap,
+      description: "Fast basic detection",
+    },
+    {
+      id: "detailed",
+      label: "Detailed Analysis",
+      icon: Eye,
+      description: "Comprehensive pest report",
+    },
+  ];
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showDropdown && !target.closest("[data-dropdown]")) {
+        setShowDropdown(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && showDropdown) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showDropdown]);
 
   const processFile = async (file: File) => {
     // Validate file type
@@ -138,12 +191,72 @@ export const PestImageDetection: React.FC<PestImageDetectionProps> = ({
     <div className="space-y-6">
       {/* Header with Stats */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div>
-          <h3 className="text-xl font-bold text-gray-900 flex items-center mb-2">
-            <Camera className="h-6 w-6 text-red-600 mr-3" />
-            AI-Powered Pest Detection
-          </h3>
-          <p className="text-gray-600 text-sm">
+        <div className="flex-1">
+          <div className="flex items-center gap-4 mb-2">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
+              <Camera className="h-6 w-6 text-red-600 mr-3" />
+              AI-Powered Pest Detection
+            </h3>
+
+            {/* Detection Mode Dropdown */}
+            <div className="relative" data-dropdown>
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                {detectionOptions.find((opt) => opt.id === detectionMode)
+                  ?.icon &&
+                  React.createElement(
+                    detectionOptions.find((opt) => opt.id === detectionMode)!
+                      .icon,
+                    { className: "w-4 h-4" },
+                  )}
+                <span>
+                  {
+                    detectionOptions.find((opt) => opt.id === detectionMode)
+                      ?.label
+                  }
+                </span>
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${showDropdown ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {showDropdown && (
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
+                  <div className="py-2">
+                    {detectionOptions.map((option) => (
+                      <button
+                        key={option.id}
+                        onClick={() => {
+                          setDetectionMode(option.id);
+                          setShowDropdown(false);
+                        }}
+                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                          detectionMode === option.id
+                            ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
+                            : "text-gray-700 dark:text-gray-300"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <option.icon
+                            className={`w-5 h-5 mt-0.5 ${detectionMode === option.id ? "text-red-600 dark:text-red-400" : "text-gray-500 dark:text-gray-400"}`}
+                          />
+                          <div>
+                            <div className="font-medium">{option.label}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              {option.description}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
             Upload crop images for instant pest identification and treatment
             recommendations
           </p>
