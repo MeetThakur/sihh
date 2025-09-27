@@ -12,7 +12,6 @@ import {
   Zap,
   Target,
   ChevronDown,
-  Settings,
   Eye,
   Cpu,
 } from "lucide-react";
@@ -192,17 +191,17 @@ export const PestImageDetection: React.FC<PestImageDetectionProps> = ({
       {/* Header with Stats */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex-1">
-          <div className="flex items-center gap-4 mb-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-2">
             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
               <Camera className="h-6 w-6 text-red-600 mr-3" />
               AI-Powered Pest Detection
             </h3>
 
             {/* Detection Mode Dropdown */}
-            <div className="relative" data-dropdown>
+            <div className="relative z-50 w-full sm:w-auto" data-dropdown>
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="flex items-center justify-between gap-2 px-3 py-2 w-full sm:w-auto bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-sm font-medium text-gray-700 dark:text-gray-300"
               >
                 {detectionOptions.find((opt) => opt.id === detectionMode)
                   ?.icon &&
@@ -223,7 +222,7 @@ export const PestImageDetection: React.FC<PestImageDetectionProps> = ({
               </button>
 
               {showDropdown && (
-                <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
+                <div className="absolute top-full left-0 sm:left-auto sm:right-0 mt-2 w-full sm:w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[100]">
                   <div className="py-2">
                     {detectionOptions.map((option) => (
                       <button
@@ -278,7 +277,7 @@ export const PestImageDetection: React.FC<PestImageDetectionProps> = ({
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-visible relative">
         {/* Upload Area */}
         <div
           className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${

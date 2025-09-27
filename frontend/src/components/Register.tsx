@@ -106,7 +106,8 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       } else if (formData.password.length < 6) {
         errors.password = "Password must be at least 6 characters long";
       } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-        errors.password = "Password must contain at least one uppercase letter, one lowercase letter, and one number";
+        errors.password =
+          "Password must contain at least one uppercase letter, one lowercase letter, and one number";
       }
 
       if (!confirmPassword) {
@@ -117,11 +118,14 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
 
       if (formData.phone && formData.phone.trim()) {
         // Remove all non-digits to check format
-        const digitsOnly = formData.phone.replace(/\D/g, '');
+        const digitsOnly = formData.phone.replace(/\D/g, "");
         // Allow Indian mobile numbers (10 digits) or international format
-        if (!/^(\+91)?[6-9]\d{9}$/.test(formData.phone.replace(/\s/g, '')) &&
-            !/^[6-9]\d{9}$/.test(digitsOnly)) {
-          errors.phone = "Please enter a valid Indian mobile number (10 digits starting with 6-9)";
+        if (
+          !/^(\+91)?[6-9]\d{9}$/.test(formData.phone.replace(/\s/g, "")) &&
+          !/^[6-9]\d{9}$/.test(digitsOnly)
+        ) {
+          errors.phone =
+            "Please enter a valid Indian mobile number (10 digits starting with 6-9)";
         }
       }
     }
@@ -232,10 +236,12 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       setIsLoadingPincode(true);
       try {
         // Use fetch directly since locationService might have import issues
-        const response = await fetch(`https://api.postalpincode.in/pincode/${value}`);
+        const response = await fetch(
+          `https://api.postalpincode.in/pincode/${value}`,
+        );
         const data = await response.json();
 
-        if (data[0]?.Status === 'Success' && data[0]?.PostOffice?.length > 0) {
+        if (data[0]?.Status === "Success" && data[0]?.PostOffice?.length > 0) {
           const postOffice = data[0].PostOffice[0];
 
           // Auto-fill state and district based on pincode
@@ -252,21 +258,19 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
           }));
 
           // Clear validation errors
-          setValidationErrors(prev => ({
+          setValidationErrors((prev) => ({
             ...prev,
             state: undefined,
-            district: undefined
+            district: undefined,
           }));
         }
       } catch (error) {
-        console.error('Failed to lookup pincode:', error);
+        console.error("Failed to lookup pincode:", error);
       } finally {
         setIsLoadingPincode(false);
       }
     }
   };
-
-
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
@@ -324,18 +328,27 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       // Add location only if at least one field has a value
       if (formData.profile?.location) {
         const { state, district, village } = formData.profile.location;
-        if ((state && state.trim()) || (district && district.trim()) || (village && village.trim())) {
+        if (
+          (state && state.trim()) ||
+          (district && district.trim()) ||
+          (village && village.trim())
+        ) {
           profile.location = {};
           if (state && state.trim()) profile.location.state = state.trim();
-          if (district && district.trim()) profile.location.district = district.trim();
-          if (village && village.trim()) profile.location.village = village.trim();
+          if (district && district.trim())
+            profile.location.district = district.trim();
+          if (village && village.trim())
+            profile.location.village = village.trim();
         }
       }
 
       cleanedData.profile = profile;
 
       // Debug logging to see what data is being sent
-      console.log("Registration data being sent:", JSON.stringify(cleanedData, null, 2));
+      console.log(
+        "Registration data being sent:",
+        JSON.stringify(cleanedData, null, 2),
+      );
       console.log("Location data:", cleanedData.profile?.location);
       console.log("Profile data:", cleanedData.profile);
       console.log("Original form data:", JSON.stringify(formData, null, 2));
@@ -351,12 +364,13 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
           console.error("Validation failed - check console for details");
           setValidationErrors({
             ...validationErrors,
-            submit: "Please check all fields and try again. Some required information may be missing or invalid."
+            submit:
+              "Please check all fields and try again. Some required information may be missing or invalid.",
           });
         } else {
           setValidationErrors({
             ...validationErrors,
-            submit: error.message || "Registration failed. Please try again."
+            submit: error.message || "Registration failed. Please try again.",
           });
         }
       }
@@ -366,8 +380,10 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
   const renderStep1 = () => (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-medium text-gray-900">Basic Information</h3>
-        <p className="text-sm text-gray-600">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+          Basic Information
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-dark-300">
           Let's start with your basic details
         </p>
       </div>
@@ -376,13 +392,13 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2"
         >
           Full Name *
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <User className="h-5 w-5 text-gray-400" />
+            <User className="h-5 w-5 text-gray-400 dark:text-dark-400" />
           </div>
           <input
             id="name"
@@ -392,13 +408,17 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             value={formData.name}
             onChange={handleInputChange}
             className={`appearance-none relative block w-full px-3 py-3 pl-10 border ${
-              validationErrors.name ? "border-red-300" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+              validationErrors.name
+                ? "border-red-300 dark:border-red-600"
+                : "border-gray-300 dark:border-dark-600"
+            } placeholder-gray-500 dark:placeholder-dark-400 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200`}
             placeholder="Enter your full name"
           />
         </div>
         {validationErrors.name && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.name}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {validationErrors.name}
+          </p>
         )}
       </div>
 
@@ -406,13 +426,13 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       <div>
         <label
           htmlFor="email"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2"
         >
           Email Address *
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Mail className="h-5 w-5 text-gray-400" />
+            <Mail className="h-5 w-5 text-gray-400 dark:text-dark-400" />
           </div>
           <input
             id="email"
@@ -423,13 +443,17 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             value={formData.email}
             onChange={handleInputChange}
             className={`appearance-none relative block w-full px-3 py-3 pl-10 border ${
-              validationErrors.email ? "border-red-300" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+              validationErrors.email
+                ? "border-red-300 dark:border-red-600"
+                : "border-gray-300 dark:border-dark-600"
+            } placeholder-gray-500 dark:placeholder-dark-400 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200`}
             placeholder="Enter your email"
           />
         </div>
         {validationErrors.email && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {validationErrors.email}
+          </p>
         )}
       </div>
 
@@ -437,13 +461,13 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       <div>
         <label
           htmlFor="phone"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2"
         >
           Phone Number (optional)
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Phone className="h-5 w-5 text-gray-400" />
+            <Phone className="h-5 w-5 text-gray-400 dark:text-dark-400" />
           </div>
           <input
             id="phone"
@@ -452,13 +476,17 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             value={formData.phone || ""}
             onChange={handleInputChange}
             className={`appearance-none relative block w-full px-3 py-3 pl-10 border ${
-              validationErrors.phone ? "border-red-300" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+              validationErrors.phone
+                ? "border-red-300 dark:border-red-600"
+                : "border-gray-300 dark:border-dark-600"
+            } placeholder-gray-500 dark:placeholder-dark-400 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200`}
             placeholder="Enter your phone number (e.g., 9876543210)"
           />
         </div>
         {validationErrors.phone && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.phone}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {validationErrors.phone}
+          </p>
         )}
       </div>
 
@@ -466,13 +494,13 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       <div>
         <label
           htmlFor="password"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2"
         >
           Password *
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Lock className="h-5 w-5 text-gray-400" />
+            <Lock className="h-5 w-5 text-gray-400 dark:text-dark-400" />
           </div>
           <input
             id="password"
@@ -483,8 +511,10 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             value={formData.password}
             onChange={handleInputChange}
             className={`appearance-none relative block w-full px-3 py-3 pl-10 pr-10 border ${
-              validationErrors.password ? "border-red-300" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+              validationErrors.password
+                ? "border-red-300 dark:border-red-600"
+                : "border-gray-300 dark:border-dark-600"
+            } placeholder-gray-500 dark:placeholder-dark-400 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200`}
             placeholder="Password (min 6 chars, include A-Z, a-z, 0-9)"
           />
           <button
@@ -493,14 +523,14 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? (
-              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              <EyeOff className="h-5 w-5 text-gray-400 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300" />
             ) : (
-              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              <Eye className="h-5 w-5 text-gray-400 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300" />
             )}
           </button>
         </div>
         {validationErrors.password && (
-          <p className="mt-1 text-sm text-red-600">
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
             {validationErrors.password}
           </p>
         )}
@@ -510,13 +540,13 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       <div>
         <label
           htmlFor="confirmPassword"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2"
         >
           Confirm Password *
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Lock className="h-5 w-5 text-gray-400" />
+            <Lock className="h-5 w-5 text-gray-400 dark:text-dark-400" />
           </div>
           <input
             id="confirmPassword"
@@ -528,9 +558,9 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             onChange={handleInputChange}
             className={`appearance-none relative block w-full px-3 py-3 pl-10 pr-10 border ${
               validationErrors.confirmPassword
-                ? "border-red-300"
-                : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+                ? "border-red-300 dark:border-red-600"
+                : "border-gray-300 dark:border-dark-600"
+            } placeholder-gray-500 dark:placeholder-dark-400 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200`}
             placeholder="Confirm your password"
           />
           <button
@@ -539,14 +569,14 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
           >
             {showConfirmPassword ? (
-              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              <EyeOff className="h-5 w-5 text-gray-400 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300" />
             ) : (
-              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              <Eye className="h-5 w-5 text-gray-400 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300" />
             )}
           </button>
         </div>
         {validationErrors.confirmPassword && (
-          <p className="mt-1 text-sm text-red-600">
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
             {validationErrors.confirmPassword}
           </p>
         )}
@@ -557,15 +587,17 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
   const renderStep2 = () => (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-medium text-gray-900">Location Details</h3>
-        <p className="text-sm text-gray-600">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+          Location Details
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-dark-300">
           Tell us where your farm is located
         </p>
       </div>
 
       {/* Pincode Input */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2">
           Pincode (Optional)
         </label>
         <div className="relative">
@@ -573,7 +605,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             type="text"
             value={pincode}
             onChange={(e) => handlePincodeChange(e.target.value)}
-            className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+            className="appearance-none relative block w-full px-3 py-3 border border-gray-300 dark:border-dark-600 placeholder-gray-500 dark:placeholder-dark-400 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200"
             placeholder="Enter 6-digit pincode"
             maxLength={6}
           />
@@ -590,12 +622,12 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
 
       {/* State Dropdown */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2">
           State *
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <MapPin className="h-5 w-5 text-gray-400" />
+            <MapPin className="h-5 w-5 text-gray-400 dark:text-dark-400" />
           </div>
           <input
             id="profile.location.state"
@@ -605,24 +637,28 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             value={formData.profile?.location?.state || ""}
             onChange={handleInputChange}
             className={`appearance-none relative block w-full px-3 py-3 pl-10 border ${
-              validationErrors.state ? "border-red-300" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+              validationErrors.state
+                ? "border-red-300 dark:border-red-600"
+                : "border-gray-300 dark:border-dark-600"
+            } placeholder-gray-500 dark:placeholder-dark-400 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200`}
             placeholder="Enter your state"
           />
         </div>
         {validationErrors.state && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.state}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {validationErrors.state}
+          </p>
         )}
       </div>
 
       {/* City/District Dropdown */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2">
           City/District *
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <MapPin className="h-5 w-5 text-gray-400" />
+            <MapPin className="h-5 w-5 text-gray-400 dark:text-dark-400" />
           </div>
           <input
             id="profile.location.district"
@@ -632,13 +668,17 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             value={formData.profile?.location?.district || ""}
             onChange={handleInputChange}
             className={`appearance-none relative block w-full px-3 py-3 pl-10 border ${
-              validationErrors.district ? "border-red-300" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
-            placeholder="Enter your city or district"
+              validationErrors.district
+                ? "border-red-300 dark:border-red-600"
+                : "border-gray-300 dark:border-dark-600"
+            } placeholder-gray-500 dark:placeholder-dark-400 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200`}
+            placeholder="Enter your city/district"
           />
         </div>
         {validationErrors.district && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.district}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {validationErrors.district}
+          </p>
         )}
       </div>
 
@@ -668,10 +708,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
 
       {/* Language Preference */}
       <div>
-        <label
-          htmlFor="profile.preferredLanguage"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
+        <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2">
           Preferred Language
         </label>
         <select
@@ -679,7 +716,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
           name="profile.preferredLanguage"
           value={formData.profile?.preferredLanguage || "en"}
           onChange={handleInputChange}
-          className="appearance-none relative block w-full px-3 py-3 border border-gray-300 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+          className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-dark-600 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200"
         >
           <option value="en">English</option>
           <option value="hi">हिंदी (Hindi)</option>
@@ -691,9 +728,11 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
   const renderStep3 = () => (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-medium text-gray-900">Farm Details</h3>
-        <p className="text-sm text-gray-600">
-          Help us understand your farming background (optional)
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+          Farm Profile
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-dark-300">
+          Tell us about your farming background (all fields are optional)
         </p>
       </div>
 
@@ -701,25 +740,27 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       <div>
         <label
           htmlFor="profile.farmSize"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2"
         >
-          Farm Size (in acres)
+          Farm Size (acres)
         </label>
         <input
           id="profile.farmSize"
           name="profile.farmSize"
           type="number"
-          min="0"
           step="0.1"
+          min="0"
           value={formData.profile?.farmSize || ""}
           onChange={handleInputChange}
           className={`appearance-none relative block w-full px-3 py-3 border ${
-            validationErrors.farmSize ? "border-red-300" : "border-gray-300"
-          } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
-          placeholder="Enter farm size"
+            validationErrors.farmSize
+              ? "border-red-300 dark:border-red-600"
+              : "border-gray-300 dark:border-dark-600"
+          } placeholder-gray-500 dark:placeholder-dark-400 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200`}
+          placeholder="Enter farm size in acres (e.g., 2.5)"
         />
         {validationErrors.farmSize && (
-          <p className="mt-1 text-sm text-red-600">
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
             {validationErrors.farmSize}
           </p>
         )}
@@ -729,7 +770,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       <div>
         <label
           htmlFor="profile.soilType"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2"
         >
           Soil Type
         </label>
@@ -738,7 +779,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
           name="profile.soilType"
           value={formData.profile?.soilType || ""}
           onChange={handleInputChange}
-          className="appearance-none relative block w-full px-3 py-3 border border-gray-300 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+          className="appearance-none relative block w-full px-3 py-3 border border-gray-300 dark:border-dark-600 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200"
         >
           <option value="">Select soil type</option>
           {soilTypes.map((soil) => (
@@ -753,26 +794,27 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
       <div>
         <label
           htmlFor="profile.farmingExperience"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-2"
         >
-          Farming Experience (in years)
+          Farming Experience (years)
         </label>
         <input
           id="profile.farmingExperience"
           name="profile.farmingExperience"
           type="number"
           min="0"
+          max="100"
           value={formData.profile?.farmingExperience || ""}
           onChange={handleInputChange}
           className={`appearance-none relative block w-full px-3 py-3 border ${
             validationErrors.farmingExperience
-              ? "border-red-300"
-              : "border-gray-300"
-          } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+              ? "border-red-300 dark:border-red-600"
+              : "border-gray-300 dark:border-dark-600"
+          } placeholder-gray-500 dark:placeholder-dark-400 text-gray-900 dark:text-white bg-white dark:bg-dark-700 rounded-md focus:outline-none focus:ring-green-500 dark:focus:ring-green-400 focus:border-green-500 dark:focus:border-green-400 sm:text-sm transition-colors duration-200`}
           placeholder="Enter years of experience"
         />
         {validationErrors.farmingExperience && (
-          <p className="mt-1 text-sm text-red-600">
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
             {validationErrors.farmingExperience}
           </p>
         )}
@@ -780,7 +822,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
 
       {/* Primary Crops */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-sm font-medium text-gray-700 dark:text-dark-200 mb-3">
           Primary Crops (select all that apply)
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -792,9 +834,11 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
                   formData.profile?.primaryCrops?.includes(crop) || false
                 }
                 onChange={() => handleCropToggle(crop)}
-                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 rounded"
               />
-              <span className="ml-2 text-sm text-gray-700">{crop}</span>
+              <span className="ml-2 text-sm text-gray-700 dark:text-dark-200">
+                {crop}
+              </span>
             </label>
           ))}
         </div>
@@ -803,17 +847,17 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 dark:from-dark-900 dark:to-dark-800 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-green-600 rounded-full flex items-center justify-center">
+          <div className="mx-auto h-12 w-12 bg-green-600 dark:bg-green-500 rounded-full flex items-center justify-center transition-colors duration-200">
             <Leaf className="h-8 w-8 text-white" />
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
+          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-200">
             Join KhetSetu
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 dark:text-dark-300 transition-colors duration-200">
             Create your account to start smart farming
           </p>
         </div>
@@ -823,20 +867,22 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
           {[1, 2, 3].map((step) => (
             <div key={step} className="flex items-center">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors duration-200 ${
                   step === currentStep
-                    ? "bg-green-600 text-white"
+                    ? "bg-green-600 dark:bg-green-500 text-white"
                     : step < currentStep
-                      ? "bg-green-200 text-green-800"
-                      : "bg-gray-200 text-gray-500"
+                      ? "bg-green-200 dark:bg-green-700 text-green-800 dark:text-green-200"
+                      : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
                 }`}
               >
                 {step}
               </div>
               {step < 3 && (
                 <div
-                  className={`w-8 h-1 mx-2 ${
-                    step < currentStep ? "bg-green-200" : "bg-gray-200"
+                  className={`w-8 h-1 mx-2 transition-colors duration-200 ${
+                    step < currentStep
+                      ? "bg-green-200 dark:bg-green-700"
+                      : "bg-gray-200 dark:bg-gray-700"
                   }`}
                 />
               )}
@@ -846,14 +892,16 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
 
         {/* Registration Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="bg-white py-8 px-6 shadow-lg rounded-lg">
+          <div className="bg-white dark:bg-dark-800 py-8 px-6 shadow-lg rounded-lg border border-gray-200 dark:border-dark-700 transition-colors duration-200">
             {/* Error Display */}
             {state.error && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+              <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-md p-4 mb-6">
                 <div className="flex">
-                  <AlertCircle className="h-5 w-5 text-red-400" />
+                  <AlertCircle className="h-5 w-5 text-red-400 dark:text-red-500" />
                   <div className="ml-3">
-                    <p className="text-sm text-red-800">{state.error}</p>
+                    <p className="text-sm text-red-800 dark:text-red-400">
+                      {state.error}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -870,7 +918,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
                 <button
                   type="button"
                   onClick={handlePrevious}
-                  className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-dark-200 bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-md hover:bg-gray-50 dark:hover:bg-dark-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-dark-800 focus:ring-green-500 dark:focus:ring-green-400 transition-colors duration-200"
                 >
                   <ChevronLeft className="w-4 h-4 mr-2" />
                   Previous
@@ -883,7 +931,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  className="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 dark:bg-green-500 border border-transparent rounded-md hover:bg-green-700 dark:hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-dark-800 focus:ring-green-500 dark:focus:ring-green-400 transition-colors duration-200"
                 >
                   Next
                   <ChevronRight className="w-4 h-4 ml-2" />
@@ -892,7 +940,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
                 <button
                   type="submit"
                   disabled={state.loading}
-                  className="flex items-center px-6 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center px-6 py-2 text-sm font-medium text-white bg-green-600 dark:bg-green-500 border border-transparent rounded-md hover:bg-green-700 dark:hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-dark-800 focus:ring-green-500 dark:focus:ring-green-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                 >
                   {state.loading ? (
                     <>
@@ -910,13 +958,13 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             </div>
 
             {/* Sign In Link */}
-            <div className="text-center mt-6">
-              <p className="text-sm text-gray-600">
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-dark-400">
                 Already have an account?{" "}
                 <button
                   type="button"
                   onClick={onToggleMode}
-                  className="font-medium text-green-600 hover:text-green-500"
+                  className="font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors"
                 >
                   Sign in here
                 </button>
@@ -927,8 +975,10 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
 
         {/* Submit Error Message */}
         {validationErrors.submit && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">{validationErrors.submit}</p>
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-md p-4 mb-4">
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {validationErrors.submit}
+            </p>
           </div>
         )}
       </div>

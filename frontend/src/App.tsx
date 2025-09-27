@@ -14,6 +14,7 @@ import CropAdvisory from "./components/CropAdvisory";
 import FarmVisualization from "./components/FarmVisualization";
 import PestWatch from "./components/PestWatch";
 import MarketLinkage from "./components/MarketLinkage";
+import ExportAssistance from "./components/ExportAssistance";
 import Dashboard from "./components/Dashboard";
 import ExpertConsultation from "./components/ExpertConsultation";
 import Chatbot from "./components/Chatbot";
@@ -30,6 +31,7 @@ type ActiveTab =
   | "farm"
   | "pest"
   | "market"
+  | "export"
   | "consult";
 
 const AppContent: React.FC = () => {
@@ -44,6 +46,7 @@ const AppContent: React.FC = () => {
     { id: "farm", label: t("nav.farmView"), icon: MapIcon },
     { id: "pest", label: t("nav.pestWatch"), icon: Bug },
     { id: "market", label: t("nav.market"), icon: TrendingUp },
+    { id: "export", label: "Export Assistance", icon: Globe },
     { id: "consult", label: t("nav.expertConsult"), icon: Users },
   ];
 
@@ -59,6 +62,8 @@ const AppContent: React.FC = () => {
         return <PestWatch />;
       case "market":
         return <MarketLinkage />;
+      case "export":
+        return <ExportAssistance />;
       case "consult":
         return <ExpertConsultation />;
       default:

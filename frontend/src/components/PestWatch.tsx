@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MapPin,
   AlertTriangle,
@@ -25,6 +25,7 @@ import {
   Thermometer,
   Cloud,
   Wind,
+  CheckCircle,
 } from "lucide-react";
 import PestImageDetection from "./PestImageDetection";
 import { PestAnalysisResult } from "../utils/pestDetectionService";
@@ -77,6 +78,7 @@ const PestWatch: React.FC = () => {
   const [selectedCrop, setSelectedCrop] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [showTabDropdown, setShowTabDropdown] = useState(false);
 
   // Enhanced mock data
   const [pestReports, setPestReports] = useState<PestReport[]>([
@@ -269,6 +271,60 @@ const PestWatch: React.FC = () => {
 
   const uniqueCrops = [...new Set(pestReports.map((report) => report.crop))];
 
+  // Tab configuration for easy reference
+  const tabs = [
+    {
+      id: "detection",
+      label: "AI Detection",
+      icon: Camera,
+      count: null,
+    },
+    {
+      id: "reports",
+      label: "Community Reports",
+      icon: Users,
+      count: filteredReports.length,
+    },
+    {
+      id: "alerts",
+      label: "Pest Alerts",
+      icon: Bell,
+      count: pestAlerts.length,
+    },
+    {
+      id: "analytics",
+      label: "Analytics",
+      icon: BarChart3,
+      count: null,
+    },
+  ];
+
+  // Close dropdown on click outside or ESC key
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showTabDropdown && !target.closest("[data-dropdown]")) {
+        setShowTabDropdown(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && showTabDropdown) {
+        setShowTabDropdown(false);
+      }
+    };
+
+    if (showTabDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showTabDropdown]);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -310,39 +366,126 @@ const PestWatch: React.FC = () => {
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+        {/* Navigation - Tabs on Desktop, Dropdown on Mobile */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-visible">
+          {/* Mobile Dropdown (hidden on lg and up) */}
+          <div className="lg:hidden border-b border-gray-200 dark:border-gray-700 p-4">
+            <div className="relative" data-dropdown>
+              <button
+                onClick={() => setShowTabDropdown(!showTabDropdown)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setShowTabDropdown(!showTabDropdown);
+                  }
+                }}
+                aria-expanded={showTabDropdown}
+                aria-haspopup="true"
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
+              >
+                <div className="flex items-center space-x-3">
+                  {(() => {
+                    const currentTab = tabs.find((tab) => tab.id === activeTab);
+                    const Icon = currentTab?.icon || tabs[0].icon;
+                    return (
+                      <>
+                        <Icon
+                          size={20}
+                          className="text-red-600 dark:text-red-400"
+                        />
+                        <div className="flex items-center space-x-2">
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            {currentTab?.label || tabs[0].label}
+                          </span>
+                          {currentTab?.count !== null &&
+                            currentTab?.count !== undefined && (
+                              <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-xs rounded-full font-medium">
+                                {currentTab.count}
+                              </span>
+                            )}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+                <ChevronDown
+                  className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${
+                    showTabDropdown ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {/* Dropdown Menu */}
+              {showTabDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-20">
+                  <div className="py-2">
+                    {tabs.map((tab) => {
+                      const Icon = tab.icon;
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => {
+                            setActiveTab(tab.id as typeof activeTab);
+                            setShowTabDropdown(false);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setActiveTab(tab.id as typeof activeTab);
+                              setShowTabDropdown(false);
+                            }
+                          }}
+                          className={`w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-600 ${
+                            isActive
+                              ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
+                              : "text-gray-700 dark:text-gray-300"
+                          }`}
+                        >
+                          <Icon
+                            size={18}
+                            className={
+                              isActive
+                                ? "text-red-600 dark:text-red-400"
+                                : "text-gray-500 dark:text-gray-400"
+                            }
+                          />
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium">{tab.label}</span>
+                            {tab.count !== null && (
+                              <span
+                                className={`px-2 py-1 text-xs rounded-full font-medium ${
+                                  isActive
+                                    ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                                }`}
+                              >
+                                {tab.count}
+                              </span>
+                            )}
+                          </div>
+                          {isActive && (
+                            <CheckCircle
+                              size={16}
+                              className="ml-auto text-red-600 dark:text-red-400"
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Desktop Tabs (hidden on mobile, shown on lg and up) */}
+          <div className="hidden lg:block border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
             <nav
               className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max"
               aria-label="Tabs"
             >
-              {[
-                {
-                  id: "detection",
-                  label: "AI Detection",
-                  icon: Camera,
-                  count: null,
-                },
-                {
-                  id: "reports",
-                  label: "Community Reports",
-                  icon: Users,
-                  count: filteredReports.length,
-                },
-                {
-                  id: "alerts",
-                  label: "Pest Alerts",
-                  icon: Bell,
-                  count: pestAlerts.length,
-                },
-                {
-                  id: "analytics",
-                  label: "Analytics",
-                  icon: BarChart3,
-                  count: null,
-                },
-              ].map((tab) => (
+              {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as typeof activeTab)}
@@ -371,13 +514,13 @@ const PestWatch: React.FC = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="p-6">
+          <div className="p-6 overflow-visible">
             {activeTab === "detection" && (
-              <div className="space-y-6">
+              <div className="space-y-6 overflow-visible">
                 <PestImageDetection onPestDetected={handlePestDetection} />
 
                 {/* Quick Stats for Detection */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/30 rounded-xl p-4 border border-blue-200 dark:border-blue-700">
                     <div className="flex items-center justify-between">
                       <div>
@@ -426,51 +569,53 @@ const PestWatch: React.FC = () => {
             {activeTab === "reports" && (
               <div className="space-y-6">
                 {/* Search and Filters */}
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                  <div className="flex flex-col sm:flex-row gap-3 flex-1">
-                    <div className="relative flex-1 max-w-md">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                       <input
                         type="text"
                         placeholder="Search pests, locations, crops..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm"
+                        className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm"
                       />
                     </div>
 
-                    <select
-                      value={selectedSeverity}
-                      onChange={(e) => setSelectedSeverity(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm"
-                    >
-                      <option value="all">All Severities</option>
-                      <option value="critical">Critical</option>
-                      <option value="high">High</option>
-                      <option value="medium">Medium</option>
-                      <option value="low">Low</option>
-                    </select>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:w-auto">
+                      <select
+                        value={selectedSeverity}
+                        onChange={(e) => setSelectedSeverity(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm min-w-[140px]"
+                      >
+                        <option value="all">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                      </select>
 
-                    <select
-                      value={selectedCrop}
-                      onChange={(e) => setSelectedCrop(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm"
-                    >
-                      <option value="all">All Crops</option>
-                      {uniqueCrops.map((crop) => (
-                        <option key={crop} value={crop}>
-                          {crop}
-                        </option>
-                      ))}
-                    </select>
+                      <select
+                        value={selectedCrop}
+                        onChange={(e) => setSelectedCrop(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm min-w-[120px]"
+                      >
+                        <option value="all">All Crops</option>
+                        {uniqueCrops.map((crop) => (
+                          <option key={crop} value={crop}>
+                            {crop}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center text-sm"
+                    className="self-start px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center text-sm sm:hidden"
                   >
                     <Filter className="w-4 h-4 mr-2" />
-                    Filters
+                    Advanced Filters
                     {showFilters ? (
                       <ChevronUp className="w-4 h-4 ml-2" />
                     ) : (
@@ -480,7 +625,7 @@ const PestWatch: React.FC = () => {
                 </div>
 
                 {/* Enhanced Reports Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                   {filteredReports.map((report) => (
                     <div
                       key={report.id}
@@ -591,7 +736,7 @@ const PestWatch: React.FC = () => {
             {activeTab === "alerts" && (
               <div className="space-y-6">
                 {/* Alert Statistics */}
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                   <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/30 rounded-xl p-4 border border-red-200 dark:border-red-700">
                     <div className="flex items-center justify-between">
                       <div>
@@ -660,16 +805,18 @@ const PestWatch: React.FC = () => {
                   {pestAlerts.map((alert) => (
                     <div
                       key={alert.id}
-                      className={`border rounded-xl p-6 ${getAlertColor(alert.severity)}`}
+                      className={`border rounded-xl p-4 sm:p-6 ${getAlertColor(alert.severity)}`}
                     >
-                      <div className="flex items-start justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                         <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <AlertTriangle className="w-5 h-5" />
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                              {alert.title}
-                            </h3>
-                            <span className="px-2 py-1 bg-white dark:bg-gray-800 bg-opacity-50 dark:bg-opacity-70 text-gray-800 dark:text-gray-200 rounded-full text-xs font-medium">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                            <div className="flex items-center gap-2">
+                              <AlertTriangle className="w-5 h-5" />
+                              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                {alert.title}
+                              </h3>
+                            </div>
+                            <span className="px-2 py-1 bg-white dark:bg-gray-800 bg-opacity-50 dark:bg-opacity-70 text-gray-800 dark:text-gray-200 rounded-full text-xs font-medium self-start">
                               {alert.type.charAt(0).toUpperCase() +
                                 alert.type.slice(1)}
                             </span>
@@ -677,7 +824,7 @@ const PestWatch: React.FC = () => {
 
                           <p className="text-sm mb-3">{alert.message}</p>
 
-                          <div className="flex items-center gap-4 text-xs">
+                          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-xs">
                             <div className="flex items-center">
                               <Clock className="w-3 h-3 mr-1" />
                               {alert.timestamp}
@@ -689,7 +836,7 @@ const PestWatch: React.FC = () => {
                           </div>
                         </div>
 
-                        <button className="px-4 py-2 bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-80 hover:bg-opacity-90 dark:hover:bg-opacity-100 text-gray-800 dark:text-gray-200 rounded-lg text-sm font-medium transition-colors">
+                        <button className="self-start px-4 py-2 bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-80 hover:bg-opacity-90 dark:hover:bg-opacity-100 text-gray-800 dark:text-gray-200 rounded-lg text-sm font-medium transition-colors">
                           View Details
                         </button>
                       </div>
@@ -702,9 +849,9 @@ const PestWatch: React.FC = () => {
             {activeTab === "analytics" && (
               <div className="space-y-6">
                 {/* Analytics Dashboard */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                   {/* Trending Pests */}
-                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                       <TrendingUp className="w-5 h-5 mr-2 text-red-600" />
                       Trending Pests
@@ -715,15 +862,15 @@ const PestWatch: React.FC = () => {
                           key={pest}
                           className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                         >
-                          <div className="flex items-center">
-                            <span className="w-6 h-6 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full flex items-center justify-center text-xs font-medium mr-3">
+                          <div className="flex items-center min-w-0 flex-1">
+                            <span className="w-6 h-6 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full flex items-center justify-center text-xs font-medium mr-3 flex-shrink-0">
                               {index + 1}
                             </span>
-                            <span className="font-medium text-gray-900 dark:text-gray-100">
+                            <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
                               {pest}
                             </span>
                           </div>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">
                             {Math.floor(Math.random() * 20) + 5} reports
                           </span>
                         </div>
@@ -732,7 +879,7 @@ const PestWatch: React.FC = () => {
                   </div>
 
                   {/* Regional Risk Map */}
-                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                       <MapIcon className="w-5 h-5 mr-2 text-blue-600" />
                       Risk Distribution
@@ -748,9 +895,9 @@ const PestWatch: React.FC = () => {
                           key={area.sector}
                           className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                         >
-                          <div className="flex items-center">
+                          <div className="flex items-center min-w-0 flex-1">
                             <div
-                              className={`w-3 h-3 rounded-full mr-3 ${
+                              className={`w-3 h-3 rounded-full mr-3 flex-shrink-0 ${
                                 area.risk === "Critical"
                                   ? "bg-red-500"
                                   : area.risk === "High"
@@ -760,17 +907,17 @@ const PestWatch: React.FC = () => {
                                       : "bg-green-500"
                               }`}
                             ></div>
-                            <span className="font-medium text-gray-900 dark:text-gray-100">
+                            <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
                               {area.sector}
                             </span>
                           </div>
-                          <div>
+                          <div className="text-right ml-2 flex-shrink-0">
                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {area.risk}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
                               {area.reports} reports
                             </div>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                              {area.risk} risk
-                            </span>
                           </div>
                         </div>
                       ))}
@@ -779,41 +926,41 @@ const PestWatch: React.FC = () => {
                 </div>
 
                 {/* Performance Metrics */}
-                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 lg:mb-6 flex items-center">
                     <Activity className="w-5 h-5 mr-2 text-green-600" />
                     System Performance
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                      <div className="text-2xl font-bold text-blue-800 dark:text-blue-300">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+                    <div className="text-center p-3 lg:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                      <div className="text-xl lg:text-2xl font-bold text-blue-800 dark:text-blue-300">
                         2.5s
                       </div>
-                      <div className="text-blue-600 dark:text-blue-400 text-sm">
+                      <div className="text-blue-600 dark:text-blue-400 text-xs lg:text-sm">
                         Avg Detection Time
                       </div>
                     </div>
-                    <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
-                      <div className="text-2xl font-bold text-green-800 dark:text-green-300">
+                    <div className="text-center p-3 lg:p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                      <div className="text-xl lg:text-2xl font-bold text-green-800 dark:text-green-300">
                         94%
                       </div>
-                      <div className="text-green-600 dark:text-green-400 text-sm">
+                      <div className="text-green-600 dark:text-green-400 text-xs lg:text-sm">
                         Resolution Rate
                       </div>
                     </div>
-                    <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                      <div className="text-2xl font-bold text-purple-800 dark:text-purple-300">
+                    <div className="text-center p-3 lg:p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                      <div className="text-xl lg:text-2xl font-bold text-purple-800 dark:text-purple-300">
                         156
                       </div>
-                      <div className="text-purple-600 dark:text-purple-400 text-sm">
+                      <div className="text-purple-600 dark:text-purple-400 text-xs lg:text-sm">
                         Active Users
                       </div>
                     </div>
-                    <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
-                      <div className="text-2xl font-bold text-orange-800 dark:text-orange-300">
+                    <div className="text-center p-3 lg:p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
+                      <div className="text-xl lg:text-2xl font-bold text-orange-800 dark:text-orange-300">
                         48h
                       </div>
-                      <div className="text-orange-600 dark:text-orange-400 text-sm">
+                      <div className="text-orange-600 dark:text-orange-400 text-xs lg:text-sm">
                         Avg Response Time
                       </div>
                     </div>

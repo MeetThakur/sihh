@@ -29,6 +29,7 @@ import {
   MessageCircle,
   X,
   Plus,
+  ChevronDown,
 } from "lucide-react";
 
 interface MarketPrice {
@@ -96,6 +97,7 @@ const MarketLinkage: React.FC = () => {
   );
   const [isLiveMode, setIsLiveMode] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [showTabDropdown, setShowTabDropdown] = useState(false);
   const [priceAlerts] = useState<PriceAlert[]>([]);
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
@@ -418,6 +420,64 @@ const MarketLinkage: React.FC = () => {
     }
   };
 
+  // Tab configuration for easy reference
+  const tabs = [
+    {
+      id: "prices",
+      label: "Live Prices",
+      shortLabel: "Prices",
+      icon: TrendingUp,
+      count: filteredPrices.length,
+    },
+    {
+      id: "buyers",
+      label: "Verified Buyers",
+      shortLabel: "Buyers",
+      icon: Users,
+      count: buyers.length,
+    },
+    {
+      id: "opportunities",
+      label: "Market Opportunities",
+      shortLabel: "Opportunities",
+      icon: Target,
+      count: marketOpportunities.length,
+    },
+    {
+      id: "contracts",
+      label: "Contract Farming",
+      shortLabel: "Contracts",
+      icon: FileText,
+      count: 3,
+    },
+  ];
+
+  // Close dropdown on click outside or ESC key
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showTabDropdown && !target.closest("[data-dropdown]")) {
+        setShowTabDropdown(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && showTabDropdown) {
+        setShowTabDropdown(false);
+      }
+    };
+
+    if (showTabDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showTabDropdown]);
+
   const getBuyerTypeColor = (type: string) => {
     switch (type) {
       case "FPO":
@@ -662,43 +722,126 @@ const MarketLinkage: React.FC = () => {
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+        {/* Navigation - Tabs on Desktop, Dropdown on Mobile */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-visible">
+          {/* Mobile Dropdown (hidden on lg and up) */}
+          <div className="lg:hidden border-b border-gray-200 dark:border-gray-700 p-4">
+            <div className="relative" data-dropdown>
+              <button
+                onClick={() => setShowTabDropdown(!showTabDropdown)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setShowTabDropdown(!showTabDropdown);
+                  }
+                }}
+                aria-expanded={showTabDropdown}
+                aria-haspopup="true"
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+              >
+                <div className="flex items-center space-x-3">
+                  {(() => {
+                    const currentTab = tabs.find((tab) => tab.id === activeTab);
+                    const Icon = currentTab?.icon || tabs[0].icon;
+                    return (
+                      <>
+                        <Icon
+                          size={20}
+                          className="text-green-600 dark:text-green-400"
+                        />
+                        <div className="flex items-center space-x-2">
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            {currentTab?.label || tabs[0].label}
+                          </span>
+                          {currentTab?.count !== null &&
+                            currentTab?.count !== undefined && (
+                              <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs rounded-full font-medium">
+                                {currentTab.count}
+                              </span>
+                            )}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+                <ChevronDown
+                  className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${
+                    showTabDropdown ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {/* Dropdown Menu */}
+              {showTabDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-20">
+                  <div className="py-2">
+                    {tabs.map((tab) => {
+                      const Icon = tab.icon;
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => {
+                            setActiveTab(tab.id as typeof activeTab);
+                            setShowTabDropdown(false);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setActiveTab(tab.id as typeof activeTab);
+                              setShowTabDropdown(false);
+                            }
+                          }}
+                          className={`w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-600 ${
+                            isActive
+                              ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                              : "text-gray-700 dark:text-gray-300"
+                          }`}
+                        >
+                          <Icon
+                            size={18}
+                            className={
+                              isActive
+                                ? "text-green-600 dark:text-green-400"
+                                : "text-gray-500 dark:text-gray-400"
+                            }
+                          />
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium">{tab.label}</span>
+                            {tab.count !== null && (
+                              <span
+                                className={`px-2 py-1 text-xs rounded-full font-medium ${
+                                  isActive
+                                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                                }`}
+                              >
+                                {tab.count}
+                              </span>
+                            )}
+                          </div>
+                          {isActive && (
+                            <CheckCircle
+                              size={16}
+                              className="ml-auto text-green-600 dark:text-green-400"
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Desktop Tabs (hidden on mobile, shown on lg and up) */}
+          <div className="hidden lg:block border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
             <nav
               className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max"
               aria-label="Tabs"
             >
-              {[
-                {
-                  id: "prices",
-                  label: "Live Prices",
-                  shortLabel: "Prices",
-                  icon: TrendingUp,
-                  count: filteredPrices.length,
-                },
-                {
-                  id: "buyers",
-                  label: "Verified Buyers",
-                  shortLabel: "Buyers",
-                  icon: Users,
-                  count: buyers.length,
-                },
-                {
-                  id: "opportunities",
-                  label: "Market Opportunities",
-                  shortLabel: "Opportunities",
-                  icon: Target,
-                  count: marketOpportunities.length,
-                },
-                {
-                  id: "contracts",
-                  label: "Contract Farming",
-                  shortLabel: "Contracts",
-                  icon: FileText,
-                  count: 3,
-                },
-              ].map((tab) => (
+              {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() =>
@@ -734,7 +877,7 @@ const MarketLinkage: React.FC = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="p-6">
+          <div className="p-6 overflow-visible">
             {activeTab === "prices" && (
               <div className="space-y-6">
                 {/* Search and Filter Controls */}
@@ -1213,35 +1356,37 @@ const MarketLinkage: React.FC = () => {
 
             {activeTab === "buyers" && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                {/* Mobile-friendly header */}
+                <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     Verified Buyers & Suppliers
                   </h3>
-                  <div className="flex items-center space-x-4">
-                    <div className="relative">
+                  <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+                    <div className="relative flex-1 sm:flex-initial">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                       <input
                         type="text"
                         placeholder="Search buyers..."
-                        className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                       />
                     </div>
-                    <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center">
+                    <button className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center justify-center">
                       <Plus className="w-4 h-4 mr-2" />
                       Connect
                     </button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                   {buyers.map((buyer) => (
                     <div
                       key={buyer.id}
-                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
+                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6 hover:shadow-lg transition-all duration-200"
                     >
-                      <div className="flex items-start justify-between mb-4">
+                      {/* Mobile-friendly header layout */}
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 space-y-3 sm:space-y-0">
                         <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-2">
                             <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                               {buyer.name}
                             </h4>
@@ -1249,9 +1394,9 @@ const MarketLinkage: React.FC = () => {
                               <CheckCircle className="w-5 h-5 text-green-600" />
                             )}
                           </div>
-                          <div className="flex items-center space-x-2 mb-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                             <span
-                              className={`px-3 py-1 rounded-full text-sm font-medium border ${getBuyerTypeColor(buyer.type)}`}
+                              className={`px-3 py-1 rounded-full text-sm font-medium border ${getBuyerTypeColor(buyer.type)} flex items-center justify-center sm:justify-start w-fit`}
                             >
                               {getBuyerTypeIcon(buyer.type)}
                               <span className="ml-1">{buyer.type}</span>
@@ -1264,7 +1409,7 @@ const MarketLinkage: React.FC = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
+                        <div className="text-center sm:text-right bg-gray-50 dark:bg-gray-700 rounded-lg p-3 sm:bg-transparent sm:dark:bg-transparent sm:p-0">
                           <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                             Active Deals
                           </div>
@@ -1274,25 +1419,32 @@ const MarketLinkage: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="space-y-3 mb-4">
+                      {/* Mobile-friendly details grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                         <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                          <MapPin className="w-4 h-4 mr-2" />
-                          <span>{buyer.location}</span>
+                          <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">{buyer.location}</span>
                         </div>
 
                         <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                          <DollarSign className="w-4 h-4 mr-2" />
-                          <span>Payment: {buyer.paymentTerms}</span>
+                          <DollarSign className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">
+                            Payment: {buyer.paymentTerms}
+                          </span>
                         </div>
 
                         <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                          <Truck className="w-4 h-4 mr-2" />
-                          <span>Quantity: {buyer.preferredQuantity}</span>
+                          <Truck className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">
+                            Quantity: {buyer.preferredQuantity}
+                          </span>
                         </div>
 
                         <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                          <Activity className="w-4 h-4 mr-2" />
-                          <span>Last active: {buyer.lastActive}</span>
+                          <Activity className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">
+                            Last active: {buyer.lastActive}
+                          </span>
                         </div>
                       </div>
 
@@ -1312,17 +1464,19 @@ const MarketLinkage: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="flex gap-3">
-                        <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center justify-center">
+                      {/* Mobile-friendly button layout */}
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                        <button className="flex-1 bg-green-600 text-white py-3 sm:py-2 px-4 rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center justify-center text-sm font-medium">
                           <Phone className="w-4 h-4 mr-2" />
                           Contact
                         </button>
-                        <button className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center">
+                        <button className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 sm:py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center text-sm font-medium">
                           <Eye className="w-4 h-4 mr-2" />
                           View Profile
                         </button>
-                        <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                          <MessageCircle className="w-4 h-4" />
+                        <button className="sm:w-auto w-full py-3 sm:py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center">
+                          <MessageCircle className="w-4 h-4 sm:mr-0 mr-2" />
+                          <span className="sm:hidden">Message</span>
                         </button>
                       </div>
                     </div>
@@ -1333,24 +1487,26 @@ const MarketLinkage: React.FC = () => {
 
             {activeTab === "opportunities" && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                {/* Mobile-friendly header */}
+                <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     Market Opportunities
                   </h3>
-                  <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center">
+                  <button className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center justify-center">
                     <Zap className="w-4 h-4 mr-2" />
                     Get Recommendations
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                   {marketOpportunities.map((opportunity) => (
                     <div
                       key={opportunity.id}
-                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
+                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6 hover:shadow-lg transition-all duration-200"
                     >
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
+                      {/* Mobile-friendly header layout */}
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 space-y-3 sm:space-y-0">
+                        <div className="flex-1">
                           <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
                             {opportunity.title}
                           </h4>
@@ -1358,69 +1514,74 @@ const MarketLinkage: React.FC = () => {
                             {opportunity.company}
                           </p>
                         </div>
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${getRiskColor(opportunity.risk)}`}
-                        >
-                          {opportunity.risk} risk
-                        </span>
+                        <div className="flex items-center justify-between sm:justify-end">
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-medium ${getRiskColor(opportunity.risk)}`}
+                          >
+                            {opportunity.risk} risk
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="space-y-3 mb-4">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">
-                            Crop:
-                          </span>
-                          <span className="font-semibold text-gray-900 dark:text-gray-100">
-                            {opportunity.crop}
-                          </span>
+                      {/* Mobile-friendly details section */}
+                      <div className="mb-4">
+                        {/* Key metrics in a grid */}
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div className="text-lg font-bold text-green-600">
+                              ₹{opportunity.price.toLocaleString()}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              Price/qtl
+                            </div>
+                          </div>
+                          <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div className="text-lg font-bold text-blue-600">
+                              {opportunity.roi}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              Expected ROI
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">
-                            Price:
-                          </span>
-                          <span className="text-xl font-bold text-green-600">
-                            ₹{opportunity.price.toLocaleString()}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">
-                            Quantity:
-                          </span>
-                          <span className="text-gray-900 dark:text-gray-100">
-                            {opportunity.quantity}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">
-                            ROI:
-                          </span>
-                          <span className="text-lg font-bold text-green-600">
-                            {opportunity.roi}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">
-                            Deadline:
-                          </span>
-                          <span className="text-gray-900 dark:text-gray-100 flex items-center">
-                            <Calendar className="w-4 h-4 mr-1" />
-                            {new Date(
-                              opportunity.deadline,
-                            ).toLocaleDateString()}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">
-                            Location:
-                          </span>
-                          <span className="text-gray-900 dark:text-gray-100">
-                            {opportunity.location}
-                          </span>
+                        {/* Additional details */}
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">
+                              Crop:
+                            </span>
+                            <span className="font-medium text-gray-900 dark:text-gray-100 truncate ml-2">
+                              {opportunity.crop}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">
+                              Quantity:
+                            </span>
+                            <span className="font-medium text-gray-900 dark:text-gray-100 truncate ml-2">
+                              {opportunity.quantity}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">
+                              Deadline:
+                            </span>
+                            <span className="font-medium text-gray-900 dark:text-gray-100 flex items-center ml-2">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              {new Date(
+                                opportunity.deadline,
+                              ).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">
+                              Location:
+                            </span>
+                            <span className="font-medium text-gray-900 dark:text-gray-100 truncate ml-2">
+                              {opportunity.location}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
@@ -1428,26 +1589,28 @@ const MarketLinkage: React.FC = () => {
                         <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Requirements:
                         </p>
-                        <ul className="space-y-1">
+                        <div className="space-y-1 max-h-24 overflow-y-auto">
                           {opportunity.requirements.map((req, index) => (
-                            <li
+                            <div
                               key={index}
-                              className="text-sm text-gray-600 dark:text-gray-400 flex items-center"
+                              className="text-sm text-gray-600 dark:text-gray-400 flex items-start"
                             >
-                              <CheckCircle className="w-3 h-3 mr-2 text-green-600" />
-                              {req}
-                            </li>
+                              <CheckCircle className="w-3 h-3 mr-2 text-green-600 mt-0.5 flex-shrink-0" />
+                              <span className="flex-1">{req}</span>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
 
-                      <div className="flex gap-3">
-                        <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center justify-center">
+                      {/* Mobile-friendly button layout */}
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                        <button className="flex-1 bg-green-600 text-white py-3 sm:py-2 px-4 rounded-lg hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center justify-center text-sm font-medium">
                           <Target className="w-4 h-4 mr-2" />
                           Apply Now
                         </button>
-                        <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                          <Eye className="w-4 h-4" />
+                        <button className="sm:w-auto w-full py-3 sm:py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center">
+                          <Eye className="w-4 h-4 sm:mr-0 mr-2" />
+                          <span className="sm:hidden">View Details</span>
                         </button>
                       </div>
                     </div>
