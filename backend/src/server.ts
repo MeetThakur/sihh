@@ -24,7 +24,7 @@ import healthRoutes from "./routes/healthRoutes";
 import { authenticate, optionalAuth } from "./middleware/auth";
 import errorHandler from "./middleware/errorHandler";
 
-// Load environment variables
+// Load environment variables from backend directory
 dotenv.config();
 
 const app = express();
@@ -57,9 +57,9 @@ app.use(
   }),
 );
 
-// CORS configuration - Permissive for development
+// CORS configuration
 const corsOptions = {
-  origin: true, // Allow all origins for development
+  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: [
@@ -67,7 +67,10 @@ const corsOptions = {
     "Authorization",
     "X-API-Key",
     "X-Requested-With",
+    "Accept",
+    "Origin",
   ],
+  optionsSuccessStatus: 200, // Some legacy browsers choke on 204
 };
 
 app.use(cors(corsOptions));

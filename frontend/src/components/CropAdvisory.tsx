@@ -1517,7 +1517,7 @@ const CropAdvisory: React.FC = () => {
                     View Health Card
                   </button>
                   <button className="px-4 py-2 border border-green-600 text-green-700 rounded-lg hover:bg-green-50 text-sm font-medium">
-                    Export Report
+                    Download Report
                   </button>
                 </div>
               </div>

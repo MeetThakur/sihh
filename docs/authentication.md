@@ -262,7 +262,7 @@ function App() {
 
 ## Environment Configuration
 
-### Backend (.env)
+### Backend (backend/.env)
 
 ```env
 # JWT Configuration

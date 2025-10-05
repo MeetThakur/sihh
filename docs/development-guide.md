@@ -222,7 +222,9 @@ db.crops.find({status: "growing"})
 
 ### **Environment Variables for Production**
 
-Create `.env.production` with:
+Create environment files in respective directories:
+
+**Backend Environment** (`backend/.env`):
 
 ```env
 NODE_ENV=production

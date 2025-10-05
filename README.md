@@ -50,9 +50,11 @@ KhetSetu/
 │   │   ├── middleware/     # Authentication, validation
 │   │   ├── config/         # Database, logging configuration
 │   │   └── server.ts       # Main server entry point
-│   ├── .env               # Environment variables
+├── backend/                 # Node.js/Express API Server
+│   ├── .env               # Backend environment variables
 │   └── package.json       # Backend dependencies
 ├── frontend/               # React Web Application
+│   ├── .env               # Frontend environment variables
 │   ├── src/
 │   │   ├── components/     # React UI components
 │   │   ├── pages/         # Page components
@@ -91,7 +93,7 @@ cd khetsetu
 ```bash
 cd backend
 npm install
-# Create .env file with your MongoDB Atlas connection string
+# Create .env file in backend directory with your MongoDB Atlas connection string
 ```
 
 **Required Environment Variables:**
@@ -261,7 +263,7 @@ For complete deployment instructions, troubleshooting, and environment setup, se
 
 ### Environment Variables
 
-**Backend (.env)**
+**Backend (backend/.env)**
 ```env
 NODE_ENV=production
 PORT=5000
@@ -272,7 +274,7 @@ GEMINI_API_KEY=your-gemini-api-key
 WEATHER_API_KEY=your-weather-api-key-from-weatherapi.com
 ```
 
-**Frontend (.env.local)**
+**Frontend (frontend/.env)**
 ```env
 VITE_API_BASE_URL=http://localhost:5000
 VITE_GEMINI_API_KEY=your-gemini-api-key
