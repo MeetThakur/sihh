@@ -5,11 +5,13 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "env": {
-    "VITE_API_URL": "https://khetsetu.onrender.com/api"
+    "VITE_API_URL": "https://khetsetu.onrender.com/api",
+    "VITE_GEMINI_API_KEY": "AIzaSyD7QXWH3PwuzW_vo_jm8eLPRRLdRz895fA"
   },
   "build": {
     "env": {
-      "VITE_API_URL": "https://khetsetu.onrender.com/api"
+      "VITE_API_URL": "https://khetsetu.onrender.com/api",
+      "VITE_GEMINI_API_KEY": "AIzaSyD7QXWH3PwuzW_vo_jm8eLPRRLdRz895fA"
     }
   },
   "rewrites": [

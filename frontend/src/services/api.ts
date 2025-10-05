@@ -29,7 +29,7 @@ const getApiBaseUrl = (): string => {
 
   // Environment-based fallback
   if (import.meta.env.PROD) {
-    return "https://khetsetu-backend.onrender.com/api";
+    return "https://khetsetu.onrender.com/api";
   }
 
   return "http://localhost:5000/api";
@@ -113,13 +113,35 @@ class ApiService {
 
       return data;
     } catch (error) {
-      console.error("API request failed:", error);
+      // Enhanced error logging for production debugging
+      console.error("API request failed:", {
+        url: `${API_BASE_URL}${endpoint}`,
+        method: options.method || "GET",
+        error: error,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        environment: import.meta.env.MODE,
+      });
 
       // Handle network errors
       if (error instanceof TypeError && error.message.includes("fetch")) {
-        throw new Error(
-          "Network error: Unable to connect to the server. Please check your internet connection.",
-        );
+        const message = import.meta.env.PROD
+          ? "Unable to connect to the server. Please try again later."
+          : "Network error: Unable to connect to the server. Please check your internet connection.";
+        throw new Error(message);
+      }
+
+      // Handle CORS errors specifically
+      if (
+        error instanceof TypeError &&
+        error.message.includes("NetworkError")
+      ) {
+        console.error("CORS Error Details:", {
+          currentOrigin: window.location.origin,
+          targetAPI: API_BASE_URL,
+          endpoint: endpoint,
+        });
+        throw new Error("Server connection failed. Please try again later.");
       }
 
       throw error;
